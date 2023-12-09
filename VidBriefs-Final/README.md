@@ -11,6 +11,8 @@ cd /Users/alfienurse/Desktop/Development/xcode\ dev/VidBriefs
 
 ## Checklist
 
+- [ ] on first app run get the openaiapikey from server then save it to keychain for the device
+
 - [ ] MAKE A AUDIO READER OF THE SUMMARY ON INSIGHTVIEW
 - [ ] pick the level of detail you want your question summarised in !!!
 - [ ] Set up database, gettings themes and concise essential piece of infomation regarding the video
