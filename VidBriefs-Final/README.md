@@ -8,24 +8,28 @@ cd /Users/alfienurse/Desktop/Development/xcode\ dev/VidBriefs
 ### IPad screenshots
 (2048 x 2732px or 2732 x 2048px)
 
+
+## Checklist
+
 - [ ] MAKE A AUDIO READER OF THE SUMMARY ON INSIGHTVIEW
 - [ ] pick the level of detail you want your question summarised in !!!
 - [ ] Set up database, gettings themes and concise essential piece of infomation regarding the video
 - [ ] make it asynchrounous, so the user can send the request and swipe off the app
 
+- [ ] FIX LIBARY OF SUMMARISATIONS
+- [ ] functionality to summarise a downloadable text file
+
+- [ ] Register and sign up accounts 
+- [ ] make it spin the summary shown on the every 5 times it reaches the view
 
 - [ ] MAKE BUTTONS OPACITY 20 CUSTOMTEAL for everything
 - [x] solve safe area errors in insight view and others
 - [ ] change theme color button
 _ [x] work out group problem with insight view
 
-## Checklist
-
-- [ ] FIX LIBARY OF SUMMARISATIONS
-- [ ] functionality to summarise a downloadable text file
-- [ ] calculate if text is under the 128k token limit before deciding to loop over it
 
 
+! - [x] calculate if text is under the 128k token limit before deciding to loop over it
 ! - [x] "Don't waste your time watching long videos!"
 ! - [ ] remove the clarifying when pressing paste button
 ! - [ ] prompt engineer to ask gpt to only get the important infomation for the question
@@ -33,7 +37,6 @@ _ [x] work out group problem with insight view
 ! - [x] Move paste button left in the url textbox
 ! - [x] Move the randomize button to top right
 ! - [x] "List the things being discussed"
-! - [ ] change app navigation to have task bar at the bottom
 ! - [ ] change the response output to look easier to read
 ! - [ ] prompt engineer the ai to bold important things
 ! - [ ] prompt engineer the ai to categories the video and give different subheadings for each catercorisation
@@ -48,8 +51,6 @@ _ [x] work out group problem with insight view
 ## Notebook
 
 - [ ] set up a limited company
-- [ ] Register and sign up accounts 
-- [ ] make it spin the summary shown on the every 5 times it reaches the view
 - [ ] take some good screenshots
 
 - Filter summaries into categories
