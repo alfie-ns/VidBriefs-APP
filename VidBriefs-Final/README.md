@@ -9,9 +9,7 @@ cd /Users/alfienurse/Desktop/Development/xcode\ dev/VidBriefs
 (2048 x 2732px or 2732 x 2048px)
 
 - [ ] MAKE A AUDIO READER OF THE SUMMARY ON INSIGHTVIEW
-
 - [ ] make it asynchrounous, so the user can send the request and swipe off the app
-
 - [ ] MAKE BUTTONS OPACITY 20 CUSTOMTEAL for everything
 - [x] solve safe area errors in insight view and others
 - [ ] change theme color button
