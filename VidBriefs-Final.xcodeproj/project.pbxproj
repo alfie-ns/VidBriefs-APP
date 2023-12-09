@@ -28,6 +28,7 @@
 		34F011F32AFA52F700FF1957 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F011F22AFA52F700FF1957 /* RootView.swift */; };
 		34F011F52AFA531400FF1957 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F011F42AFA531400FF1957 /* SettingsView.swift */; };
 		34F011F72AFA532D00FF1957 /* TermsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F011F62AFA532D00FF1957 /* TermsView.swift */; };
+		34F3A7922B24E7A0001045A0 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 34F3A7912B24E7A0001045A0 /* KeychainSwift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -62,6 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34F3A7922B24E7A0001045A0 /* KeychainSwift in Frameworks */,
 				3489327F2B04315C0071DB92 /* SwiftUIX in Frameworks */,
 				34EBEB7F2B0448D000CA3C30 /* SwiftUIX in Frameworks */,
 			);
@@ -183,6 +185,7 @@
 			packageProductDependencies = (
 				3489327E2B04315C0071DB92 /* SwiftUIX */,
 				34EBEB7E2B0448D000CA3C30 /* SwiftUIX */,
+				34F3A7912B24E7A0001045A0 /* KeychainSwift */,
 			);
 			productName = "VidBriefs-Final";
 			productReference = 34F011CF2AFA514800FF1957 /* VidBriefs-Final.app */;
@@ -214,6 +217,7 @@
 			mainGroup = 34F011C62AFA514800FF1957;
 			packageReferences = (
 				3489327D2B04315C0071DB92 /* XCRemoteSwiftPackageReference "SwiftUIX" */,
+				34F3A7902B24E7A0001045A0 /* XCRemoteSwiftPackageReference "keychain-swift" */,
 			);
 			productRefGroup = 34F011D02AFA514800FF1957 /* Products */;
 			projectDirPath = "";
@@ -477,6 +481,14 @@
 				minimumVersion = 0.1.8;
 			};
 		};
+		34F3A7902B24E7A0001045A0 /* XCRemoteSwiftPackageReference "keychain-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/evgenyneu/keychain-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 20.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -489,6 +501,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3489327D2B04315C0071DB92 /* XCRemoteSwiftPackageReference "SwiftUIX" */;
 			productName = SwiftUIX;
+		};
+		34F3A7912B24E7A0001045A0 /* KeychainSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 34F3A7902B24E7A0001045A0 /* XCRemoteSwiftPackageReference "keychain-swift" */;
+			productName = KeychainSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
