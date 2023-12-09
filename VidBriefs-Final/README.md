@@ -11,7 +11,7 @@ cd /Users/alfienurse/Desktop/Development/xcode\ dev/VidBriefs
 
 ## Checklist
 
-- [ ] GET NEW APIKEY and on first app run get the openaiapikey from server then save it to keychain for the device
+- [ ] GET NEW APIKEY and on first app run get the openaiapikey from server then save it to keychain for the device, do serverside work and incorporate this functionality in while also creating a database
 
 - [ ] MAKE A AUDIO READER OF THE SUMMARY ON INSIGHTVIEW
 - [ ] pick the level of detail you want your question summarised in !!!
