@@ -1,5 +1,7 @@
 import SwiftUI
 import Combine
+import AVFoundation
+
 
 extension UIResponder {
     private weak static var _currentFirstResponder: UIResponder? = nil
@@ -87,6 +89,9 @@ struct InsightView: View {
     
     @State private var videoTitle: String = ""
     @State private var videoTranscript: String = ""
+    
+    @State private var speechSynthesizer = AVSpeechSynthesizer()
+
 
 
 
@@ -291,6 +296,9 @@ struct InsightView: View {
                                 content: {
                                     // Display the API response
                                     Text(LocalizedStringKey(apiResponse))
+                                        .onTapGesture {
+                                            self.speak(text: self.apiResponse)
+                                        }
                                         .padding()
                                         .foregroundColor(.white)
                                         .background(Color.customTeal.opacity(0.5))
@@ -325,6 +333,17 @@ struct InsightView: View {
             
         
     }
+    
+    func speak(text: String) {
+        if speechSynthesizer.isSpeaking {
+            speechSynthesizer.stopSpeaking(at: .immediate)
+        } else {
+            let utterance = AVSpeechUtterance(string: text)
+            utterance.voice = AVSpeechSynthesisVoice(language: "en-US") // or any other preferred language
+            speechSynthesizer.speak(utterance)
+        }
+    }
+
     
     func actionSheetButtons() -> [ActionSheet.Button] {
             var buttons: [ActionSheet.Button] = []
