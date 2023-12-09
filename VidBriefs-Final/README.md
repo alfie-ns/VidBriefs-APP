@@ -10,8 +10,10 @@ cd /Users/alfienurse/Desktop/Development/xcode\ dev/VidBriefs
 
 - [ ] MAKE A AUDIO READER OF THE SUMMARY ON INSIGHTVIEW
 - [ ] pick the level of detail you want your question summarised in !!!
-
+- [ ] Set up database, gettings themes and concise essential piece of infomation regarding the video
 - [ ] make it asynchrounous, so the user can send the request and swipe off the app
+
+
 - [ ] MAKE BUTTONS OPACITY 20 CUSTOMTEAL for everything
 - [x] solve safe area errors in insight view and others
 - [ ] change theme color button
@@ -42,7 +44,6 @@ _ [x] work out group problem with insight view
 4 - [x] fix stupid colouring and tabview background
 5 - [x] Add a paste button into url textbox
 6 - [x] Add functionality to manually randomize the insight on the homeview
-7 - [ ] Set up database, gettings themes and concise essential piece of infomation regarding the video
 
 ## Notebook
 
