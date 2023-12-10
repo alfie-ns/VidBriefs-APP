@@ -11,12 +11,15 @@ cd /Users/alfienurse/Desktop/Development/xcode\ dev/VidBriefs
 
 ## Checklist
 
+
 - [ ] GET NEW APIKEY and on first app run get the openaiapikey from server then save it to keychain for the device, do serverside work and incorporate this functionality in while also creating a database
+
+- [ ] Reinstate Youtube API
 
 - [ ] MAKE A AUDIO READER OF THE SUMMARY ON INSIGHTVIEW
 - [ ] pick the level of detail you want your question summarised in !!!
 - [ ] Set up database, gettings themes and concise essential piece of infomation regarding the video
-- [ ] make it asynchrounous, so the user can send the request and swipe off the app
+- [ ] make it asynchrounous, so the user can send the request and swipe off thxe app
 
 - [ ] FIX LIBARY OF SUMMARISATIONS
 - [ ] functionality to summarise a downloadable text file
