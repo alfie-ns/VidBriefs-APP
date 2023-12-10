@@ -6,11 +6,14 @@
 - `cmd + shift + y` = show/hide console on bottom
 - `option + click` = Quick documentation
 
-### IPhone screenshots
-(1290 x 2796px or 2796 x 1290px)
+##screenshots
+### iPhone
+- Portrait: 1290 x 2796 px
+- Landscape: 2796 x 1290 px
 
-### IPad screenshots
-(2048 x 2732px or 2732 x 2048px)
+### iPad
+- Portrait: 2048 x 2732 px
+- Landscape: 2732 x 2048 px
 
 
 
@@ -31,31 +34,31 @@
 
 
 
-- [ ] set up a limited company
+
 
 ### Notes
 
 https://www.disability-grants.org/business-grants-for-the-disabled.html
 https://www.scope.org.uk/advice-and-support/start-up-a-business/
 
+- [ ] set up a limited company
 - [ ] Offer plans for higher cost for more summarisetons, bronze, silver, gold
-
 - [ ] Sell YouTube summaries tokens and charge for using my API
+- [ ] Invation tech = type of business
+- [ ] type of business = innovation tech
+- [ ] My business code = 62012 business and domestic software development
+- [ ] international money transfer
+- [ ] Grant funding
+- [ ] Prioritize tasks that lay the foundation for others.
+- [ ] Regularly review and adjust your plan based on progress and challenges.
+- [ ] Consider user feedback crucial for continuous improvement.
+- [ ] Keep learning and adapting to new developments in AI and app development.
+- [ ] take some good screenshots
 
-- Invation tech = type of business
-
-- type of business = innovation tech
-
-- My business code = 62012 business and domestic software development
-
-- international money transfer
-
-- Grant funding
-
-- Prioritize tasks that lay the foundation for others.
-- Regularly review and adjust your plan based on progress and challenges.
-- Consider user feedback crucial for continuous improvement.
-- Keep learning and adapting to new developments in AI and app development.
+Marketing:
+1. Form a PLC.
+2. Learn legal risks of AI
+3. Market to university students at £7.99/year. Use demo videos and ads for promotion.
 
 
 
@@ -67,41 +70,33 @@ https://www.scope.org.uk/advice-and-support/start-up-a-business/
 
 cd /Users/alfienurse/Desktop/Development/xcode\ dev/VidBriefs
 
+## Dev Prompts
+
+> "I want you to act as a UX/UI developer. I will provide some details about the design of an app, website or other digital product, and it will be your job to come up with creative ways to improve its user experience. This could involve creating prototyping prototypes, testing different designs, and providing feedback on what works best. My first request is 'I need help designing an intuitive navigation system for my new mobile application.'"
+
+
 
 ## Checklist
 
 
 - [ ] GET NEW APIKEY and on first app run get the openaiapikey from server then save it to keychain for the device, do serverside work and incorporate this functionality in while also creating a database
-
 - [ ] Reinstate Youtube API - get other youtube api data and pass with the prompt
-
 - [ ] Guess which prompt to suggest
-
 - [x] MAKE A AUDIO READER OF THE SUMMARY ON INSIGHTVIEW
 - [ ] make a proper nice voice for the reading
-
 - [ ] pick the level of detail you want your question summarised in 
-
 - [ ] Set up database, gettings themes and concise essential piece of infomation regarding the video
-
 - [ ] insure asynchrounous, so the user can send the request and swipe off the app
-
 - [ ] fix libary
-
 - [ ] functionality to summarise a downloadable text file
-
 - [ ] Register and sign up accounts 
-
+- [ ] **DALL-E Integration for Quick Pictures**: This is an advanced feature and should be tackled later in the development process.
 - [ ] make it spin the summary shown on the every 5 times it reaches the view, spin for a general reccomeneded insight
-
 - [ ] MAKE BUTTONS OPACITY 20 CUSTOMTEAL for everything
 - [x] solve safe area errors in insight view and others
 - [ ] change theme color button for users to change the colour theme of the app
 _ [x] work out group problem with insight view
-
 - [x] database implemtnation
-
-
 - [x] calculate if text is under the 128k token limit before deciding to loop over it
 - [x] "Don't waste your time watching long videos!"- 
 - [ ] remove the clarifying alert message when pressing paste button
@@ -112,29 +107,47 @@ _ [x] work out group problem with insight view
 - [x] "List the things being discussed"
 - [ ] change the response output to look easier to read
 - [ ] prompt engineer the ai to bold important things
+- [x] Give my API key for all users
+- [x] Fix tabview to fluidly swipe
+- [x] "Un-update" back to IOS 16
+- [x] fix stupid colouring and tabview background
+- [x] Add a paste button into url textbox
+- [x] Add functionality to manually randomize the insight on the homeview
 
 ## For a more detailed recommendation system:
 
-Collect Data: Start by collecting data on user interactions with videos (views, likes, duration watched) and video metadata (tags, categories, etc.).
-
-Data Analysis: Analyze this data to find patterns and correlations. Machine learning models can be useful here.
-
-Algorithm Implementation: Implement algorithms like collaborative filtering, content-based filtering, or hybrid methods to provide personalized video recommendations.
-Continuous Improvement: Regularly update your models and algorithms based on new data and user feedback.
-
-This approach lays the groundwork for a robust recommendation system, which you can refine and expand over time based on your specific requirements and user data.
-
-- [ ]  **DALL-E Integration for Quick Pictures**: This is an advanced feature and should be tackled later in the development process.
-
-1 - [x] Give my API key for all users
-2 - [x] Fix tabview to fluidly swipe
-3 - [x] "Un-update" back to IOS 16
-4 - [x] fix stupid colouring and tabview background
-5 - [x] Add a paste button into url textbox
-6 - [x] Add functionality to manually randomize the insight on the homevie
+- [ ] Collect Data: Start by collecting data on user interactions with videos (views, likes, duration watched) and video metadata (tags, categories, etc.).
+- [ ] Data Analysis: Analyze this data to find patterns and correlations. Machine learning models can be useful here.
+- [ ] Algorithm Implementation: Implement algorithms like collaborative filtering, content-based filtering, or hybrid methods to provide personalized video recommendations.
+- [ ] Continuous Improvement: Regularly update your models and algorithms based on new data and user feedback.
+- [ ]This approach lays the groundwork for a robust recommendation system, which you can refine and expand over time based on your specific requirements and user data.
 
 
-- [ ] take some good screenshots
+### Immediate Short-Term Goals (1-2 Weeks)
+- [x] **Decide on a Good Colour Combination**
+- [x] **Fix Swiping When Reaching the Last View on the Right**
+- [x] **TabView Implementation**
+- [x] **Swipe up on the app in root view to “open the app”**
+- [ ] **Adjust black and grey for dark mode and light mode**
+- [ ] **Finish Investor Pitch**
+### Mid-Term Goals (3-6 Weeks)
+- [ ] **Functionality to Read Out a Generated Insight/Brief**
+- [x] **Animation to Swipe Up to Move on from RootView**
+- [ ] **Filter What the AI Looks for in the Video**
+- [ ] **Add in a Database That Saves the Initial Summaries and Themes**
+- [ ] **Concise Summary First, Then Option to Furthermore Summarise Specifically**
+- [ ] **Functionality to Listen to the Transcript with an AI-Generated Voice**
+### Long-Term Goals (2-6 Months)
+- [x] **Incorporate Data Gained from the Summarisation to Give Tailored Adverts**
+- [x] **Incorporate GPT into YouTube**
+- [ ] **AI Maintains a Conversation with the User with Knowledge of the Video**
+- [ ] **Implement Own API Key for Use by Everyone**
+- [ ] **Market to Disabled People**
+- [ ] **Incorporate Ad Revenue Which Runs While Waiting for the Response**
+
+
+
+
 
 - Filter summaries into categories
 - Implementation to suggest videos  
@@ -193,128 +206,45 @@ private, so this might not be available).
 
 
 
-## Plan
-
-### Immediate Short-Term Goals (1-2 Weeks)
-1. [x] **Decide on a Good Colour Combination**: This is a foundational task that will influence the design of your app. It's relatively simple and sets the stage for UI development.
-
-2. [x] **Fix the Swiping When Reaching the Last View on the Right**: Since you've already implemented swiping between views, fixing this should be a straightforward task.
-
-3. [x] **TabView Implementation**: Follow the tutorial linked ([YouTube Tutorial](https://www.youtube.com/watch?v=DLj9yM-zLyc)) to implement this feature. This is a key UI component.
-
-3.5. [x] Swipe up on the app in root view to “open the app” (send it too the next page) swipe up high up to not open app
-
-3.75. [ ] Adjust black and grey for dark mode and lighmode 
-
-4. [] **Finish Investor Pitch**: Refine your pitch to secure funding, which is crucial for long-term development and marketing efforts.
-
-### Mid-Term Goals (3-6 Weeks)
-
-5.  [ ] Functionality to Read Out a Generated Insight/Brief**: This is a core feature that should follow the basic UI implementations.
-
-6. [x] Animation to Swipe Up to Move on from RootView**: Enhances user experience and should be tackled after basic UI elements like TabView are in place.
-
-7. [ ] Filter What the AI Looks for in the Video**: This requires some understanding of AI and how it will interact with video content, a fundamental part of your app's functionality.
-
-8. [ ] Add in a Database That Saves the Initial Summaries and Themes (Keywords)**: Essential for storing user data and preferences, which is important for personalized experiences.
-
-9. [ ] Concise Summary First, Then Option to Furthermore Summarise Specifically**: Develop this feature as it's a key selling point of your app.
-
-10. [ ] Functionality to Listen to the Transcript with an AI-Generated Voice**: This is a significant feature that will require some research and development.
-
-### Long-Term Goals (2-6 Months)
-- [x] **Incorporate Data Gained from the Summarisation to Give Tailored Adverts**: This involves both AI and understanding user data, which is more complex.
-
-- [x] **Incorporate GPT into YouTube (Final Task)**: This is a major feature and should be tackled once you have a stable version of the app with basic functionalities.
-
-- [ ] **AI Maintains a Conversation with the User with Knowledge of the Video**: This is an advanced feature and should be developed after the basic AI functionalities are stable.
-
-14. **Implement Own API Key for Use by Everyone**: This is crucial for scaling up but should be done after ensuring that basic functionalities are working well.
-
-15. **Market to Disabled People**: This is part of your marketing strategy but requires a stable, fully functional app.
-
-17. **Incorporate Ad Revenue Which Runs While Waiting for the Response**: This is a monetization strategy that should be implemented once the app is functional and engaging.
-
-
-
 ## ideas
 
 - [ ] AI THAT READS A BOOK AND TELLS YOU WHAT YOU WANT TO KNOW
-
 - [ ] selection of noice voices for the AI
-
 - [ ] suggest videos for user based on registeration details and videos summarised
-
 - [ ] really personalise it, get user to register with likes and dislikes, asking questions to indicate their likes and dislike
-
 - [ ] HAVE SUGGESTIVE VIDEOS TO USE IN THE URL-BOX. PICK DIFFERENT CATEGORY'S FOR RANDOM VIDEO FROM THE CATEGORY
-
 - [ ] My own summary tokens to use my app?
-
 - [ ] Summarise educational content(here's you bitesize version of this course)
-
 - [ ] Incorporate GPT into YouTube
-
 - [ ] functionality to read out a generated insight/brief
-
 - [ ] Animation to swipe up to move on from rootview
-
 - [ ] Brief Summarisation/Synopsis where a user has a choice to summarise more
-
 - [ ] AI maintains a conversation with the user with knowledge of the video
-
 - [x] Implement own API key for use by everyone
-
 - [ ] TabView: https://www.youtube.com/watch?v=DLj9yM-zLyc: 
-
 - [ ] Filter what the AI looks for in the video
-
 - [ ] instead of putting in own api key, use mine 10 summarisations for basic plan and implement chance to get a higher paid plan
-
 - [ ] incorporate data gained from the summarisation to give them tailored adverts
-
 - [ ] chance to rate the video, and rate the summary for help with next summarisation
-
 - [ ] Search the LLM for specific infomation which they want to learn
-
 - [ ] Add in a database that saves the initial summaries and themes(keywords))
-
 - [ ] Concise summary first, then opition to furthermore summarise specifcally
-
 - [ ] When you push a summary, produce themes and keywords)
-
 - [ ] Add recomendations for other videos to look at 
-
 - [ ] Market to disabled people
-
 - [ ] what do they do after they've saved the time
-
 - [x] swipe between the views in the app
-
 - [ ] Fix the swiping when reaching the last view on the right
-
 - [ ] Brand as a podcast time saver("get all the infomation from a 2-hour long podcast in a minute")
-
 - [x] Swipe between views that are on the tabview
-
 - [ ]  makde tabview pop out with it's own background colour'
-
 - [ ] Functionality to listen to the transcript with a AI generated voice, having options to have something else playing, such as a background noise to enhance focus(binarul beats 40hz). Have functionalties like an audio playing app
-
 - [ ] dall-e integration for quick pictures made from the infomation of the transcript, have the pictures inside the insight summary labels
-
 - [ ] Decide on a good colour combination
-
 - [ ] Incorporate ad revenue which runs while waiting for the response, takes around 30-45 seconds
-
 - [x] Investor Pitch: Use GPT to craft a compelling, cost-focused investment proposition. Target price: £7.99.
-
 - [ ] finish investor pitch
 
-Marketing:
-1. Form a PLC.
-2. Learn legal risks of AI
-3. Market to university students at £7.99/year. Use demo videos and ads for promotion.
 
 
 ## AI Voice-Generated Transcript Playback:
@@ -367,7 +297,7 @@ By following these steps, you can develop a sophisticated system that personaliz
 
 
 
-### Different types to call an insight
+### Different things to call an insight
 
 Synopsis: Indicates a brief summary of the main points or narrative of the video.
 Summary: A straightforward term that conveys the essence of the video content in a condensed form.
@@ -382,9 +312,6 @@ Condensation: Implies a reduction of the content to its core elements, maintaini
 
 	
 
-## Prompts
-
-> "I want you to act as a UX/UI developer. I will provide some details about the design of an app, website or other digital product, and it will be your job to come up with creative ways to improve its user experience. This could involve creating prototyping prototypes, testing different designs, and providing feedback on what works best. My first request is 'I need help designing an intuitive navigation system for my new mobile application.'"
 
 ## Design & Interaction
 
