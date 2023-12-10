@@ -1,6 +1,22 @@
 # VidBriefs
 
+## Xcode shortcuts
+- `cmd + 0` = show/hide navigator on left
+- `cmd + option + 0` = show/hide inspector on right
+- `cmd + shift + y` = show/hide console on bottom
+- `option + click` = Quick documentation
+
+### IPhone screenshots
+(1290 x 2796px or 2796 x 1290px)
+
+### IPad screenshots
+(2048 x 2732px or 2732 x 2048px)
+
+
+
 # BUSINESS
+
+
 
 ### Marketing and Legal
 - **Form a PLC**: This should be done early in your process, as it's important for legal and financial reasons.
@@ -13,21 +29,43 @@
 - **Add Recommendations for Other Videos to Look At**: This can be an ongoing improvement as your database grows.
 - **What Do They Do After They've Saved the Time**: This is more of a value proposition and user engagement strategy, continuously evolve this based on user feedback.
 
+
+
+- [ ] set up a limited company
+
 ### Notes
+
+https://www.disability-grants.org/business-grants-for-the-disabled.html
+https://www.scope.org.uk/advice-and-support/start-up-a-business/
+
+- [ ] Offer plans for higher cost for more summarisetons, bronze, silver, gold
+
+- [ ] Sell YouTube summaries tokens and charge for using my API
+
+- Invation tech = type of business
+
+- type of business = innovation tech
+
+- My business code = 62012 business and domestic software development
+
+- international money transfer
+
+- Grant funding
+
 - Prioritize tasks that lay the foundation for others.
 - Regularly review and adjust your plan based on progress and challenges.
 - Consider user feedback crucial for continuous improvement.
 - Keep learning and adapting to new developments in AI and app development.
 
+
+
+
+
+
+
 # CODE
 
 cd /Users/alfienurse/Desktop/Development/xcode\ dev/VidBriefs
-
-### IPhone screenshots
-(1290 x 2796px or 2796 x 1290px)
-
-### IPad screenshots
-(2048 x 2732px or 2732 x 2048px)
 
 
 ## Checklist
@@ -49,14 +87,16 @@ cd /Users/alfienurse/Desktop/Development/xcode\ dev/VidBriefs
 - [ ] insure asynchrounous, so the user can send the request and swipe off the app
 
 - [ ] fix libary
+
 - [ ] functionality to summarise a downloadable text file
 
 - [ ] Register and sign up accounts 
-- [ ] make it spin the summary shown on the every 5 times it reaches the view
+
+- [ ] make it spin the summary shown on the every 5 times it reaches the view, spin for a general reccomeneded insight
 
 - [ ] MAKE BUTTONS OPACITY 20 CUSTOMTEAL for everything
 - [x] solve safe area errors in insight view and others
-- [ ] change theme color button
+- [ ] change theme color button for users to change the colour theme of the app
 _ [x] work out group problem with insight view
 
 - [x] database implemtnation
@@ -64,8 +104,8 @@ _ [x] work out group problem with insight view
 
 - [x] calculate if text is under the 128k token limit before deciding to loop over it
 - [x] "Don't waste your time watching long videos!"- 
-- [ ] remove the clarifying when pressing paste button
-- [ ] prompt engineer to ask gpt to only get the important infomation for the question
+- [ ] remove the clarifying alert message when pressing paste button
+- [ ] prompt engineer to ask gpt to only get the important infomation for the question, and different types of important infomation you want
 - [x] Start using the YouTube API
 - [x] Move paste button left in the url textbox
 - [x] Move the randomize button to top right
@@ -84,7 +124,7 @@ Continuous Improvement: Regularly update your models and algorithms based on new
 
 This approach lays the groundwork for a robust recommendation system, which you can refine and expand over time based on your specific requirements and user data.
 
-
+- [ ]  **DALL-E Integration for Quick Pictures**: This is an advanced feature and should be tackled later in the development process.
 
 1 - [x] Give my API key for all users
 2 - [x] Fix tabview to fluidly swipe
@@ -93,7 +133,7 @@ This approach lays the groundwork for a robust recommendation system, which you 
 5 - [x] Add a paste button into url textbox
 6 - [x] Add functionality to manually randomize the insight on the homevie
 
-- [ ] set up a limited company
+
 - [ ] take some good screenshots
 
 - Filter summaries into categories
@@ -147,31 +187,11 @@ private, so this might not be available).
 
 20, Caption: Indicates if the video has captions.
 
-21. License: Type of license of the video (e.g., YouTube standard license, Creative
-
-Commons),
+21. License: Type of license of the video (e.g., YouTube standard license, Creative Commons),
 
 22. Embeddable: Indicates if the video can be embedded on other websites.
 
 
-
-## Business
-https://www.disability-grants.org/business-grants-for-the-disabled.html
-https://www.scope.org.uk/advice-and-support/start-up-a-business/
-
-- [ ] Offer plans for higher cost for more summarisetons, bronze, silver, gold
-
-- [ ] Sell YouTube summaries tokens and charge for using my API
-
-- Invation tech = type of business
-
-- type of business = innovation tech
-
-- My business code = 62012 business and domestic software development
-
-- international money transfer
-
-- Grant funding
 
 ## Plan
 
@@ -213,13 +233,11 @@ https://www.scope.org.uk/advice-and-support/start-up-a-business/
 
 15. **Market to Disabled People**: This is part of your marketing strategy but requires a stable, fully functional app.
 
-16. **DALL-E Integration for Quick Pictures**: This is an advanced feature and should be tackled later in the development process.
-
 17. **Incorporate Ad Revenue Which Runs While Waiting for the Response**: This is a monetization strategy that should be implemented once the app is functional and engaging.
 
 
 
-## App development ideas
+## ideas
 
 - [ ] AI THAT READS A BOOK AND TELLS YOU WHAT YOU WANT TO KNOW
 
@@ -363,16 +381,6 @@ Briefing: Suggests a concise and informative summary, typically used in informat
 Condensation: Implies a reduction of the content to its core elements, maintaining the essential points.
 
 	
-
-
-
-
-## Xcode shortcuts
-- `cmd + 0` = show/hide navigator on left
-- `cmd + option + 0` = show/hide inspector on right
-- `cmd + shift + y` = show/hide console on bottom
-- `option + click` = Quick documentation
-
 
 ## Prompts
 
