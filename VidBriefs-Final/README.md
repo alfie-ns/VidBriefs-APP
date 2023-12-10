@@ -120,7 +120,7 @@ _ [x] work out group problem with insight view
 - [ ] Data Analysis: Analyze this data to find patterns and correlations. Machine learning models can be useful here.
 - [ ] Algorithm Implementation: Implement algorithms like collaborative filtering, content-based filtering, or hybrid methods to provide personalized video recommendations.
 - [ ] Continuous Improvement: Regularly update your models and algorithms based on new data and user feedback.
-- [ ]This approach lays the groundwork for a robust recommendation system, which you can refine and expand over time based on your specific requirements and user data.
+- [ ] This approach lays the groundwork for a robust recommendation system, which you can refine and expand over time based on your specific requirements and user data.
 
 
 ### Immediate Short-Term Goals (1-2 Weeks)
