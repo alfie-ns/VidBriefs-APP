@@ -24,8 +24,6 @@ cd /Users/alfienurse/Desktop/Development/xcode\ dev/VidBriefs
 
 - [ ] Set up database, gettings themes and concise essential piece of infomation regarding the video
 
-- [ ] get 
-
 - [ ] insure asynchrounous, so the user can send the request and swipe off the app
 
 - [ ] libary
@@ -39,28 +37,37 @@ cd /Users/alfienurse/Desktop/Development/xcode\ dev/VidBriefs
 - [ ] change theme color button
 _ [x] work out group problem with insight view
 
+- [x] database implemtnation
 
 
-! - [x] calculate if text is under the 128k token limit before deciding to loop over it
-! - [x] "Don't waste your time watching long videos!"
-! - [ ] remove the clarifying when pressing paste button
-! - [ ] prompt engineer to ask gpt to only get the important infomation for the question
-! - [x] Start using the YouTube API
-! - [x] Move paste button left in the url textbox
-! - [x] Move the randomize button to top right
+- [x] calculate if text is under the 128k token limit before deciding to loop over it
+[x] "Don't waste your time watching long videos!"
+[ ] remove the clarifying when pressing paste button
+[ ] prompt engineer to ask gpt to only get the important infomation for the question
+[x] Start using the YouTube API
+[x] Move paste button left in the url textbox
+[x] Move the randomize button to top right
 ! - [x] "List the things being discussed"
 ! - [ ] change the response output to look easier to read
 ! - [ ] prompt engineer the ai to bold important things
 ! - [ ] prompt engineer the ai to categories the video and give different subheadings for each catercorisation
+
+For a more detailed recommendation system:
+
+Collect Data: Start by collecting data on user interactions with videos (views, likes, duration watched) and video metadata (tags, categories, etc.).
+Data Analysis: Analyze this data to find patterns and correlations. Machine learning models can be useful here.
+Algorithm Implementation: Implement algorithms like collaborative filtering, content-based filtering, or hybrid methods to provide personalized video recommendations.
+Continuous Improvement: Regularly update your models and algorithms based on new data and user feedback.
+This approach lays the groundwork for a robust recommendation system, which you can refine and expand over time based on your specific requirements and user data.
+
+
 
 1 - [x] Give my API key for all users
 2 - [x] Fix tabview to fluidly swipe
 3 - [x] "Un-update" back to IOS 16
 4 - [x] fix stupid colouring and tabview background
 5 - [x] Add a paste button into url textbox
-6 - [x] Add functionality to manually randomize the insight on the homeview
-
-## Notebook
+6 - [x] Add functionality to manually randomize the insight on the homevie
 
 - [ ] set up a limited company
 - [ ] take some good screenshots
