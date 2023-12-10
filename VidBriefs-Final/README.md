@@ -41,16 +41,16 @@ _ [x] work out group problem with insight view
 
 
 - [x] calculate if text is under the 128k token limit before deciding to loop over it
-[x] "Don't waste your time watching long videos!"
-[ ] remove the clarifying when pressing paste button
-[ ] prompt engineer to ask gpt to only get the important infomation for the question
-[x] Start using the YouTube API
-[x] Move paste button left in the url textbox
-[x] Move the randomize button to top right
-! - [x] "List the things being discussed"
-! - [ ] change the response output to look easier to read
-! - [ ] prompt engineer the ai to bold important things
-! - [ ] prompt engineer the ai to categories the video and give different subheadings for each catercorisation
+- [x] "Don't waste your time watching long videos!"- 
+- [ ] remove the clarifying when pressing paste button
+- [ ] prompt engineer to ask gpt to only get the important infomation for the question
+- [x] Start using the YouTube API
+- [x] Move paste button left in the url textbox
+- [x] Move the randomize button to top right
+- [x] "List the things being discussed"
+- [ ] change the response output to look easier to read
+- [ ] prompt engineer the ai to bold important things
+- [ ] prompt engineer the ai to categories the video and give different subheadings for each catercorisation
 
 For a more detailed recommendation system:
 
@@ -79,7 +79,7 @@ This approach lays the groundwork for a robust recommendation system, which you 
 - swipe down to reload libraryview 
 - possible opinon to like or dislike
 
-*When using the YouTube API to fetch data from a video URL, you can obtain a variety of information beyond just the title and transcript. Here's a list of some additional fields you might consider retrieving:*
+*When using the YouTube API to fetch data from a video URL, you can obtain a variety of information beyond just the title and transcript. Here's a list of some additional fields you might consider retrieving:* //TODO: DONE
 
 1. Video ID: Unique identifier for the video.
 
