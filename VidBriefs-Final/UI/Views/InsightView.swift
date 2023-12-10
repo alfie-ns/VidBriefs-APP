@@ -364,11 +364,14 @@ struct InsightView: View {
             DispatchQueue.main.async {
                 self.isLoading = false
                 if success, let response = response {
-                    print(response) // print response
+                    let newInsight = VideoInsight(title: "Your Video Title", insight: response) 
+                    print(response)
+                    
+                    self.savedInsights.append(newInsight) // Append directly to the list
                     self.apiResponse = response
                     self.updateUI(success: success, response: response)
                 } else {
-                    self.apiResponse = "Error fetching data"
+                    self.apiResponse = "fetchData error"
                     self.updateUI(success: false, response: nil)
                 }
             }
@@ -396,8 +399,20 @@ struct InsightView: View {
                 apiResponse = response ?? "An unspecified error occurred"
             }
         }
+        
+        func handleNewInsight(title: String, insight: String) {
+            let newInsight = VideoInsight(title: title, insight: insight)
+            savedInsights.append(newInsight)
+            
+            // Save the updated list to UserDefaults
+            if let encoded = try? JSONEncoder().encode(savedInsights) {
+                UserDefaults.standard.set(encoded, forKey: "savedInsights")
+            }
+        }
     }
 }
+
+
 
 struct InsightView_Previews: PreviewProvider {
     static var previews: some View {
