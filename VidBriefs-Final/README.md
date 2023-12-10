@@ -39,7 +39,8 @@ cd /Users/alfienurse/Desktop/Development/xcode\ dev/VidBriefs
 
 - [ ] Guess which prompt to suggest
 
-- [ ] MAKE A AUDIO READER OF THE SUMMARY ON INSIGHTVIEW
+- [x] MAKE A AUDIO READER OF THE SUMMARY ON INSIGHTVIEW
+- [ ] make a proper nice voice for the reading
 
 - [ ] pick the level of detail you want your question summarised in 
 
@@ -47,7 +48,7 @@ cd /Users/alfienurse/Desktop/Development/xcode\ dev/VidBriefs
 
 - [ ] insure asynchrounous, so the user can send the request and swipe off the app
 
-- [ ] libary
+- [ ] fix libary
 - [ ] functionality to summarise a downloadable text file
 
 - [ ] Register and sign up accounts 
