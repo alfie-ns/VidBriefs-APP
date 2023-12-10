@@ -1,5 +1,26 @@
 # VidBriefs
 
+# BUSINESS
+
+### Marketing and Legal
+- **Form a PLC**: This should be done early in your process, as it's important for legal and financial reasons.
+- **Learn Legal Risks of AI**: Parallel to your development, understand the legal aspects to ensure compliance.
+- **Market to University Students at £7.99/year**: This should be part of your ongoing marketing strategy, but more focused once the app is nearing completion.
+
+### Continuous Tasks
+- **Chance to Rate the Video, and Rate the Summary for Help with Next Summarisation**: Implement this as a feature that evolves with user feedback.
+- **Search the LLM for Specific Information Which They Want to Learn**: Continuously refine this feature based on user feedback and AI advancements.
+- **Add Recommendations for Other Videos to Look At**: This can be an ongoing improvement as your database grows.
+- **What Do They Do After They've Saved the Time**: This is more of a value proposition and user engagement strategy, continuously evolve this based on user feedback.
+
+### Notes
+- Prioritize tasks that lay the foundation for others.
+- Regularly review and adjust your plan based on progress and challenges.
+- Consider user feedback crucial for continuous improvement.
+- Keep learning and adapting to new developments in AI and app development.
+
+# CODE
+
 cd /Users/alfienurse/Desktop/Development/xcode\ dev/VidBriefs
 
 ### IPhone screenshots
@@ -50,14 +71,16 @@ _ [x] work out group problem with insight view
 - [x] "List the things being discussed"
 - [ ] change the response output to look easier to read
 - [ ] prompt engineer the ai to bold important things
-- [ ] prompt engineer the ai to categories the video and give different subheadings for each catercorisation
 
-For a more detailed recommendation system:
+## For a more detailed recommendation system:
 
 Collect Data: Start by collecting data on user interactions with videos (views, likes, duration watched) and video metadata (tags, categories, etc.).
+
 Data Analysis: Analyze this data to find patterns and correlations. Machine learning models can be useful here.
+
 Algorithm Implementation: Implement algorithms like collaborative filtering, content-based filtering, or hybrid methods to provide personalized video recommendations.
 Continuous Improvement: Regularly update your models and algorithms based on new data and user feedback.
+
 This approach lays the groundwork for a robust recommendation system, which you can refine and expand over time based on your specific requirements and user data.
 
 
@@ -79,7 +102,7 @@ This approach lays the groundwork for a robust recommendation system, which you 
 - swipe down to reload libraryview 
 - possible opinon to like or dislike
 
-*When using the YouTube API to fetch data from a video URL, you can obtain a variety of information beyond just the title and transcript. Here's a list of some additional fields you might consider retrieving:* //TODO: DONE
+*When using the YouTube API to fetch data from a video URL, you can obtain a variety of information beyond just the title and transcript. Here's a list of some additional fields you might consider retrieving:* DONE
 
 1. Video ID: Unique identifier for the video.
 
@@ -179,11 +202,11 @@ https://www.scope.org.uk/advice-and-support/start-up-a-business/
 10. [ ] Functionality to Listen to the Transcript with an AI-Generated Voice**: This is a significant feature that will require some research and development.
 
 ### Long-Term Goals (2-6 Months)
-11. **Incorporate Data Gained from the Summarisation to Give Tailored Adverts**: This involves both AI and understanding user data, which is more complex.
+- [x] **Incorporate Data Gained from the Summarisation to Give Tailored Adverts**: This involves both AI and understanding user data, which is more complex.
 
-12. **Incorporate GPT into YouTube (Final Task)**: This is a major feature and should be tackled once you have a stable version of the app with basic functionalities.
+- [x] **Incorporate GPT into YouTube (Final Task)**: This is a major feature and should be tackled once you have a stable version of the app with basic functionalities.
 
-13. **AI Maintains a Conversation with the User with Knowledge of the Video**: This is an advanced feature and should be developed after the basic AI functionalities are stable.
+- [ ] **AI Maintains a Conversation with the User with Knowledge of the Video**: This is an advanced feature and should be developed after the basic AI functionalities are stable.
 
 14. **Implement Own API Key for Use by Everyone**: This is crucial for scaling up but should be done after ensuring that basic functionalities are working well.
 
@@ -193,22 +216,7 @@ https://www.scope.org.uk/advice-and-support/start-up-a-business/
 
 17. **Incorporate Ad Revenue Which Runs While Waiting for the Response**: This is a monetization strategy that should be implemented once the app is functional and engaging.
 
-### Marketing and Legal
-- **Form a PLC**: This should be done early in your process, as it's important for legal and financial reasons.
-- **Learn Legal Risks of AI**: Parallel to your development, understand the legal aspects to ensure compliance.
-- **Market to University Students at £7.99/year**: This should be part of your ongoing marketing strategy, but more focused once the app is nearing completion.
 
-### Continuous Tasks
-- **Chance to Rate the Video, and Rate the Summary for Help with Next Summarisation**: Implement this as a feature that evolves with user feedback.
-- **Search the LLM for Specific Information Which They Want to Learn**: Continuously refine this feature based on user feedback and AI advancements.
-- **Add Recommendations for Other Videos to Look At**: This can be an ongoing improvement as your database grows.
-- **What Do They Do After They've Saved the Time**: This is more of a value proposition and user engagement strategy, continuously evolve this based on user feedback.
-
-### Notes
-- Prioritize tasks that lay the foundation for others.
-- Regularly review and adjust your plan based on progress and challenges.
-- Consider user feedback crucial for continuous improvement.
-- Keep learning and adapting to new developments in AI and app development.
 
 ## App development ideas
 
