@@ -149,12 +149,12 @@ _ [x] work out group problem with insight view
 
 
 
-- Filter summaries into categories
-- Implementation to suggest videos  
-- Having option to listen to an audio voice generation of the transcript and then can mix the sound with(e.g binaural beats)
-- Alternated tokens for summary gpt
-- swipe down to reload libraryview 
-- possible opinon to like or dislike
+- [ ] Filter summaries into categories
+- [ ] Implementation to suggest videos  
+- [ ] Having option to listen to an audio voice generation of the transcript and then can mix the sound with(e.g binaural beats)
+- [ ] Alternated tokens for summary gpt
+- [ ] swipe down to reload libraryview 
+- [ ] possible opinon to like or dislike
 
 *When using the YouTube API to fetch data from a video URL, you can obtain a variety of information beyond just the title and transcript. Here's a list of some additional fields you might consider retrieving:* DONE
 
@@ -237,10 +237,10 @@ private, so this might not be available).
 - [ ] Fix the swiping when reaching the last view on the right
 - [ ] Brand as a podcast time saver("get all the infomation from a 2-hour long podcast in a minute")
 - [x] Swipe between views that are on the tabview
-- [ ]  makde tabview pop out with it's own background colour'
+- [ ] make tabview pop out with it's own background colour'
 - [ ] Functionality to listen to the transcript with a AI generated voice, having options to have something else playing, such as a background noise to enhance focus(binarul beats 40hz). Have functionalties like an audio playing app
 - [ ] dall-e integration for quick pictures made from the infomation of the transcript, have the pictures inside the insight summary labels
-- [ ] Decide on a good colour combination
+- [x] Decide on a good colour combination
 - [ ] Incorporate ad revenue which runs while waiting for the response, takes around 30-45 seconds
 - [x] Investor Pitch: Use GPT to craft a compelling, cost-focused investment proposition. Target price: £7.99.
 - [ ] finish investor pitch
