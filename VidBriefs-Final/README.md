@@ -80,6 +80,8 @@ cd /Users/alfienurse/Desktop/Development/xcode\ dev/VidBriefs
 
 ## Checklist
 
+- [ ] Store SavedInsights on db and call api for them
+
 - [ ] Fix libary array to save summarisations
 
 - [ ] GET NEW APIKEY and on first app run get the openaiapikey from server then save it to keychain for the device, do serverside work and incorporate this functionality in while also creating a database
