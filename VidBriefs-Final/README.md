@@ -1,5 +1,7 @@
 # VidBriefs
 
+REMEMBER TO ADD NEW OPENAI API KEY EVERYTIME
+
 ## Xcode shortcuts
 - `cmd + 0` = show/hide navigator on left
 - `cmd + option + 0` = show/hide inspector on right
