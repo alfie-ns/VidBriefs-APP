@@ -80,7 +80,7 @@ struct InsightView: View {
     @State private var urlInput: String = ""
     @State private var customInsight: String = "" // Custom message
     
-    @State private var apiResponse: String = ""
+    @State private var apiResponse = ""
     @State private var isResponseExpanded = false // for DisclosureGroup
     @State private var savedInsights: [VideoInsight] = []
     @State private var isLoading = false
@@ -98,7 +98,7 @@ struct InsightView: View {
 
     // List of questions
     let questions = [
-        
+        "how",
         "based on the content, provide a practical action plan.",
         "Explain this video",
         "give me a list of the main things discussed in this video",
@@ -365,7 +365,6 @@ struct InsightView: View {
             DispatchQueue.main.async {
                 self.isLoading = false
                 if success, let response = response {
-                    let newInsight =
                     print(response)
                     
                     self.savedInsights.append(VideoInsight(title: "Your Video Title", insight: response)) // Append directly to the list
@@ -378,12 +377,14 @@ struct InsightView: View {
             }
         }
     }
-
+    
+    // TODO: Unpack the
 
     private func updateUI(success: Bool, response: String?) {
         DispatchQueue.main.async {
             if success {
-                let newInsight = VideoInsight(title: videoTitle, insight: response ?? "No data")
+                let newInsight = VideoInsight(title: videoTitle, insight: apiResponse ?? "No data")
+//                self.apiResponse = newInsight.insight
                 if let existingSavedInsightsData = UserDefaults.standard.data(forKey: "savedInsights"),
                    var existingSavedInsights = try? JSONDecoder().decode([VideoInsight].self, from: existingSavedInsightsData) {
                     existingSavedInsights.append(newInsight)
