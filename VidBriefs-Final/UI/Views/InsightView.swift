@@ -73,7 +73,8 @@ struct InsightView: View {
     
     @Binding var currentPath: AppNavigationPath
     var customLoading: CustomLoadingView! // Custom loading sign
-    @EnvironmentObject var settings: SharedSettings // "terms are accepted" bool gate keeper
+    @EnvironmentObject var settings: SharedSettings // "terms are accepted" bool gate keepe
+
     
     
     @State private var urlInput: String = ""
@@ -81,7 +82,7 @@ struct InsightView: View {
     
     @State private var apiResponse: String = ""
     @State private var isResponseExpanded = false // for DisclosureGroup
-    @State private var savedInsights: [String] = []
+    @State private var savedInsights: [VideoInsight] = []
     @State private var isLoading = false
     
     @State private var selectedQuestion: String = ""
@@ -364,10 +365,10 @@ struct InsightView: View {
             DispatchQueue.main.async {
                 self.isLoading = false
                 if success, let response = response {
-                    let newInsight = VideoInsight(title: "Your Video Title", insight: response) 
+                    let newInsight =
                     print(response)
                     
-                    self.savedInsights.append(newInsight) // Append directly to the list
+                    self.savedInsights.append(VideoInsight(title: "Your Video Title", insight: response)) // Append directly to the list
                     self.apiResponse = response
                     self.updateUI(success: success, response: response)
                 } else {
@@ -402,7 +403,7 @@ struct InsightView: View {
         
         func handleNewInsight(title: String, insight: String) {
             let newInsight = VideoInsight(title: title, insight: insight)
-            savedInsights.append(newInsight)
+            savedInsights.append(VideoInsight(title: "Your Video Title", insight: response!))
             
             // Save the updated list to UserDefaults
             if let encoded = try? JSONEncoder().encode(savedInsights) {

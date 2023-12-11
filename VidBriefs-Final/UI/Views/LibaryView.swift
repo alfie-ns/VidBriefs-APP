@@ -4,13 +4,19 @@ enum ActiveAlert {
     case clearAll, selectedInsight
 }
 
+struct VideoInsight: Codable {
+    var title: String
+    var insight: String
+}
+
+
 struct LibraryView: View {
     
     @Binding var currentPath: AppNavigationPath
     @EnvironmentObject var settings: SharedSettings
 
     
-    @State private var savedInsights = [] // create a savedInsights list storing the responses
+    @State private var savedInsights: [VideoInsight] = []  // create a savedInsights list storing the responses
     @State private var activeAlert: ActiveAlert = .selectedInsight
     @State private var showAlert = false
     @State private var selectedInsight: String = ""
