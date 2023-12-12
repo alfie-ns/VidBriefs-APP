@@ -219,6 +219,7 @@ private, so this might not be available).
 
 ## ideas
 
+- [ ] educational summariser for univeristys DLE
 - [ ] AI THAT READS A BOOK AND TELLS YOU WHAT YOU WANT TO KNOW
 - [ ] selection of noice voices for the AI
 - [ ] suggest videos for user based on registeration details and videos summarised
