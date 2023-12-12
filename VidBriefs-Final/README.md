@@ -1,5 +1,7 @@
 # VidBriefs
 
+- text-to-video investment
+
 REMEMBER TO ADD NEW OPENAI API KEY EVERYTIME
 
 ## Xcode shortcuts
@@ -17,6 +19,9 @@ REMEMBER TO ADD NEW OPENAI API KEY EVERYTIME
 - Portrait: 2048 x 2732 px
 - Landscape: 2732 x 2048 px
 
+##Uni student course summariser, 
+- [ ] gets data from university's
+I should move on to an app which summarises university's DLE data
 
 
 # BUSINESS
