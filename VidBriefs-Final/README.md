@@ -1,8 +1,10 @@
 # VidBriefs
 
+jump to time of the summisation based on the 'chapters'
+
 - text-to-video investment
 
-REMEMBER TO ADD NEW OPENAI API KEY EVERYTIME
+REMEMBER TO ADD NEW OPENAI API KEY EVERYTIME because of unsafe pushes to github
 
 ## Xcode shortcuts
 - `cmd + 0` = show/hide navigator on left
@@ -22,6 +24,9 @@ REMEMBER TO ADD NEW OPENAI API KEY EVERYTIME
 ##Uni student course summariser, 
 - [ ] gets data from university's
 I should move on to an app which summarises university's DLE data
+- [ ] summarise lectures giving key points related to it
+- [ ] help out extra stuff concering the summary, if token length is enough for one summarisation without breaking up in the chunks
+- [ ] chapyter up the summarisation into subheading summarises of the summary
 
 
 # BUSINESS
@@ -40,8 +45,13 @@ I should move on to an app which summarises university's DLE data
 - **What Do They Do After They've Saved the Time**: This is more of a value proposition and user engagement strategy, continuously evolve this based on user feedback.
 
 
-
-
+- [ ] Offer plans for higher cost for more summarisetons, bronze, silver, gold
+- [ ] Sell YouTube summaries tokens and charge for using my API
+- [ ] Prioritize tasks that lay the foundation for others.
+- [ ] Regularly review and adjust your plan based on progress and challenges.
+- [ ] Consider user feedback crucial for continuous improvement.
+- [ ] Keep learning and adapting to new developments in AI and app development.
+- [ ] take some good screenshots
 
 ### Notes
 
@@ -49,18 +59,12 @@ https://www.disability-grants.org/business-grants-for-the-disabled.html
 https://www.scope.org.uk/advice-and-support/start-up-a-business/
 
 - [ ] set up a limited company
-- [ ] Offer plans for higher cost for more summarisetons, bronze, silver, gold
-- [ ] Sell YouTube summaries tokens and charge for using my API
 - [ ] Invation tech = type of business
 - [ ] type of business = innovation tech
 - [ ] My business code = 62012 business and domestic software development
 - [ ] international money transfer
 - [ ] Grant funding
-- [ ] Prioritize tasks that lay the foundation for others.
-- [ ] Regularly review and adjust your plan based on progress and challenges.
-- [ ] Consider user feedback crucial for continuous improvement.
-- [ ] Keep learning and adapting to new developments in AI and app development.
-- [ ] take some good screenshots
+
 
 Marketing:
 1. Form a PLC.
@@ -215,10 +219,10 @@ private, so this might not be available).
 
 22. Embeddable: Indicates if the video can be embedded on other websites.
 
-
+= PROMPT: You have been given knowledge of my Django api, you will assist me very very fast in any tech problem with my project development, you will be extremely creative in terms of your responses
 
 ## ideas
-
+!!! - [ ] 
 - [ ] educational summariser for univeristys DLE
 - [ ] AI THAT READS A BOOK AND TELLS YOU WHAT YOU WANT TO KNOW
 - [ ] selection of noice voices for the AI
