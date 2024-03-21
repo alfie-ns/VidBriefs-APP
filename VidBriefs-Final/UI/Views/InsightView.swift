@@ -98,7 +98,7 @@ struct InsightView: View {
 
     // List of questions
     let questions = [
-        "how",
+        "what are the step-by-step instructions for replicating the process demonstrated in the video?",
         "based on the content, provide a practical action plan.",
         "Explain this video",
         "give me a list of the main things discussed in this video",
@@ -154,7 +154,7 @@ struct InsightView: View {
                     
                 } else {
                     
-                    // The ScrollView to accommodate dynamic content eg the Picker
+                    // The ScrollView to accommodate dynamic content eg the keyboard
                     
                     // - Allows veritcal scrolling, UI elements(text-fields,buttons,response display
                     // - Works with keyboardAdaptive modifier to prevent keyboard from obscuring UI elements, maintaining a smooth user experience.
@@ -163,7 +163,7 @@ struct InsightView: View {
                     
                     ScrollView {
                         
-                        VStack { // VStack containing the main UI elements for video URL input, custom insight text editor, question selection menu, video unpacking button, loading view, and the response display.
+                        // VStack { // VStack containing the main UI elements for video URL input, custom insight text editor, question selection menu, video unpacking button, loading view, and the response display.
                             
                             Spacer().frame(height: 100) // Vertical space at the top
                             
@@ -311,10 +311,6 @@ struct InsightView: View {
                             )
                             .foregroundColor(Color.black)
                             .multilineTextAlignment(.center)
-                            
-                        }
-                        
-                        
                     }
                     
                 }
