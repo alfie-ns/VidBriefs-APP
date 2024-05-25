@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3419A5D12AFCD43000A0108A /* ApiKeyDemo2.mov in Resources */ = {isa = PBXBuildFile; fileRef = 3419A5D02AFCD43000A0108A /* ApiKeyDemo2.mov */; };
+		34294AFA2C026B1900C29928 /* SharedSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34294AF92C026B1900C29928 /* SharedSettings.swift */; };
 		343065B12B06508D00F7FAF9 /* UIColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343065B02B06508D00F7FAF9 /* UIColorExtensions.swift */; };
 		346D1FEC2AFDAEB700F84B27 /* ExampleVideo.mov in Resources */ = {isa = PBXBuildFile; fileRef = 346D1FE92AFDAC7700F84B27 /* ExampleVideo.mov */; };
 		346D1FED2AFDAEBE00F84B27 /* LibaryPicture.png in Resources */ = {isa = PBXBuildFile; fileRef = 3489422C2AFBF5270035B716 /* LibaryPicture.png */; };
@@ -33,6 +34,7 @@
 
 /* Begin PBXFileReference section */
 		3419A5D02AFCD43000A0108A /* ApiKeyDemo2.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = ApiKeyDemo2.mov; sourceTree = "<group>"; };
+		34294AF92C026B1900C29928 /* SharedSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedSettings.swift; sourceTree = "<group>"; };
 		343065B02B06508D00F7FAF9 /* UIColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtensions.swift; sourceTree = "<group>"; };
 		345B39C62B16C37300F33FB2 /* UIDesignPlan.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = UIDesignPlan.md; sourceTree = "<group>"; };
 		346D1FE92AFDAC7700F84B27 /* ExampleVideo.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = ExampleVideo.mov; sourceTree = "<group>"; };
@@ -89,6 +91,7 @@
 				34F011D22AFA514800FF1957 /* VidBriefs_FinalApp.swift */,
 				3489422E2AFC0C6E0035B716 /* APIManager.swift */,
 				349EF5F02B09058200AC8CA1 /* RequestLimitTracker.swift */,
+				34294AF92C026B1900C29928 /* SharedSettings.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -251,6 +254,7 @@
 				34F011ED2AFA52AB00FF1957 /* HomeView.swift in Sources */,
 				34F011EF2AFA52C300FF1957 /* InsightView.swift in Sources */,
 				349EF5F12B09058200AC8CA1 /* RequestLimitTracker.swift in Sources */,
+				34294AFA2C026B1900C29928 /* SharedSettings.swift in Sources */,
 				348942312AFC0D5F0035B716 /* AboutView.swift in Sources */,
 				34F011F72AFA532D00FF1957 /* TermsView.swift in Sources */,
 				34F011D32AFA514800FF1957 /* VidBriefs_FinalApp.swift in Sources */,

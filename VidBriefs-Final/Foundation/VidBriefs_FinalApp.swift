@@ -10,22 +10,9 @@ class AppEnvironment: ObservableObject {
     @Published var shouldRestart: Bool = false
 }
 
-class SharedSettings: ObservableObject {
-    @Published var termsAccepted: Bool {
-        didSet {
-            UserDefaults.standard.set(termsAccepted, forKey: "termsAccepted")
-        }
-    }
-
-    init() {
-        self.termsAccepted = UserDefaults.standard.bool(forKey: "termsAccepted")
-    }
-}
-
 @main
 struct Youtube_SummarizerApp: App {
-    
-    var settings = SharedSettings()
+    @StateObject var settings = SharedSettings()
     @StateObject var appEnvironment = AppEnvironment()
     let keychain = KeychainSwift()
 
@@ -41,15 +28,9 @@ struct Youtube_SummarizerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if appEnvironment.shouldRestart {
-                AppNavigation()
-                    .environmentObject(settings)
-                    .environmentObject(appEnvironment)
-            } else {
-                AppNavigation()
-                    .environmentObject(settings)
-                    .environmentObject(appEnvironment)
-            }
+            AppNavigation()
+                .environmentObject(settings)
+                .environmentObject(appEnvironment)
         }
     }
 }

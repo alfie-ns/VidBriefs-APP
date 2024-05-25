@@ -89,6 +89,8 @@ cd /Users/alfienurse/Desktop/Development/xcode\ dev/VidBriefs
 
 ## Checklist
 
+- [ ] Get API working on google vm instance
+
 - [ ] Store SavedInsights on db and call api for them
 
 - [ ] Fix libary array to save summarisations
