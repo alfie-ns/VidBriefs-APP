@@ -129,11 +129,11 @@ struct APIManager {
         // Construct the body of the request with the task and the summaries
         let requestBody: [String: Any] = [
             
-            "model": "gpt-4o", // new gpt-4 turbo
+            "model": "gpt-4o", // new gpt-4
             "messages": [["role": "system", "content": """
 
-              Your task is to summarise the this text:{\(transcript)}, and
-              answer the users question: \(customInsight)
+              Your task is to summarise the this text:{\(transcript)},
+              then answer the users question: \(customInsight)
             
             
             """]]
@@ -306,7 +306,7 @@ struct APIManager {
             task.resume()
         }
         
-        // SECOND OPENAI CALL TO SUMMARIZE SUMMARISED CHUNKS
+        // SECOND OPENAI CALL TO SUMMARISE SUMMARISED CHUNKS
             
             // After all tasks in the dispatch group have completed, this block will be executed
             dispatchGroup.notify(queue: .main) {

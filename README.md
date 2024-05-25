@@ -1,4 +1,12 @@
-# VidBriefs
+# VidBriefs Dev
+
+## TODO
+- [ ] Fix the LibraryView
+- [ ] Make a colour-chooser functionality to change the colour(if the user wants)
+- [ ] When the user summarises something, then create a button for the user to press to further talk about the video,
+      make sure to save the memory of the video in the conversation the user wishes to have about said video
+- [ ] Inside THAT^ summary conversation, suggest one things the user may like to summarise, make it seemless for them
+      to summarise a reccomended video straight away(don't have to get said video's url)
 
 jump to time of the summisation based on the 'chapters'
 
