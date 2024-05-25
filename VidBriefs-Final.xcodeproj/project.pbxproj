@@ -10,10 +10,10 @@
 		3419A5D12AFCD43000A0108A /* ApiKeyDemo2.mov in Resources */ = {isa = PBXBuildFile; fileRef = 3419A5D02AFCD43000A0108A /* ApiKeyDemo2.mov */; };
 		34294AFA2C026B1900C29928 /* SharedSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34294AF92C026B1900C29928 /* SharedSettings.swift */; };
 		343065B12B06508D00F7FAF9 /* UIColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343065B02B06508D00F7FAF9 /* UIColorExtensions.swift */; };
+		345F47B32C02791800C739C3 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345F47B22C02791800C739C3 /* APIManager.swift */; };
 		346D1FEC2AFDAEB700F84B27 /* ExampleVideo.mov in Resources */ = {isa = PBXBuildFile; fileRef = 346D1FE92AFDAC7700F84B27 /* ExampleVideo.mov */; };
 		346D1FED2AFDAEBE00F84B27 /* LibaryPicture.png in Resources */ = {isa = PBXBuildFile; fileRef = 3489422C2AFBF5270035B716 /* LibaryPicture.png */; };
 		3489327F2B04315C0071DB92 /* SwiftUIX in Frameworks */ = {isa = PBXBuildFile; productRef = 3489327E2B04315C0071DB92 /* SwiftUIX */; };
-		3489422F2AFC0C6E0035B716 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3489422E2AFC0C6E0035B716 /* APIManager.swift */; };
 		348942312AFC0D5F0035B716 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348942302AFC0D5F0035B716 /* AboutView.swift */; };
 		349EF5F12B09058200AC8CA1 /* RequestLimitTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349EF5F02B09058200AC8CA1 /* RequestLimitTracker.swift */; };
 		34C2B1D22B02F64200019CC1 /* LoadingSign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2B1D12B02F64200019CC1 /* LoadingSign.swift */; };
@@ -37,10 +37,10 @@
 		34294AF92C026B1900C29928 /* SharedSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedSettings.swift; sourceTree = "<group>"; };
 		343065B02B06508D00F7FAF9 /* UIColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtensions.swift; sourceTree = "<group>"; };
 		345B39C62B16C37300F33FB2 /* UIDesignPlan.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = UIDesignPlan.md; sourceTree = "<group>"; };
+		345F47B22C02791800C739C3 /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
 		346D1FE92AFDAC7700F84B27 /* ExampleVideo.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = ExampleVideo.mov; sourceTree = "<group>"; };
 		3477DAEF2B16C29300BF3E72 /* DailyPlan.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = DailyPlan.md; sourceTree = "<group>"; };
 		3489422C2AFBF5270035B716 /* LibaryPicture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LibaryPicture.png; sourceTree = "<group>"; };
-		3489422E2AFC0C6E0035B716 /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
 		348942302AFC0D5F0035B716 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		349EF5F02B09058200AC8CA1 /* RequestLimitTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestLimitTracker.swift; sourceTree = "<group>"; };
 		34C2B1D12B02F64200019CC1 /* LoadingSign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingSign.swift; sourceTree = "<group>"; };
@@ -89,9 +89,9 @@
 				34C2B1D12B02F64200019CC1 /* LoadingSign.swift */,
 				34F011E22AFA520F00FF1957 /* AppNavigation.swift */,
 				34F011D22AFA514800FF1957 /* VidBriefs_FinalApp.swift */,
-				3489422E2AFC0C6E0035B716 /* APIManager.swift */,
 				349EF5F02B09058200AC8CA1 /* RequestLimitTracker.swift */,
 				34294AF92C026B1900C29928 /* SharedSettings.swift */,
+				345F47B22C02791800C739C3 /* APIManager.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -262,8 +262,8 @@
 				34F011F32AFA52F700FF1957 /* RootView.swift in Sources */,
 				34C2B1D22B02F64200019CC1 /* LoadingSign.swift in Sources */,
 				34F011F12AFA52DB00FF1957 /* LibaryView.swift in Sources */,
-				3489422F2AFC0C6E0035B716 /* APIManager.swift in Sources */,
 				343065B12B06508D00F7FAF9 /* UIColorExtensions.swift in Sources */,
+				345F47B32C02791800C739C3 /* APIManager.swift in Sources */,
 				34F011E32AFA520F00FF1957 /* AppNavigation.swift in Sources */,
 				34F011F52AFA531400FF1957 /* SettingsView.swift in Sources */,
 			);
