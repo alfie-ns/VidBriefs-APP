@@ -129,7 +129,7 @@ struct APIManager {
         // Construct the body of the request with the task and the summaries
         let requestBody: [String: Any] = [
             
-            "model": "gpt-4-0125-preview", // new gpt-4 turbo
+            "model": "gpt-4o", // new gpt-4 turbo
             "messages": [["role": "system", "content": """
 
               Your task is to summarise the this text:{\(transcript)}, and
@@ -248,7 +248,7 @@ struct APIManager {
             // Request Body for OpenAI API call
             let requestBody: [String: Any] = [
                 
-                "model": "gpt-4-0125-preview", // MAY CHANGE THIS TO OPTION TO CHANGE TO 3.5
+                "model": "gpt-4o", // MAY CHANGE THIS TO OPTION TO CHANGE TO 3.5
                 "messages": systemMessages // Pass systemMessages list as messages for API call
             ]
             
@@ -320,7 +320,7 @@ struct APIManager {
                 // Construct the body of the request with the task and the summaries
                 let requestBody: [String: Any] = [
                     
-                    "model": "gpt-4-0125-preview", // Specify  model to use
+                    "model": "gpt-4o", // Specify  model to use
                     "messages": [["role": "system", "content": """
                                 
                                   Your task is now to summarise all the relevant pieces

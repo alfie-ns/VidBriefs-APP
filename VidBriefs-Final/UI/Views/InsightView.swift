@@ -268,7 +268,7 @@ struct InsightView: View {
                                 
                                 
                                 // The "Digest video" button
-                                Button("Analyze Video") {
+                                Button("Analyse Video") {
                                     fetchData()
                                 }
                                 // .disabled(!isApiKeySet) // Disable the button if the API key is not set
