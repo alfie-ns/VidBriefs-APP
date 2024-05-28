@@ -1,10 +1,10 @@
-import SwiftUI
-import AVKit
-import KeychainSwift
+import SwiftUI // SwiftUI framework(used to build the user interface using SwiftUI framework.)
+import AVKit // AVKit framework(used to play audio and video media in iOS and tvOS applications.)
+import KeychainSwift // KeychainSwift framework(used to store small API keys and sensitive data in the iOS keychain.)
 
-struct SettingsView: View {
-    @EnvironmentObject var settings: SharedSettings
-    @Binding var currentPath: AppNavigationPath
+struct SettingsView: View { // SettingsView structure
+    @EnvironmentObject var settings: SharedSettings // Reads and subscribes to SharedSettings from the environment.
+    @Binding var currentPath: AppNavigationPath // Two-way binding to a value of type AppNavigationPath.
     
     @State private var showLogoutAlert: Bool = false
     @State private var navigateToLandingView: Bool = false

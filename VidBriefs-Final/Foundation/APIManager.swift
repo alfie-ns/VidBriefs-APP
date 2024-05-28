@@ -5,17 +5,17 @@
 //  Created by Alfie Nurse on 02/09/2023.
 //
 
-import Foundation
-import KeychainSwift
+import Foundation // Import Foundation(used for URLSession and JSON decoding)
+import KeychainSwift // Import KeychainSwift(used for storing API keys)
 
 
 
 struct APIManager {
     
-    private static var keychain = KeychainSwift()
+    private static var keychain = KeychainSwift() // Create a KeychainSwift object to store API keys -> secure storage of API keys
 
-    static var openai_apikey: String {
-        keychain.get("openai-apikey") ?? ""
+    static var openai_apikey: String { // Static variable to store the OpenAI API key
+        keychain.get("openai-apikey") ?? "" // Get the OpenAI API key from the keychain or return an empty string
     }
     
     // Structures
