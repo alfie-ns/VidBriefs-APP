@@ -132,8 +132,8 @@ struct APIManager {
             "model": "gpt-4o", // new gpt-4
             "messages": [["role": "system", "content": """
 
-              Your task is to summarise the this text:{\(transcript)},
-              then answer the users question: \(customInsight)
+              Please to summarise this youtube video transcript:{\(transcript)},
+              then answer the users question regarding the video: \(customInsight)
             
             
             """]]
@@ -212,7 +212,7 @@ struct APIManager {
                 ["role": "system", "content": String(format: "Start of loop %d", index + 1)],
                 ["role": "system", "content": """
                 
-                    You are an AI chatbot who has been asked to extract specific information from a YouTube video transcript.
+                    You been asked to extract specific information from a YouTube video transcript.
                     The transcript has been divided into multiple chunks, and you must process each chunk individually.
                 
                     Your task is to follow these steps:
