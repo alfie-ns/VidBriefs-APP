@@ -8,8 +8,6 @@
 import Foundation // Import Foundation(used for URLSession and JSON decoding)
 import KeychainSwift // Import KeychainSwift(used for storing API keys)
 
-
-
 struct APIManager {
     
     private static var keychain = KeychainSwift() // Create a KeychainSwift object to store API keys -> secure storage of API keys
@@ -20,25 +18,25 @@ struct APIManager {
     
     // Structure to store and manage request timestamps to only allow less than 3 requests a month
     struct RequestTracker {
-        static var timestamps: [Date] = []
+        static var timestamps: [Date] = [] // Array to store request timestamps
 
-        static func cleanUpOldTimestamps() {
+        static func cleanUpOldTimestamps() { // Function to remove timestamps older than a week
             timestamps = timestamps.filter { Date().timeIntervalSince($0) < 604800 } // 604800 seconds in a week
         }
 
-        static func isRequestAllowed() -> Bool {
-            cleanUpOldTimestamps()
-            return timestamps.count < 3
+        static func isRequestAllowed() -> Bool { // bool function to check if request is allowed
+            cleanUpOldTimestamps() // Clean up old timestamps before checking
+            return timestamps.count < 3 // Return true if less than 3 requests have been made in the last week
         }
 
-        static func addTimestamp() {
+        static func addTimestamp() { // func to append a new timestamp to the timestamps array
             timestamps.append(Date())
         }
     }
     
     // Defines a structure for decoding JSON responses related to video transcripts.
     struct TranscriptResponse: Decodable {
-        //let title: String       // Holds the title of the video.
+        //let title: String   FIX [ ]    // Holds the title of the video.
         let transcript: String  // Contains the transcript text of the video.
     }
 

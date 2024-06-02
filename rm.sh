@@ -1,4 +1,5 @@
 #!/bin/bash
 
+./push.sh
 cd ..
-rm -rf VidBriefs-APP
+rm -rf Vidbriefs-APP
