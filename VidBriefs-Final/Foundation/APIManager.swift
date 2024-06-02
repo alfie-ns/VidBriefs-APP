@@ -18,9 +18,7 @@ struct APIManager {
         keychain.get("openai-apikey") ?? "" // Get the OpenAI API key from the keychain or return an empty string
     }
     
-    // Structures
-    
-    // Structure to store and manage request timestamps to allow less than 3 requests a month
+    // Structure to store and manage request timestamps to only allow less than 3 requests a month
     struct RequestTracker {
         static var timestamps: [Date] = []
 
