@@ -1,114 +1,121 @@
 import SwiftUI
 
-struct HomeView: View {
+struct HomeView: View { // HomeView
     
-    @Binding var currentPath: AppNavigationPath
-    @EnvironmentObject var settings: SharedSettings
+    @Binding var currentPath: AppNavigationPath // bind to the currentPath
+    @EnvironmentObject var settings: SharedSettings // link to environmental 'settingss' objects
 
-    @State private var savedInsights: [String] = []
-    @State private var currentRandomInsight: String = "No insights available"
-    @State private var appearanceCount = 0
+    @State private var savedInsights: [String] = [] // arraay to hold insights
+    @State private var currentRandomInsight: String = "No insights available" // ... something initalzied
+    @State private var appearanceCount = 0 
 
-    var randomInsight: String {
-        savedInsights.randomElement() ?? "No insights available"
+    var randomInsight: String { // save the random insight to a 'computed property', essentially this means the property does not store a value directly but computes it on the fly each time it's accessed
+        savedInsights.randomElement() ?? "No insights available" // pick a random element from the savedInsights array, or provide a default message if the array is empty
     }
-    
+    // main body of view
     var body: some View {
         ZStack(alignment: .topTrailing) { // Align content to the top trailing
             
             // Background gradient
             LinearGradient(
-                gradient: Gradient(colors: [Color.black, Color.customTeal, Color.gray]),
-                startPoint: .top,
-                endPoint: .bottom
+                gradient: Gradient(colors: [Color.black, Color.customTeal, Color.gray]), // gradient colors with black, teal and gray
+                startPoint: .top, // start point for gradient as it goes from top to bottom
+                endPoint: .bottom // end
             )
-            .edgesIgnoringSafeArea(.all)
+            .edgesIgnoringSafeArea(.all) // ignore safe area edges to fill the screen
 
-            ScrollView {
-                VStack(spacing: 20) {
+            ScrollView { // scroll view to allow for scrolling up && down
+                VStack(spacing: 20) { // vertical stack with spacing of 20
                     // Greeting Section
-                    VStack {
-                        HStack {
-                            Spacer()
-                            // Back button
-                            Button(action: {
-                                currentPath = .root
+                    VStack { // vertical stack
+                        HStack { // horizontal stack
+                            Spacer() // Spacer(used to push content to the right side of the screen)
+                            Button(action: { // Back button
+                                currentPath = .root // set current path to root(back-out of home view)
                             }) {
-                                Image(systemName: "arrow.left")
-                                    .foregroundColor(.white)
-                                    .font(.system(size: 24))
+                                Image(systemName: "arrow.left") // arrow left icon
+                                    .foregroundColor(.white) // color white
+                                    .font(.system(size: 24)) // font size 24
                             }
-                            Spacer()
+                            Spacer() // Spacer (used to push content to the left side of the screen, centering the button horizontally)
                         }
-                        .padding(.top, 50)
+                        .padding(.top, 50) // padding from the top
 
-                        Text("Welcome")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                            .foregroundColor(.white)
-                        Text("What would you like to learn about today?")
-                            .foregroundColor(.white)
-                            .font(.headline)
+                        Text("Welcome") // 'Welcome' text
+                            .font(.largeTitle) // font size large
+                            .fontWeight(.bold) // font weight bold
+                            .foregroundColor(.white) // font colour white
+                        Text("What would you like to learn about today?") // 'What would you like to learn about today?' text
+                            .foregroundColor(.white) // font colour white
+                            .font(.headline) // font type headline
                     }
-                    .padding(.top, 50)
+                    .padding(.top, 50) // padding from the top AFTER greeting section
 
-                    Text(LocalizedStringKey(currentRandomInsight))
-                        .padding()
-                        .background(Color.customTeal)
-                        .opacity(0.75)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
+                    Text(LocalizedStringKey(currentRandomInsight)) // show current random insight
+                        .padding() // padding first
+                        .background(Color.customTeal) // background color teal
+                        .opacity(0.75) // opacity 0.75 means 75% visible, 25% transparent
+                        .foregroundColor(.white) // font color white
+                        .cornerRadius(8) // corner radius 8 this rounds the corners of the view
                 }
-                .padding()
+                .padding() // padding before button
             }
 
             // Randomize Button
-            Button(action: {
-                self.currentRandomInsight = self.randomInsight // Randomise the current shown insight
+            Button(action: { // action for the button
+                self.currentRandomInsight = self.randomInsight // Randomize the current shown insight
             }) {
-                Image(systemName: "die.face.2").font(.title)
+                Image(systemName: "die.face.2").font(.title) // dice image
             }
-            .padding()
-            .cornerRadius(20)
-            .background(Color.customTeal)
-            .opacity(0.75)
-            .foregroundColor(.white)
-            .cornerRadius(10)
-            .padding(.trailing, 20)
-            .padding(.top, 20)
-            .onAppear {
-                appearanceCount += 1
-                UserDefaults.standard.set(appearanceCount, forKey: "appearanceCount")
+            .padding() // padding at the top
+            .cornerRadius(20) // corner radius 20 VERY round
+            .background(Color.customTeal) // background color teal
+            .opacity(0.75) // opacity 0.75 means 75% visible, 25% transparent
+            .foregroundColor(.white) // font color white
+            .cornerRadius(10) // corner radius 10
+            .padding(.trailing, 20) // padding from the trailing edge
+            .padding(.top, 20) // padding from the top
+            .onAppear { // when the view appears
+                appearanceCount += 1 // increment the appearance count
+                UserDefaults.standard.set(appearanceCount, forKey: "appearanceCount") // save the appearance count to UserDefaults as 'appearanceCount'
 
-                print("Appearance Count: \(appearanceCount)")
+                print("Appearance Count: \(appearanceCount)") // print the appearance count
 
-                // Load insights initially or every 5 appearances
-                if appearanceCount % 5 == 0 || savedInsights.isEmpty {
-                    if let insights = UserDefaults.standard.object(forKey: "savedInsights") as? [String] {
-                        self.savedInsights = insights
-                        print("Saved Insights: \(self.savedInsights)")
-                    } else {
-                        print("No saved insights found in UserDefaults")
+                
+                if appearanceCount % 5 == 0 || savedInsights.isEmpty { // if the appearance count is divisible by 5 OR savedInsights is empty  
+                    if let insights = UserDefaults.standard.object(forKey: "savedInsights") as? [String] { // if there are saved insights in UserDefaults
+                        self.savedInsights = insights // set the loaded insights to the savedInsights array
+                        print("Saved Insights: \(self.savedInsights)") // print the saved insights in the console
+                    } else { // if there are no saved insights in UserDefaults
+                        print("No saved insights found in UserDefaults") // print message in console
                     }
                 }
             }
         }
     }
     
-    // Enhanced actionButton to handle actions.
+    // Enhanced actionButton function to handle actions.
     func actionButton(title: String, iconName: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack {
-                Image(systemName: iconName)
-                    .font(.system(size: 24))
-                Text(title)
-                    .fontWeight(.medium)
+        /*
+            Defines a function called actionButton that takes three parameters:
+            - title: A String representing the title of the button.
+            - iconName: A String representing the name of the icon to display in the button.
+            - action: A closure that represents the action to perform when the button is tapped.
+            
+            The function returns a View that represents the button.
+        */
+        Button(action: action) { // Button with action
+            HStack { // horizontal stack
+                Image(systemName: iconName) // image with system name = iconName
+                    .font(.system(size: 24)) // font size 24
+                Text(title) // title text
+                    .fontWeight(.medium) // font weight medium
             }
-            .padding()
-            .frame(maxWidth: .infinity)
-            .background(Color.blue)
-            .foregroundColor(.white)
-            .cornerRadius(10)
+            .padding() // padding
+            .frame(maxWidth: .infinity) // frame with max width = infinity
+            .background(Color.blue) // background color blue
+            .foregroundColor(.white) // font color white
+            .cornerRadius(10) // corner radius 10
         }
     }
 }
