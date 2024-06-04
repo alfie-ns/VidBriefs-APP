@@ -45,7 +45,7 @@ struct HomeView: View { // HomeView
                             .font(.largeTitle) // font size large
                             .fontWeight(.bold) // font weight bold
                             .foregroundColor(.white) // font colour white
-                        Text("What would you like to learn about today?") // 'What would you like to learn about today?' text
+                        Text("Development...?") // 'What would you like to learn about today?' text
                             .foregroundColor(.white) // font colour white
                             .font(.headline) // font type headline
                     }

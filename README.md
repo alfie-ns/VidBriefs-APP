@@ -16,6 +16,9 @@ jump to time of the summisation based on the 'chapters'
 
 REMEMBER TO ADD NEW OPENAI API KEY EVERYTIME because of unsafe pushes to github
 
+
+- [ ]  **Different ways to to set the AI in ways to prompt it !**
+
 ## Xcode shortcuts
 
 - `cmd + 0` = show/hide navigator on left

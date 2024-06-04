@@ -53,40 +53,41 @@ struct APIManager {
 
     // Defines a structure for holding snippet information of a video.
     struct Snippet: Decodable {
-        let videoId: String     // The unique identifier of the video associated with this snippet.
+        let videoId: String  // The unique identifier of the video associated with this snippet.
     }
     
-    func retrieveOpenAIKey() -> String? {
-        return ProcessInfo.processInfo.environment["openai-apikey"]
+    func retrieveOpenAIKey() -> String? { // Function to retrieve the OpenAI API key from the keychain
+        return ProcessInfo.processInfo.environment["openai-apikey"] // Return the OpenAI API key from the environment
     }
     
 
-        // Custom insight function
+        // Function to handle all custom insight requests from API for transcript to turn into an insight
         static func handleCustomInsightAll(yt_url: String, userPrompt: String, completion: @escaping (Bool, String?) -> Void) {
                     
             // Step 1: Get the entire transcript
-            
+            // ----------------------------------
+
             // Call gettranscript function and pass the url entered by the user as "transcript" parameter
             GetTranscript(yt_url: yt_url) { (success, transcript) in
-                if success, let transcript = transcript { // If successful API call transcriptt = the transcript got
+                if success, let transcript = transcript { // If successful API call 'transcriptt' = the transcript got
                     print("Transcript from youtube: \(transcript)") // Verify transcript fetched by displaying it
                     
-                    let words = transcript.split(separator: " ")
-                    print("Words in transcript: \(words.count)")
+                    let words = transcript.split(separator: " ") // Split the transcript into words
+                    print("Words in transcript: \(words.count)") // Log the number of words in the transcript
                     
-                    if words.count < 85000 {
-                        print("one-prompt summarisation")
+                    if words.count < 105000 //
+                        print("one-prompt summarisation") // summarise in one go
                         
                         fetchOneGPTSummary(transcript: transcript, customInsight: userPrompt) { finalSummary in
                             if let finalSummary = finalSummary {
                                 completion(true, finalSummary)
                             }
-                            else {
+                            else { // if...
                                 completion(false, "GPT could not be reached, check the API key is correct")
                             }
                         }
                     }
-                    else if words.count > 85000 {
+                    else if words.count > 10500 {
                         print("Chunk summarisation")
                         let chunks = breakIntoChunks(transcript: transcript) // Call breakIntoChunks and pass the transcript
                         fetchGPTSummaries(chunks: chunks, customInsight: userPrompt) { (finalSummary) in
@@ -111,7 +112,7 @@ struct APIManager {
     static func fetchOneGPTSummary(transcript: String, customInsight: String, completion: @escaping (String?) -> Void)
     {
         let apiUrl = URL(string: "https://api.openai.com/v1/chat/completions")! // OpenAI API url
-        let dispatchGroup = DispatchGroup()
+        let dispatchGroup = DispatchGroup() // Create a new DispatchGroup to manage a set of related, asynchronous tasks.
         
         dispatchGroup.enter() // enter dispatch group
         
@@ -119,7 +120,7 @@ struct APIManager {
         var request = URLRequest(url: apiUrl)
         request.httpMethod = "POST" // POST request
         request.addValue("Bearer \(openai_apikey)", forHTTPHeaderField: "Authorization") // User users API key as http header
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type") //
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type") // Set the content type of the request to JSON
         request.timeoutInterval = 300.0 // Long interval to prevent long response timeout
         
         // Construct the body of the request with the task and the summaries
@@ -128,18 +129,18 @@ struct APIManager {
             "model": "gpt-4o", // new gpt-4
             "messages": [["role": "system", "content": """
 
-              Please to summarise this youtube video transcript:{\(transcript)},
-              then answer the users question regarding the video: \(customInsight)
+              "Please summarise this YouTube video transcript: {transcript}. Only after you have fully traversed
+               the entire transcript, answer the user's question regarding the video using parts of this: {customInsight}."
             
             
             """]]
             
             ]// Provides the context and the task for the model
             
-            // Attempt to serialize the request body to JSON
-            do {
+            // Attempt to serialise the request body to JSON
+            do { // try and if fail catch
                 request.httpBody = try JSONSerialization.data(withJSONObject: requestBody, options: [])
-            } catch {
+            } catch { // error
                 print("Failed to serialize JSON for final summary") // Log serialization error
                 completion(nil) // Complete with nil due to error
                 return
@@ -204,54 +205,46 @@ struct APIManager {
             
             // Create list called systemMessages with each necessary system message for the iterated GPT call
             var systemMessages: [[String: String]] = [
-                
-                ["role": "system", "content": String(format: "Start of loop %d", index + 1)],
-                ["role": "system", "content": """
-                
-                    You been asked to extract specific information from a YouTube video transcript.
-                    The transcript has been divided into multiple chunks, and you must process each chunk individually.
-                
-                    Your task is to follow these steps:
-                    - Review each chunk of the transcript and identify every piece of information that aligns with the given user prompt.
-                    - After processing all chunks, summarize all the relevant pieces of information you have found in a single response.
-                    - Only use information found in this transcript for your response.
-                
-                    
-                    Your guiding rule, as defined by the user, is: \(customInsight)
-                
-                """],
-                
-                ["role": "system", "content": String(format: """
-                
-                    You are iterating over each chunk of a single entire YouTube video transcript,
-                    you are interpreting chunk %d out of %d chunks of the entire video.
-                    You must give notes about this chunk in regard to the user's prompt: (%@).
-                    The next message contains the chunk content.
-                
-                """, index + 1, chunks.count, customInsight)],
-                ["role": "system", "content": String(format: "CHUNK %d: %@", index + 1, chunk)],
-                ["role": "system", "content": String(format: "End of loop %d", index + 1)]
-                
-            ]
+                                    ["role": "system", "content": String(format: "Start of loop %d", index + 1)],
+                                    ["role": "system", "content": """
+                                        You have been asked to extract specific information from a YouTube video transcript.
+                                        The transcript has been divided into multiple chunks, and you must process each chunk individually.
+
+                                        Your task is to follow these steps:
+                                        - Review each chunk of the transcript and identify every piece of information that aligns with the given user prompt.
+                                        - After processing all chunks, summarise all the relevant pieces of information you have found in a single response.
+                                        - Only use information found in this transcript for your response.
+
+                                        Your guiding rule, as defined by the user, is: \(customInsight)
+                                    """],
+                                    ["role": "system", "content": String(format: """
+                                        You are iterating over each chunk of a single entire YouTube video transcript.
+                                        You are interpreting chunk %d out of %d chunks of the entire video.
+                                        You must give notes about this chunk in regard to the user's prompt: (%@).
+                                        The next message contains the chunk content.
+                                    """, index + 1, chunks.count, customInsight)],
+                                    ["role": "system", "content": String(format: "CHUNK %d: %@", index + 1, chunk)],
+                                    ["role": "system", "content": String(format: "End of loop %d", index + 1)]
+                                ]
             
             
             
             // Checks for last chunk
-            if index == chunks.count - 1 {
-                systemMessages.append(["role": "system", "content": "This is the final chunk of the entire video transcript. Please identify the last few sentences relative to all of the chunks if needed."]) // Append warning that final loop is now
+            if index == chunks.count - 1 { // if index is the last chunk 
+                systemMessages.append(["role": "system", "content": "This is the final chunk of the entire video transcript. Please identify the last few sentences relative to all of the chunks if needed, to structure the summarisation to be as close as to the users wish as possible"]) // Append warning that final loop is now
             }
             
             // Request Body for OpenAI API call
             let requestBody: [String: Any] = [
                 
-                "model": "gpt-4o", // MAY CHANGE THIS TO OPTION TO CHANGE TO 3.5
+                "model": "gpt-4o", // [ ] OPTION TO CHANGE TO 3.5
                 "messages": systemMessages // Pass systemMessages list as messages for API call
             ]
             
             // Try serialize JSON and if faild catch print that
-            do {
+            do { // try and if fail catch
                 request.httpBody = try JSONSerialization.data(withJSONObject: requestBody, options: [])
-            } catch {
+            } catch { // error
                 print("Failed to serialize JSON")
                 completion(nil)
                 return
@@ -274,7 +267,7 @@ struct APIManager {
                 }
 
                 // Attempt to parse the JSON data returned from the API
-                do {
+                do { // try and if fail catch
                     // Deserialize JSON into a dictionary and check for expected structure
                     if let unwrappedData = data, let json = try JSONSerialization.jsonObject(with: unwrappedData, options: []) as? [String: Any] {
                         print("Parsed JSON: \(json)") // Log the parsed JSON
@@ -303,6 +296,7 @@ struct APIManager {
         }
         
         // SECOND OPENAI CALL TO SUMMARISE SUMMARISED CHUNKS
+        // -------------------------------------------------
             
             // After all tasks in the dispatch group have completed, this block will be executed
             dispatchGroup.notify(queue: .main) {
@@ -368,13 +362,13 @@ struct APIManager {
     // GET TRANSCRIPT API CALL
     static func GetTranscript(yt_url: String, completion: @escaping (Bool, String?) -> Void) {
         
-        let getTranscriptUrl = URL(string: "http://127.0.0.1:8000/response/get_youtube_transcript/")!
+        let getTranscriptUrl = URL(string: "http://127.0.0.1:8000/response/get_youtube_transcript/")! // call django api for transcript
         //let getTranscriptUrl = URL(string: "http://34.66.187.223:8000/response/get_youtube_transcript/")!
         
         // Makes request to the api for youtube transcript
-        var request = URLRequest(url: getTranscriptUrl)
-        request.httpMethod = "POST"
-        request.timeoutInterval = 3000
+        var request = URLRequest(url: getTranscriptUrl) // Create a new URLRequest object with the given URL
+        request.httpMethod = "POST" // POST request
+        request.timeoutInterval = 3000 // Long interval to prevent long response timeout
         
         // Give the youtube url to my api as a parameter in the api call
         let parameters: [String: Any] = [
@@ -425,6 +419,7 @@ struct APIManager {
     }
     
     // BREAK TRANSCRIPT INTO CHUNKS
+    // Break into chunks and process an entire video transcript
     static func breakIntoChunks(transcript: String, maxTokens: Int = 80000) -> [String] {
         var chunks: [String] = [] // Holds the chunks of transcript text
         let words = transcript.split(separator: " ") // Splits transcript into words
