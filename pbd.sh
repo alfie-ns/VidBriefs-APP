@@ -1,9 +1,15 @@
 #!/bin/bash
 
-# Push-Backout-Delete
+# Get the current directory name
+current_dir=$(basename "$PWD")
 
-./push.sh #push to repo
-sleep 5 #5sec sleep
-cd .. # go backwards
-rm -rf Vidbriefs-APP # delete repo
-
+# Run the push script
+if ./push.sh; then
+  # Change to the parent directory if push.sh succeeds
+  cd ..
+  # Remove the original directory
+  rm -rf "$current_dir"
+  echo "Process completed successfully."
+else
+  echo "Error: push.sh failed. Exiting."
+fi
