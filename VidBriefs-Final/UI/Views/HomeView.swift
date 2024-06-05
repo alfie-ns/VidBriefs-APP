@@ -45,9 +45,13 @@ struct HomeView: View { // HomeView
                             .font(.largeTitle) // font size large
                             .fontWeight(.bold) // font weight bold
                             .foregroundColor(.white) // font colour white
-                        Text("Development...?") // 'What would you like to learn about today?' text
+                        Text("Under Development...?") // 'What would you like to learn about today?' text
                             .foregroundColor(.white) // font colour white
                             .font(.headline) // font type headline
+
+                        // I need to add other things u could press here
+                        // - [ ] perhaps another training room they can go more into different things they can leanr. 
+                        // - [ ] make AI put all the different summarisations in categorys
                     }
                     .padding(.top, 50) // padding from the top AFTER greeting section
 
