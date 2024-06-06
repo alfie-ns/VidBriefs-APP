@@ -9,6 +9,7 @@ if ./push.sh; then
   cd ..
   # Remove the original directory
   rm -rf "$current_dir"
+  echo ""
   echo "--------------------------------"
   echo "Process completed successfully."
   echo "--------------------------------"
