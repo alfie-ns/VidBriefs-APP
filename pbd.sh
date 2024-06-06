@@ -4,16 +4,22 @@
 current_dir=$(basename "$PWD")
 
 # Run the push script
-if ./push.sh; then
-  # Change to the parent directory if push.sh succeeds
+if ./push.sh; then # if push.sh succeeds then...
+
+  # Change to the parent directory
   cd ..
-  # Remove the original directory
+
+  # Remove the repository directory
   rm -rf "$current_dir"
   echo ""
   echo "--------------------------------"
   echo "Process completed successfully."
   echo "--------------------------------"
   echo ""
-else
+else # if push.sh fails
+  echo ""
+  echo "--------------------------------"
   echo "Error: push.sh failed. Exiting."
+  echo "--------------------------------"
+  echo ""
 fi
