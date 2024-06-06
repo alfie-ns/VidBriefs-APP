@@ -13,6 +13,7 @@ if ./push.sh; then
   echo "--------------------------------"
   echo "Process completed successfully."
   echo "--------------------------------"
+  echo ""
 else
   echo "Error: push.sh failed. Exiting."
 fi
