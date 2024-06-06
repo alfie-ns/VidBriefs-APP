@@ -9,6 +9,26 @@ import Foundation // Import Foundation(used for URLSession and JSON decoding)
 import KeychainSwift // Import KeychainSwift(used for storing API keys)
 
 struct APIManager {
+
+   struct ConversationHistory {
+        static var messages: [[String: String]] = [
+            ["role": "system", "content": "You are a helpful assistant."]
+        ]
+
+        static func addUserMessage(_ message: String) {
+            messages.append(["role": "user", "content": message])
+        }
+
+        static func addAssistantMessage(_ message: String) {
+            messages.append(["role": "assistant", "content": message])
+        }
+
+        static func clear() {
+            messages = [
+                ["role": "system", "content": "You are a helpful assistant."]
+            ]
+        }
+    }
     
     private static var keychain = KeychainSwift() // Create a KeychainSwift object to store API keys -> secure storage of API keys
 
@@ -63,6 +83,12 @@ struct APIManager {
 
         // Function to handle all custom insight requests from API for transcript to turn into an insight
         static func handleCustomInsightAll(yt_url: String, userPrompt: String, completion: @escaping (Bool, String?) -> Void) {
+
+            // Step 0: Init conversation history
+            // ----------------------------------
+            ConversationHistory.clear()
+            ConversationHistory.addUserMessage(userPrompt)
+            // Begin the conversation with the user prompt
                     
             // Step 1: Get the entire transcript
             // ----------------------------------
@@ -109,78 +135,44 @@ struct APIManager {
             }
         }
     
-    static func fetchOneGPTSummary(transcript: String, customInsight: String, completion: @escaping (String?) -> Void)
-    {
-        let apiUrl = URL(string: "https://api.openai.com/v1/chat/completions")! // OpenAI API url
-        let dispatchGroup = DispatchGroup() // Create a new DispatchGroup to manage a set of related, asynchronous tasks.
-        
-        dispatchGroup.enter() // enter dispatch group
-        
-        // Create request to OpenAI
-        var request = URLRequest(url: apiUrl)
-        request.httpMethod = "POST" // POST request
-        request.addValue("Bearer \(openai_apikey)", forHTTPHeaderField: "Authorization") // User users API key as http header
+   static func fetchOneGPTSummary(transcript: String, customInsight: String, completion: @escaping (String?) -> Void) {
+        let apiUrl = URL(string: "https://api.openai.com/v1/chat/completions")! // OpenAI API URL ('!' means it must have a value)
+        var request = URLRequest(url: apiUrl) // Create a new URLRequest object with the given URL
+        request.httpMethod = "POST" // Set the HTTP method to POST
+        request.addValue("Bearer \(openai_apikey)", forHTTPHeaderField: "Authorization") // Include the API key in the request headers
         request.addValue("application/json", forHTTPHeaderField: "Content-Type") // Set the content type of the request to JSON
-        request.timeoutInterval = 300.0 // Long interval to prevent long response timeout
-        
-        // Construct the body of the request with the task and the summaries
-        let requestBody: [String: Any] = [
-            
-            "model": "gpt-4o", // new gpt-4
-            "messages": [["role": "system", "content": """
+        request.timeoutInterval = 300.0 // Set a timeout interval of 5 minutes
 
-              "Please summarise this YouTube video transcript: {transcript}. Only after you have fully traversed
-               the entire transcript, answer the user's question regarding the video using parts of this: {customInsight}."
-            
-            
-            """]]
-            
-            ]// Provides the context and the task for the model
-            
-            // Attempt to serialise the request body to JSON
-            do { // try and if fail catch
-                request.httpBody = try JSONSerialization.data(withJSONObject: requestBody, options: [])
-            } catch { // error
-                print("Failed to serialize JSON for final summary") // Log serialization error
-                completion(nil) // Complete with nil due to error
-                return
-            }
-            
-            // Perform the network task to get the final summary
-            let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-                do {
-                    // Attempt to deserialize the JSON response
-                    if let json = try JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any] {
-                        // Extract the summary text from the JSON response
-                        if let choices = json["choices"] as? [[String: Any]],
-                           let message = choices.first?["message"] as? [String: Any],
-                           let text = message["content"] as? String {
-                            completion(text) // Pass the final summary to the completion handler
-                        } else {
-                            print("Failed to extract final summary text.") // Log an error if the summary text is not found
-                            completion(nil) // Complete with nil due to error
-                        }
-                    } else {
-                        print("Failed to cast JSON for final summary.") // Log an error if JSON casting fails
-                        completion(nil) // Complete with nil due to error
-                    }
-                } catch let jsonError {
-                    print("Failed to parse JSON for final summary due to error: \(jsonError)") // Log JSON parsing error
-                    completion(nil) // Complete with nil due to error
+        var messages = ConversationHistory.messages // Initialize messages with the conversation history
+        messages.append(["role": "user", "content": "Please summarise this YouTube video transcript: \(transcript). Only after you have fully traversed the entire transcript, answer the user's question regarding the video using parts of this: \(customInsight)."])
+        // Pass the transcript and question to the model and start the conversation
+        let requestBody: [String: Any] = [
+            "model": "gpt-4o", // Specify the model to use: GPT-4o
+            "messages": messages // Pass the messages array as the conversation history
+        ]
+
+        do { // Try to serialize the request body to JSON
+            request.httpBody = try JSONSerialization.data(withJSONObject: requestBody, options: []) // Serialize the request body to JSON
+        } catch { // if fails
+            completion(nil) // Complete with nil due to error
+            return // Exit the function
+        }
+
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            if let data = data, let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                if let choices = json["choices"] as? [[String: Any]], let message = choices.first?["message"] as? [String: Any], let text = message["content"] as? String {
+                    ConversationHistory.addAssistantMessage(text) // Add the assistant's response to the conversation history
+                    completion(text) // Pass the assistant's response to the completion handler
+                } else { // if fails
+                    completion(nil)
                 }
+            } else { // if fails
+                completion(nil)
             }
-            task.resume() // Start the network task
+        }
+        task.resume() // Start the network task
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     static func fetchGPTSummaries(chunks: [String], customInsight: String, completion: @escaping (String?) -> Void) {
         
         let apiUrl = URL(string: "https://api.openai.com/v1/chat/completions")! // OpenAI API url
@@ -194,7 +186,7 @@ struct APIManager {
         for (index, chunk) in chunks.enumerated() { // For each index(to count the chunks) and chunk
             dispatchGroup.enter() // Enter DispatchGroup
             print("Entered Dispatch Group for chunk \(index + 1)") // Log numbered interation of the loop
-//          let openai_apikey = UserDefaults.standard.string(forKey: "openai_apikey") ?? "" // Use users API key
+//          let openai_apikey = UserDefaults.standard.string(forKey: "openai_apikey") ?? "" // Use users API key [X] [ ] store in keychain
             
             // Create request to OpenAI
             var request = URLRequest(url: apiUrl)
@@ -314,7 +306,7 @@ struct APIManager {
                     "messages": [["role": "system", "content": """
                                 
                                   Your task is now to summarise all the relevant pieces
-                                  of information you have found in a single response.
+                                  and append each part of the information you have found in a single response.
                                 
                                   Listed summary information: \(intermediateSummary)
                                   Users prompt: \(customInsight)

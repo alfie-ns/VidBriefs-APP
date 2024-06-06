@@ -3,12 +3,14 @@
 ## TODO
 
 - [ ] Fix the LibraryView
+- [X] Turn into a conversation for each video
 - [ ] Organisation-type summarisation
 - [ ] Make a colour-chooser functionality to change the colour(if the user wants)
 - [ ] When the user summarises something, then create a button for the user to press to further talk about the video,
   make sure to save the memory of the video in the conversation the user wishes to have about said video
 - [ ] Inside THAT^ summary conversation, suggest one things the user may like to summarise, make it seemless for them
   to summarise a reccomended video straight away(don't have to get said video's url)
+- [ ] turn this into a conversation with each video
 
 jump to time of the summisation based on the 'chapters'
 
@@ -16,8 +18,7 @@ jump to time of the summisation based on the 'chapters'
 
 REMEMBER TO ADD NEW OPENAI API KEY EVERYTIME because of unsafe pushes to github
 
-
-- [ ]  **Different ways to to set the AI in ways to prompt it !**
+- [ ] **Different ways to to set the AI in ways to prompt it !**
 
 ## Xcode shortcuts
 
