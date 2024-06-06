@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Clone the repository
+git clone https://github.com/alfie-ns/VidBriefs-APP
+
+# Copy the .env file to the cloned repository
+cp .env VidBriefs-APP/
+
+echo "Repository cloned and .env file copied in to vidbriefs-app successfully."
