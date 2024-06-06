@@ -1,1 +1,1 @@
-[ ] CustomLoadingView.swift
+- [X] CustomLoadingView.swift

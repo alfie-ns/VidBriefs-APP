@@ -1,7 +1,13 @@
 import SwiftUI
 import UIKit
 
-// A custom UIViewRepresentable that wraps a custom loading view
+// --------------------------------------------------------------------------------------------
+// CustomLoadingView.swift - A custom loading view that displays a circular loading animation |
+// --------------------------------------------------------------------------------------------
+
+// A custom UIViewRepresentable that wraps a custom loading view;
+// this view represents a circular loading animation that can be used in SwiftUI
+
 
 struct CustomLoadingSwiftUIView: UIViewRepresentable {
     
@@ -16,9 +22,46 @@ struct CustomLoadingSwiftUIView: UIViewRepresentable {
     }
     
     // Updates the UIView instance when the SwiftUI view updates
+    // Updates the UIView instance when the SwiftUI view updates
     func updateUIView(_ uiView: CustomLoadingView, context: UIViewRepresentableContext<CustomLoadingSwiftUIView>) {
-        // Add code here to update the UIView based on changes in the SwiftUI view
+        // Check if the loading state has changed
+        if context.coordinator.isLoading != isLoading {
+            if isLoading { // if the loading state is true, 
+                uiView.startAnimating() // start animating the loading view
+            } else { // if the loading state is false,
+                uiView.stopAnimating() // stop animating the loading view
+            }
+            context.coordinator.isLoading = isLoading // update the loading state in the coordinator
+        }
+        
+        // Update the color of the loading spinner
+        uiView.circleLayer.strokeColor = strokeColor.cgColor
+        
+        // Set the frame of the loading view to match the specified size
+        uiView.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+        // The CGRect initializer takes the x and y coordinates of the origin (top-left corner)
+        // and the width and height of the view. In this case, the origin is set to (0, 0),
+        // and the size is determined by the 'size' parameter passed from the SwiftUI view.
+
+        // Inform the system that the loading view's layout needs to be updated
+        uiView.setNeedsLayout()
+        // Calling 'setNeedsLayout()' marks the view as needing a layout update.
+        // This is necessary because changing the frame of a view doesn't automatically
+        // trigger a layout update. By calling this method, you are telling the system
+        // to recalculate and redraw the view's layout based on its new frame.
+        // The actual layout update will occur at a later point in the rendering cycle.
+        
     }
+
+// Add a Coordinator class to store the loading state
+class Coordinator {
+    var isLoading: Bool = false
+}
+
+// Implement the makeCoordinator function to create a Coordinator instance
+func makeCoordinator() -> Coordinator {
+    Coordinator()
+}
 }
 
 class CustomLoadingView: UIView {

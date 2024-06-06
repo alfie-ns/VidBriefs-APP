@@ -13,13 +13,13 @@ if ./push.sh; then # if push.sh succeeds then...
   rm -rf "$current_dir"
   echo ""
   echo "--------------------------------"
-  echo "Process completed successfully."
+  echo "Process completed successfully. |"
   echo "--------------------------------"
   echo ""
 else # if push.sh fails
   echo ""
   echo "--------------------------------"
-  echo "Error: push.sh failed. Exiting."
+  echo "Error: push.sh failed. Exiting. |"
   echo "--------------------------------"
   echo ""
 fi
