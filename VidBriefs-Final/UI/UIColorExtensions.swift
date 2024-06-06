@@ -1,22 +1,22 @@
-//
+// ---------------------------------------------------
 //  UIColourExtensions.swift
 //  VidBriefs-Final
 //
 //  Created by Alfie Nurse  on 16/11/2023.
-//
+// ---------------------------------------------------
 
-import Foundation
-import UIKit
-import SwiftUI
+import Foundation // Foundation
+import UIKit // UIKit
+import SwiftUI // SwiftUI
 
 extension Color {
-    static let customCoral = Color(UIColor.gray)
-    static let customTeal = Color(UIColor.customTeal)
+    static let customCoral = Color(UIColor.customCoral) // coral bg color customCoral
+    static let customTeal = Color(UIColor.customTeal) // teal bg color
 }
 
-extension UIColor {
+extension UIColor { // UIColor extension
     
-    static let customCoral = UIColor { traitCollection in
+    static let customCoral = UIColor { traitCollection in 
         if traitCollection.userInterfaceStyle == .dark {
             // Darker shade for dark mode
             return UIColor(red: 205/255, green: 92/255, blue: 52/255, alpha: 1)
