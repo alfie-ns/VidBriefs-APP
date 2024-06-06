@@ -13,9 +13,9 @@ if ./push.sh; then # if push.sh succeeds then...
   rm -rf "$current_dir"
   echo ""
   echo "--------------------------------"
-  echo "Process completed successfully. |"
+  echo "| Process completed successfully|"
   echo "--------------------------------"
-  echo "Push -> Backout -> Delete       |"
+  echo "| Push -> Backout -> Delete     |"
   echo "--------------------------------"
   echo ""
 else # if push.sh fails
