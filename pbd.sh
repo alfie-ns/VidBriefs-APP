@@ -15,6 +15,8 @@ if ./push.sh; then # if push.sh succeeds then...
   echo "--------------------------------"
   echo "Process completed successfully. |"
   echo "--------------------------------"
+  echo "Push -> Backout -> Delete       |"
+  echo "--------------------------------"
   echo ""
 else # if push.sh fails
   echo ""
