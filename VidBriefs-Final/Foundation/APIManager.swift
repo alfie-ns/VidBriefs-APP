@@ -151,9 +151,9 @@ struct APIManager {
             "messages": messages // Pass the messages array as the conversation history
         ]
 
-        do { // Try to serialize the request body to JSON
+        do {
             request.httpBody = try JSONSerialization.data(withJSONObject: requestBody, options: []) // Serialize the request body to JSON
-        } catch { // if fails
+        } catch {
             completion(nil) // Complete with nil due to error
             return // Exit the function
         }
@@ -163,15 +163,16 @@ struct APIManager {
                 if let choices = json["choices"] as? [[String: Any]], let message = choices.first?["message"] as? [String: Any], let text = message["content"] as? String {
                     ConversationHistory.addAssistantMessage(text) // Add the assistant's response to the conversation history
                     completion(text) // Pass the assistant's response to the completion handler
-                } else { // if fails
+                } else {
                     completion(nil)
                 }
-            } else { // if fails
+            } else {
                 completion(nil)
             }
         }
         task.resume() // Start the network task
     }
+
 
     static func fetchGPTSummaries(chunks: [String], customInsight: String, completion: @escaping (String?) -> Void) {
         
