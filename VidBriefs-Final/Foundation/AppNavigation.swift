@@ -1,4 +1,4 @@
-//
+/*
 //  AppNavigator.swift
 //  Youtube-Summarizer
 //
@@ -103,4 +103,100 @@ struct AppNavigation: View {
     
     
     
+*/
 
+import SwiftUI
+
+@MainActor
+struct AppNavigation: View { // main struct for the app navigation
+    
+    // State variable to track the current navigation path
+    @State private var currentPath: AppNavigationPath = .root
+    
+    var body: some View {
+        ZStack { // ZStack overlays views, allowing conditional navigation views to be layered
+            if AppNavigationPath.tabs.contains(currentPath) { 
+                // If the current path corresponds to a tab, create the tab view
+                createTabView()
+            } else {
+                // Otherwise, create the corresponding view for the current path
+                createView(for: currentPath)
+            }
+        }
+        .background(Color.customTeal) // Set background color
+        .edgesIgnoringSafeArea(.all) // Extend background to cover the entire screen
+    }
+    
+    // Function to create the tab view for paths in the `tabs` list
+    @ViewBuilder
+    private func createTabView() -> some View {
+        TabView(selection: $currentPath) { // TabView binding to `currentPath`
+            ForEach(AppNavigationPath.tabs, id: \.self) { path in
+                // Iterate over all tab paths, creating a view for each
+                createView(for: path)
+                    .tabItem {
+                        // Set the tab's label and icon based on the enum's properties
+                        Label(path.tabLabel, systemImage: path.tabIcon)
+                    }
+                    .tag(path) // Tag the tab item with its corresponding path
+            }
+        }
+        .tabViewStyle(PageTabViewStyle()) // Use the page style for tabs
+        .edgesIgnoringSafeArea(.all) // Ensure the tab view covers the entire screen
+    }
+    
+    // Function to create the corresponding view for a given path
+    @ViewBuilder
+    private func createView(for path: AppNavigationPath) -> some View {
+        switch path {
+        case .root:
+            RootView(currentPath: $currentPath) // Root view
+        case .home:
+            HomeView(currentPath: $currentPath) // Home view
+        case .insights:
+            InsightView(currentPath: $currentPath) // Insights view
+        case .libary:
+            LibraryView(currentPath: $currentPath) // Library view
+        case .settings:
+            SettingsView(currentPath: $currentPath) // Settings view
+        case .about:
+            AboutView(currentPath: $currentPath) // About view
+        case .terms:
+            TermsView(currentPath: $currentPath) // Terms view
+        case .feedback:
+            FeedbackView(currentPath: $currentPath) // Feedback view
+        default:
+            EmptyView() // Handle unexpected paths gracefully
+        }
+    }
+}
+
+// Enum defining different navigation paths, conforming to `Hashable` for use in SwiftUI
+enum AppNavigationPath: Hashable {
+    case root, home, insights, libary, settings, about, terms, feedback
+
+    // Static array of paths that should appear in the TabView
+    static let tabs: [AppNavigationPath] = [.home, .insights, .libary, .settings]
+
+    // Computed property to return the label for each tab
+    var tabLabel: String {
+        switch self {
+        case .home: return "Home"
+        case .insights: return "Insights"
+        case .libary: return "Library"
+        case .settings: return "Settings"
+        default: return ""
+        }
+    }
+
+    // Computed property to return the system image name for each tab's icon
+    var tabIcon: String {
+        switch self {
+        case .home: return "house.fill"
+        case .insights: return "lightbulb"
+        case .libary: return "books.vertical"
+        case .settings: return "gear"
+        default: return ""
+        }
+    }
+}
