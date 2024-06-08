@@ -192,35 +192,33 @@ struct APIManager {
             // Create request to OpenAI
             var request = URLRequest(url: apiUrl)
             request.httpMethod = "POST" // POST request
-            request.addValue("Bearer \(openai_apikey)", forHTTPHeaderField: "Authorization") // User users API key as http header
+            request.addValue("Bearer \(openai_apikey)", forHTTPHeaderField: "Authorization") // User's API key as http header
             request.addValue("application/json", forHTTPHeaderField: "Content-Type") //
             request.timeoutInterval = 300.0 // Long interval to prevent long response timeout
             
             // Create list called systemMessages with each necessary system message for the iterated GPT call
             var systemMessages: [[String: String]] = [
-                                    ["role": "system", "content": String(format: "Start of loop %d", index + 1)],
-                                    ["role": "system", "content": """
-                                        You have been asked to extract specific information from a YouTube video transcript.
-                                        The transcript has been divided into multiple chunks, and you must process each chunk individually.
+                ["role": "system", "content": String(format: "Start of loop %d", index + 1)],
+                ["role": "system", "content": """
+                    You have been asked to extract specific information from a YouTube video transcript.
+                    The transcript is divided into multiple chunks, and you must process each chunk individually.
 
-                                        Your task is to follow these steps:
-                                        - Review each chunk of the transcript and identify every piece of information that aligns with the given user prompt.
-                                        - After processing all chunks, summarise all the relevant pieces of information you have found in a single response.
-                                        - Only use information found in this transcript for your response.
+                    Your task is to follow these steps:
+                    - Review each chunk of the transcript and identify every piece of information that aligns with the given user prompt.
+                    - After processing all chunks, summarise all relevant information you have found in a single response.
+                    - Use only the information found in this transcript for your response.
 
-                                        Your guiding rule, as defined by the user, is: \(customInsight)
-                                    """],
-                                    ["role": "system", "content": String(format: """
-                                        You are iterating over each chunk of a single entire YouTube video transcript.
-                                        You are interpreting chunk %d out of %d chunks of the entire video.
-                                        You must give notes about this chunk in regard to the user's prompt: (%@).
-                                        The next message contains the chunk content.
-                                    """, index + 1, chunks.count, customInsight)],
-                                    ["role": "system", "content": String(format: "CHUNK %d: %@", index + 1, chunk)],
-                                    ["role": "system", "content": String(format: "End of loop %d", index + 1)]
-                                ]
-            
-            
+                    Your guiding rule, as defined by the user, is: \(customInsight)
+                """],
+                ["role": "system", "content": String(format: """
+                    You are iterating over each chunk of a YouTube video transcript.
+                    You are interpreting chunk %d out of %d.
+                    You must note the information in this chunk regarding the user's prompt: (%@).
+                    The next message contains the chunk content.
+                """, index + 1, chunks.count, customInsight)],
+                ["role": "system", "content": String(format: "CHUNK %d: %@", index + 1, chunk)],
+                ["role": "system", "content": String(format: "End of loop %d", index + 1)]
+            ]
             
             // Checks for last chunk
             if index == chunks.count - 1 { // if index is the last chunk 
