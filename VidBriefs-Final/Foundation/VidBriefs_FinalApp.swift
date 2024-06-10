@@ -6,6 +6,9 @@ import KeychainSwift
     - SwiftUI: For building the user interface.
     - Foundation: Provides fundamental utilities.
     - KeychainSwift: Manages secure keychain storage.
+
+    This file acts as the entry point for the app and
+    defines the main structure of the app.
 */
 
 func fetchOpenAIKey() -> String? {

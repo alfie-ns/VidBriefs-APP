@@ -7,49 +7,49 @@
 
 import SwiftUI
 import MessageUI
+// Import SwiftUI for building the user interface
+// Import MessageUI for sending feedback via email
 
 struct FeedbackView: View {
     
-    @Binding var currentPath: AppNavigationPath
+    @Binding var currentPath: AppNavigationPath // Binds the current navigation path
     
-    @State private var feedbackText: String = ""
-    @State private var isShowingMailView: Bool = false
-    @State private var alertNoMail = false
-    @State private var result: Result<MFMailComposeResult, Error>? = nil
-    @State private var showThankYouAlert = false
+    @State private var feedbackText: String = "" // State variable to store the feedback text
+    @State private var isShowingMailView: Bool = false // State variable to show the mail view, starts as false
+    @State private var alertNoMail = false // State variable to show alert if no mail accounts are set up
+    @State private var result: Result<MFMailComposeResult, Error>? = nil // State variable to store the result of sending feedback, starts as nil
+    @State private var showThankYouAlert = false // State variable to show thank you alert, starts as false
 
     
-    var body: some View {
-        ZStack {
+    var body: some View { // Body of the view
+        ZStack { // ZStack for layering views
             // Your background setup
-            LinearGradient(gradient: Gradient(colors: [Color.mint, Color.gray]), startPoint: .top, endPoint: .bottom)
-
-            // Your other background layers...
+            LinearGradient(gradient: Gradient(colors: [Color.mint, Color.gray]), startPoint: .top, endPoint: .bottom) // Gradient background
             
-            VStack(alignment: .leading, spacing: 16) {
-                Button(action: {
-                    currentPath = .settings
-                }) {
-                    Image(systemName: "arrow.left")
-                        .foregroundColor(.white)
-                        .font(.system(size: 24))
-                        .padding()
+            VStack(alignment: .leading, spacing: 16) { // Vertical stack with leading alignment and spacing of 16
+                Button(action: { // Back button action
+                    currentPath = .settings // Navigates back to the settings screen
+                }) { // Back button visual
+                    Image(systemName: "arrow.left") // Back arrow icon
+                        .foregroundColor(.white) // White color
+                        .font(.system(size: 24)) // Font size 24
+                        .padding() // Adds padding
                 }
                 
-                Text("Feedback")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .padding(.top, 5)
-                    .foregroundColor(.white)
+                Text("Feedback") // Title
+                    .font(.largeTitle) // Large title font
+                    .fontWeight(.bold) // Bold weight
+                    .padding(.top, 5) // Adds top padding of 5
+                    .foregroundColor(.white) // White color
                 
-                Text("Share your feedback! Help improve the app by suggesting ideas, features, and fixes!")
-                    .font(.subheadline)
-                    .fontWeight(.bold)
-                    .padding(.top, 5)
-                    .foregroundColor(.white)
+                Text("Share your feedback! Help improve the app by suggesting ideas, features, and fixes!") // Description
+                    .font(.subheadline) // Subheadline font
+                    .fontWeight(.bold) // Bold weight
+                    .padding(.top, 5) // Adds top padding of 5
+                    .foregroundColor(.white) // White color
 
                 
-                TextEditor(text: $feedbackText)
+                TextEditor(text: $feedbackText) 
                     .frame(height: 200)
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)

@@ -1,53 +1,54 @@
 import SwiftUI
+// Import SwiftUI for building the user interface
 
-struct AboutView: View {
+struct AboutView: View { // Defines a view for the About screen
     
-    @Binding var currentPath: AppNavigationPath
+    @Binding var currentPath: AppNavigationPath // Binds the current navigation path
     
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
+    var body: some View { // Body of the view
+        ScrollView { // Scrollable view
+            VStack(alignment: .leading, spacing: 16) { // Vertical stack with leading alignment and spacing of 16
                 
                 // Back Button
                 Button(action: {
-                    currentPath = .settings
+                    currentPath = .settings // Navigates back to the settings screen
                 }) {
-                    Image(systemName: "arrow.left")
-                        .foregroundStyle(.white)
-                        .font(.system(size: 24))
-                        .padding()
+                    Image(systemName: "arrow.left") // Back arrow icon
+                        .foregroundStyle(.white) // White color
+                        .font(.system(size: 24)) // Font size 24
+                        .padding() // Adds padding
                 }
 
                 // Title
                 Text("About VideoDigest")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundStyle(.white)
-                    .padding(.bottom, 5)
+                    .font(.largeTitle) // Large title font
+                    .fontWeight(.bold) // Bold weight
+                    .foregroundStyle(.white) // White color
+                    .padding(.bottom, 5) // Adds bottom padding of 5
 
                 // Subtitle
                 Text("Discover how to efficiently extract key information from videos in less time")
                     .font(.headline) // Changed to headline for better visibility
-                    .foregroundStyle(.gray)
-                    .padding(.bottom, 10)
+                    .foregroundStyle(.gray) // Gray color
+                    .padding(.bottom, 10) // Adds bottom padding of 10
                 
-                Divider()
+                Divider() // Horizontal divider
                 
                 
                 
                 // Description
                 Group {
-                    Text("Explore the Essence of Every Video Instantly")
+                    Text("Instantly Uncover the Core of Every Video.") 
                         .font(.title3) // Slightly smaller than headline for differentiation
-                        .fontWeight(.bold)
-                        .padding(.vertical, 5)
-                        .foregroundStyle(.white)
+                        .fontWeight(.bold) // Bold weight
+                        .padding(.vertical, 5) // Adds vertical padding of 5
+                        .foregroundStyle(.white) // White color
 
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("1. : Input your question about the video's content, seeking clarity, insights, or deeper understanding.")
-                        Text("2. Effortless Information Retrieval: Submit your query and feel free to navigate away. GPT-4 AI processes the video in the background.")
-                        Text("3. Swift, Seamless Summaries: Return in 20 seconds for a concise summary. Your understanding, maximized with minimal time investment.")
-                        Text("🌟Keep the app running in the background to ensure uninterrupted AI summarization🌟")
+                        Text("1. Input your question about the video content to seek clarity, insights, or deeper understanding.")
+                        Text("2. Submit your query and let AI process the video. You may continue using the app or perform other tasks.")
+                        Text("3. Return after a short while to view the summary and insights generated from the video.")
+                        Text("🌟 Ensure the app remains active to complete the summarization process. 🌟")
                     }
                     .font(.body) // Standard body font for better readability
                     .padding(.leading, 10)
@@ -78,7 +79,7 @@ struct AboutView: View {
     }
 }
 
-struct AboutView_Previews: PreviewProvider {
+struct AboutView_Previews: PreviewProvider { // Previews for the AboutView
     static var previews: some View {
         AboutView(currentPath: Binding.constant(AppNavigationPath.root))
     }

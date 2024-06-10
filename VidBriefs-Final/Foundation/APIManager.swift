@@ -204,9 +204,11 @@ struct APIManager {
                     The transcript is divided into multiple chunks, and you must process each chunk individually.
 
                     Your task is to follow these steps:
-                    - Review each chunk of the transcript and identify every piece of information that aligns with the given user prompt.
+                    - Review each chunk of the transcript and identify every concise piece of information that aligns with the given user prompt.
                     - After processing all chunks, summarise all relevant information you have found in a single response.
                     - Use only the information found in this transcript for your response.
+
+                    Remember, because you have to process each node individually, you must provide a summary for each chunk which answers the user's question.
 
                     Your guiding rule, as defined by the user, is: \(customInsight)
                 """],
@@ -353,7 +355,7 @@ struct APIManager {
     // GET TRANSCRIPT API CALL
     static func GetTranscript(yt_url: String, completion: @escaping (Bool, String?) -> Void) {
         
-        let getTranscriptUrl = URL(string: "http://127.0.0.1:8000/response/get_youtube_transcript/")! // call django api for transcript
+        let getTranscriptUrl = URL(string: "http://127.0.0.1:8000/response/get_youtube_transcript/")! // '!' means 'must have a value
         //let getTranscriptUrl = URL(string: "http://34.66.187.223:8000/response/get_youtube_transcript/")!
         
         // Makes request to the api for youtube transcript
@@ -361,7 +363,7 @@ struct APIManager {
         request.httpMethod = "POST" // POST request
         request.timeoutInterval = 3000 // Long interval to prevent long response timeout
         
-        // Give the youtube url to my api as a parameter in the api call
+        // Give the youtube url to api as a parameter in the api call
         let parameters: [String: Any] = [
             "url": yt_url
         ]
@@ -410,7 +412,7 @@ struct APIManager {
     }
     
     // BREAK TRANSCRIPT INTO CHUNKS
-    // Break into chunks and process an entire video transcript
+    // Break into chunks and process an entire video transcript if token length exceeds 80,000
     static func breakIntoChunks(transcript: String, maxTokens: Int = 80000) -> [String] {
         var chunks: [String] = [] // Holds the chunks of transcript text
         let words = transcript.split(separator: " ") // Splits transcript into words
