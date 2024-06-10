@@ -1,44 +1,45 @@
 import SwiftUI
 
-enum ActiveAlert {
+// This swift view is for the library view where the user can see all the insights they have saved. They can also delete all the insights or copy an insight to the clipboard.
+
+enum ActiveAlert { // Enum for the alert
     case clearAll, selectedInsight
 }
 
-struct VideoInsight: Codable {
-    var title: String
-    var insight: String
+struct VideoInsight: Codable { // Struct for the video insight, codable for encoding && decoding   
+    var title: String // Title of the insight: String
+    var insight: String // Insights given to the user: String
 }
 
 
-struct LibraryView: View {
+struct LibraryView: View { // LibraryView struct
     
-    @Binding var currentPath: AppNavigationPath
-    @EnvironmentObject var settings: SharedSettings
+    @Binding var currentPath: AppNavigationPath // Binding for the current path
+    @EnvironmentObject var settings: SharedSettings // Environment object for the SharedSettings
 
     
     @State private var savedInsights: [VideoInsight] = []  // create a savedInsights list storing the responses
-    @State private var activeAlert: ActiveAlert = .selectedInsight
+    @State private var activeAlert: ActiveAlert = .selectedInsight 
     @State private var showAlert = false
     @State private var selectedInsight: String = ""
     @State private var insightCopied = false
 
     
-    var body: some View {
+    var body: some View { // main body of the view
         
-        ZStack {
-            
+        ZStack { // ZStack for the view
            
-            ZStack {
+            ZStack { // ZStack for the background
                            
-                LinearGradient(
+                LinearGradient( // Gradient for the background
                     gradient: Gradient(colors: [Color.black, Color.customTeal, Color.gray]), // Added Color.blue
                     startPoint: .top,
                     endPoint: .bottom
                 )
-                .edgesIgnoringSafeArea(.all)
+                .edgesIgnoringSafeArea(.all) // Ignore the safe area for the gradient
 
                 
-                VStack {
+                VStack { // vertical stack for the view
                     Text("Swipe left on an insight to delete it.")
                         .foregroundColor(Color.white)
                         .padding(.top)

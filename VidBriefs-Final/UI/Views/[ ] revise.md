@@ -1,12 +1,12 @@
-- [ ] AboutView.swift
-- [ ] FeedbackView.swift
-- [ ] HomeView.swift
+- [X] AboutView.swift
+- [X] FeedbackView.swift
+- [X] HomeView.swift
+- [X] LibraryView.swift
 - [ ] SettingsView.swift
-- [ ] InsightView.swift
+- [X] InsightView.swift
 - [ ] LibaryView.swift
 - [ ] RootView.swift
 - [ ] TermsViewswift
-
 - [ ] DonateView.swift
 
 Start creating views...

@@ -1,18 +1,26 @@
 import SwiftUI
 import Combine
 import AVFoundation
+// SwiftUI framework is used for building modern, declarative user interfaces.
+// Combine framework is used for handling asynchronous events, such as keyboard height changes.
+// AVFoundation framework supports working with audiovisual assets, including playback and speech synthesis for reading out insights.
 
-
-extension UIResponder {
-    private weak static var _currentFirstResponder: UIResponder? = nil
+extension UIResponder { // Extends UIResponder to find and manage the current first responder
+    private weak static var _currentFirstResponder: UIResponder? = nil 
+    // A static weak variable to hold the current first responder. 
+    // It is weak to avoid retain cycles and optional to handle the absence of a first responder.
 
     public static var currentFirstResponder: UIResponder? {
+        // Retrieves the current first responder by setting _currentFirstResponder to nil, 
+        // sending a findFirstResponder action across the app, and returning the result.
         _currentFirstResponder = nil
         UIApplication.shared.sendAction(#selector(findFirstResponder(_:)), to: nil, from: nil, for: nil)
         return _currentFirstResponder
     }
 
     @objc internal func findFirstResponder(_ sender: Any) {
+        // '@objc' attribute enables this method to interact with Objective-C runtime for action-based callbacks.
+        // 'internal' access level restricts its visibility to within the same module, ensuring it's used only internally.
         UIResponder._currentFirstResponder = self
     }
     
@@ -23,31 +31,40 @@ extension UIResponder {
 }
 
 
-// Adapts the app to not push down up the screen if using keyboard
+// Adjusts the view's layout to prevent the keyboard from covering up the content.
+// The modifier dynamically adds bottom padding to shift the view up when the keyboard appears.
 struct KeyboardAdaptive: ViewModifier {
-    @State private var bottomPadding: CGFloat = 0
+    @State private var bottomPadding: CGFloat = 0 // Initial bottom padding is zero
 
     func body(content: Content) -> some View {
         GeometryReader { geometry in
             content
-                .padding(.bottom, self.bottomPadding)
-                .onReceive(Publishers.keyboardHeight) { keyboardHeight in
-                    let keyboardTop = geometry.frame(in: .global).height - keyboardHeight
-                    let focusedTextInputBottom = UIResponder.currentFirstResponder?.globalFrame?.maxY ?? 0
-                    self.bottomPadding = max(0, focusedTextInputBottom - keyboardTop - geometry.safeAreaInsets.bottom)
+                .padding(.bottom, self.bottomPadding) // Apply dynamic bottom padding
+                .onReceive(Publishers.keyboardHeight) { keyboardHeight in 
+                    // Adjust bottom padding based on the keyboard height and the position of the focused text input
+                    let keyboardTop = geometry.frame(in: .global).height - keyboardHeight // Top edge of the keyboard
+                    let focusedTextInputBottom = UIResponder.currentFirstResponder?.globalFrame?.maxY ?? 0 // Bottom edge of the focused text input
+                    self.bottomPadding = max(0, focusedTextInputBottom - keyboardTop - geometry.safeAreaInsets.bottom) 
+                    // Set bottom padding to ensure the focused input is above the keyboard
                 }
-                .animation(.easeOut(duration: 0.16), value: bottomPadding)
+                .animation(.easeOut(duration: 0.16), value: bottomPadding) // Smooth animation for padding changes
         }
     }
 }
 
-extension View {
+extension View { 
+    // Extends the View protocol to add a keyboardAdaptive modifier.
+    // This modifier adapts the view's layout dynamically when the keyboard appears, ensuring that input fields are not hidden.
+    // It is particularly useful in this app to maintain a smooth user experience by keeping the input fields visible when typing.
     func keyboardAdaptive() -> some View {
         ModifiedContent(content: self, modifier: KeyboardAdaptive())
     }
 }
 
-extension Publishers {
+extension Publishers { 
+    // Provides a publisher that emits keyboard height changes.
+    // Combines the notifications for keyboard appearance and disappearance to emit the current keyboard height.
+    // Essential for this app to dynamically adjust the layout based on the keyboard height.
     static var keyboardHeight: AnyPublisher<CGFloat, Never> {
         let willShow = NotificationCenter.default.publisher(for: UIApplication.keyboardWillShowNotification)
             .map { $0.keyboardHeight }
@@ -61,37 +78,40 @@ extension Publishers {
 }
 
 extension Notification {
+    // Extracts the keyboard height from the notification's userInfo.
+    // Converts the keyboard frame into its height, which is used to adjust the view layout.
+    // This app uses it to ensure that the bottom padding is accurately calculated based on the keyboard's position.
     var keyboardHeight: CGFloat {
         return (userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect)?.height ?? 0
     }
 }
 
 
-struct InsightView: View {
+struct InsightView: View { // The main view for generating insights from a youtube video
     
     //    @State private var isApiKeySet: Bool = UserDefaults.standard.string(forKey: "openai_apikey") != nil
     
-    @Binding var currentPath: AppNavigationPath
+    @Binding var currentPath: AppNavigationPath // Binding to the current navigation path
     var customLoading: CustomLoadingView! // Custom loading sign
     @EnvironmentObject var settings: SharedSettings // "terms are accepted" bool gate keepe
 
     
     
-    @State private var urlInput: String = ""
+    @State private var urlInput: String = "" // URL input starts empty
     @State private var customInsight: String = "" // Custom message
     
-    @State private var apiResponse = ""
+    @State private var apiResponse = "" // API response starts empty
     @State private var isResponseExpanded = false // for DisclosureGroup
-    @State private var savedInsights: [VideoInsight] = []
-    @State private var isLoading = false
+    @State private var savedInsights: [VideoInsight] = [] // Saved insights list starts empty
+    @State private var isLoading = false // Loading state starts false
     
-    @State private var selectedQuestion: String = ""
-    @State private var showingActionSheet = false
+    @State private var selectedQuestion: String = "" // Selected question starts empty
+    @State private var showingActionSheet = false // Action sheet starts hidden
     
-    @State private var videoTitle: String = ""
-    @State private var videoTranscript: String = ""
+    @State private var videoTitle: String = "" // Video title starts empty
+    @State private var videoTranscript: String = "" // Video transcript starts empty
     
-    @State private var speechSynthesizer = AVSpeechSynthesizer()
+    @State private var speechSynthesizer = AVSpeechSynthesizer() // Speech synthesizer for text-to-speech(voiceover)
 
 
 
@@ -128,17 +148,17 @@ struct InsightView: View {
     ]
     
    
-    var body: some View {
+    var body: some View { // The main body of the InsightView
         
             
-            ZStack {
+            ZStack { // ZStack to layer the background gradient and the main content
                 
-                LinearGradient(
+                LinearGradient( // Background gradient
                     gradient: Gradient(colors: [Color.black, Color.customTeal, Color.gray]),
                     startPoint: .top,
                     endPoint: .bottom
                 )
-                .edgesIgnoringSafeArea(.all)
+                .edgesIgnoringSafeArea(.all) // Fill the entire screen with the gradient
                 
                 
                 if settings.termsAccepted == false{ // If the terms anc condition has not been accepted yet
@@ -152,7 +172,7 @@ struct InsightView: View {
                     .background(Color.customTeal.opacity(0.7)) // coloured background to show authority
                     .cornerRadius(10)
                     
-                } else {
+                } else { // terms and conditions must have been accepted
                     
                     // The ScrollView to accommodate dynamic content eg the keyboard
                     
@@ -168,9 +188,9 @@ struct InsightView: View {
                             Spacer().frame(height: 100) // Vertical space at the top
                             
                             
-                            HStack { // "Enter URL"
+                            HStack { // "Enter URL" text field with paste and delete buttons, horizontal padding, and rounded border
                                 
-                                TextField("Enter URL", text: $urlInput)
+                                TextField("Enter URL", text: $urlInput) // Text field for entering the video URL
                                     .padding([.leading, .trailing])
                                     .textFieldStyle(RoundedBorderTextFieldStyle())
                                     .overlay(
@@ -224,7 +244,7 @@ struct InsightView: View {
                                         Button(action: {
                                             customInsight = ""
                                         }) {
-                                            Image(systemName: "xmark.circle.fill")
+                                            Image(systemName: "xmark.circle.fill") // Clear button
                                                 .font(.system(size: 20))
                                                 .foregroundColor(.gray)
                                                 .padding(.trailing, 10) // Right padding inside TextEditor
@@ -241,13 +261,13 @@ struct InsightView: View {
                                 
                                 ZStack { // The Menu for selecting a question
                                     Menu {
-                                        Picker("Select a question", selection: $customInsight) {
-                                            ForEach(questions, id: \.self) { question in
-                                                Text(question).tag(question)
+                                        Picker("Select a question", selection: $customInsight) { // Picker for selecting a question
+                                            ForEach(questions, id: \.self) { question in // Loop through the list of questions
+                                                Text(question).tag(question) // Display each question as a selectable option
                                             }
                                         }
                                     } label: {
-                                        HStack {
+                                        HStack { // Horizontal stack 
                                             Text("Select a question")
                                                 .foregroundColor(.white)
                                                 .font(.headline)
@@ -280,10 +300,10 @@ struct InsightView: View {
                                 .cornerRadius(20)
                             }
                             
-                            if isLoading { // if loading make CustomLoadingSwiftUIView the view for this vstack
+                            if isLoading { // if loading, make CustomLoadingSwiftUIView the view for this vstack
                                 VStack {
-                                    Spacer()
-                                    CustomLoadingSwiftUIView()
+                                    Spacer() 
+                                    CustomLoadingSwiftUIView() // Custom loading view
                                         .frame(width: 50, height: 50)
                                         .offset(x: 21, y: 50)
                                     
@@ -356,19 +376,19 @@ struct InsightView: View {
     
  
     private func fetchData() {
-        isLoading = true
-        APIManager.handleCustomInsightAll(yt_url: urlInput, userPrompt: customInsight) { success, response in
-            DispatchQueue.main.async {
-                self.isLoading = false
-                if success, let response = response {
-                    print(response)
+        isLoading = true // set loading to true, as we've entered the fetch data function
+        APIManager.handleCustomInsightAll(yt_url: urlInput, userPrompt: customInsight) { success, response in // Call the HandleCustomInsightAll function from the APIManager.swift file
+            DispatchQueue.main.async { // Dispatch the following code to the main thread
+                self.isLoading = false // Set loading to false, as we've finished fetching data
+                if success, let response = response { // If the fetch was successful and the response is NOT nil
+                    print(response) // Print the response to the console
                     
                     self.savedInsights.append(VideoInsight(title: "Your Video Title", insight: response)) // Append directly to the list
-                    self.apiResponse = response
-                    self.updateUI(success: success, response: response)
-                } else {
-                    self.apiResponse = "fetchData error"
-                    self.updateUI(success: false, response: nil)
+                    self.apiResponse = response // Set apiResponse to the response generated
+                    self.updateUI(success: success, response: response) // Update the UI with the response
+                } else { // If the fetch was unsuccessful
+                    self.apiResponse = "fetchData error" // Set apiResponse to an error message
+                    self.updateUI(success: false, response: nil) // Update the UI with the error message
                 }
             }
         }
@@ -376,31 +396,31 @@ struct InsightView: View {
     
     // TODO: Unpack the
 
-    private func updateUI(success: Bool, response: String?) {
-        DispatchQueue.main.async {
-            if success {
-                let newInsight = VideoInsight(title: videoTitle, insight: apiResponse ?? "No data")
+    private func updateUI(success: Bool, response: String?) { // function to update the UI based on the success of the API call
+        DispatchQueue.main.async { // Dispatch the following code to the main thread
+            if success { // If the API call was successful
+                let newInsight = VideoInsight(title: videoTitle, insight: apiResponse ?? "No data") // Create a new VideoInsight object with the video title and the API response
 //                self.apiResponse = newInsight.insight
-                if let existingSavedInsightsData = UserDefaults.standard.data(forKey: "savedInsights"),
-                   var existingSavedInsights = try? JSONDecoder().decode([VideoInsight].self, from: existingSavedInsightsData) {
-                    existingSavedInsights.append(newInsight)
-                    if let encoded = try? JSONEncoder().encode(existingSavedInsights) {
-                        UserDefaults.standard.set(encoded, forKey: "savedInsights")
+                if let existingSavedInsightsData = UserDefaults.standard.data(forKey: "savedInsights"), // If there are existing saved insights in UserDefaults
+                   var existingSavedInsights = try? JSONDecoder().decode([VideoInsight].self, from: existingSavedInsightsData) { // decode json data into VideoInsight objects
+                    existingSavedInsights.append(newInsight) // Append the new insight to the existing list
+                    if let encoded = try? JSONEncoder().encode(existingSavedInsights) { // Encode the updated list
+                        UserDefaults.standard.set(encoded, forKey: "savedInsights") // Save the updated list to UserDefaults
                     }
-                } else {
-                    let newInsights = newInsight
-                    if let encoded = try? JSONEncoder().encode(newInsights) {
-                        UserDefaults.standard.set(encoded, forKey: "savedInsights")
+                } else { // If there are no existing saved insights
+                    let newInsights = newInsight // Set the new insights to the new insight
+                    if let encoded = try? JSONEncoder().encode(newInsights) { // Encode the new insights
+                        UserDefaults.standard.set(encoded, forKey: "savedInsights") // Save the new insights to UserDefaults
                     }
                 }
-            } else {
+            } else { // If the API call was unsuccessful
                 apiResponse = response ?? "An unspecified error occurred"
             }
         }
         
-        func handleNewInsight(title: String, insight: String) {
-            let newInsight = VideoInsight(title: title, insight: insight)
-            savedInsights.append(VideoInsight(title: "Your Video Title", insight: response!))
+        func handleNewInsight(title: String, insight: String) { // function to handle a new insight
+            let newInsight = VideoInsight(title: title, insight: insight) // Create a new VideoInsight object with the title and insight
+            savedInsights.append(VideoInsight(title: "Your Video Title", insight: response!)) // Append the new insight to the saved insights list
             
             // Save the updated list to UserDefaults
             if let encoded = try? JSONEncoder().encode(savedInsights) {
