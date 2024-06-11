@@ -1,7 +1,5 @@
 import SwiftUI
 
-
-
 struct TermsView: View {
     
     @EnvironmentObject var settings: SharedSettings
@@ -114,28 +112,28 @@ struct TermsView: View {
         return lines.joined(separator: "\n")
     }
     
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                Button(action: {
+    var body: some View { // main body of TermsView
+        ScrollView { // make scrollable
+            VStack(alignment: .leading, spacing: 16) { // vertical stack of elements
+                Button(action: { // back button to go back to settings
                     currentPath = .settings
                 }) {
-                    Image(systemName: "arrow.left")
+                    Image(systemName: "arrow.left") // back arrow
                         .foregroundStyle(.white)
                         .font(.system(size: 24))
                         .padding()
                 }
                 
-                Text("TERMS AND CONDITIONS")
+                Text("TERMS AND CONDITIONS") // title
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .foregroundStyle(.white)
-                Text(termsText)
+                Text(termsText) // entire terms and conditions text
                     .padding()
                     .foregroundStyle(.white)
                 
                 // Inside the VStack of your TermsView
-                Button(action: {
+                Button(action: { // if accept terms button is clicked, set termsAccepted to true and navigate to insights to get started
                     settings.termsAccepted = true
                     currentPath = .insights
                 }) {

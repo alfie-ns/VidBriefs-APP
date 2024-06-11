@@ -94,22 +94,22 @@ struct SettingsView: View { // SettingsView structure
                         .padding() // given it's own paddings
                         .disabled(!termsAccepted) // termsAccept
                     
-                    Button("Save") {
-                        let keychain = KeychainSwift()
-                        keychain.set(openai_apikey, forKey: "openai-apikey")
-                        print("New API Key saved: \(openai_apikey)")
-                        showAPIKeyPopup = false
+                    Button("Save") { // Button to save the API key
+                        let keychain = KeychainSwift() // init keychain instance
+                        keychain.set(openai_apikey, forKey: "openai-apikey") // set the API key in the keychain
+                        print("New API Key saved: \(openai_apikey)") // print the API key to the console
+                        showAPIKeyPopup = false // close the popup
                         settings.apiKey = openai_apikey // Update environment object if applicable
                     }
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
+                    .padding() // padding
+                    .background(Color.blue) // blue background
+                    .foregroundColor(.white) // white text
+                    .cornerRadius(10) // corner radius
                 }
-                .frame(width: 300, height: 150)
-                .background(Color.white)
-                .cornerRadius(20)
-                .shadow(radius: 20)
+                .frame(width: 300, height: 150) // frame size
+                .background(Color.white) // white background
+                .cornerRadius(20) // corner radius of 20
+                .shadow(radius: 20) // shadow radius of 20
             }
         }
     }
@@ -150,10 +150,10 @@ struct VideoPlayerView: View {
         // Use AVPlayer to play the video
         let player = AVPlayer(url: videoURL)
         return VideoPlayer(player: player)
-            .onAppear {
-                player.play() // Play the video when the view appears
+            .onAppear { // when the view appears
+                player.play() // play the video
             }
-            .toAnyView()
+            .toAnyView() // convert the view to AnyView, erasing its specific type to allow for type-agnostic storage and dynamic view composition
     }
 }
 
