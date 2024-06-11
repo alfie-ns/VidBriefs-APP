@@ -4,9 +4,9 @@
 - [X] LibraryView.swift
 - [ ] SettingsView.swift
 - [X] InsightView.swift
-- [ ] LibaryView.swift
-- [ ] RootView.swift
-- [ ] TermsViewswift
+- [X] LibaryView.swift
+- [X] RootView.swift
+- [X] TermsViewswift
 - [ ] DonateView.swift
 
 Start creating views...
