@@ -16,7 +16,6 @@
 		3489327F2B04315C0071DB92 /* SwiftUIX in Frameworks */ = {isa = PBXBuildFile; productRef = 3489327E2B04315C0071DB92 /* SwiftUIX */; };
 		348942312AFC0D5F0035B716 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348942302AFC0D5F0035B716 /* AboutView.swift */; };
 		349EF5F12B09058200AC8CA1 /* RequestLimitTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349EF5F02B09058200AC8CA1 /* RequestLimitTracker.swift */; };
-		34C2B1D22B02F64200019CC1 /* LoadingSign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2B1D12B02F64200019CC1 /* LoadingSign.swift */; };
 		34EBEB7F2B0448D000CA3C30 /* SwiftUIX in Frameworks */ = {isa = PBXBuildFile; productRef = 34EBEB7E2B0448D000CA3C30 /* SwiftUIX */; };
 		34F011D32AFA514800FF1957 /* VidBriefs_FinalApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F011D22AFA514800FF1957 /* VidBriefs_FinalApp.swift */; };
 		34F011D72AFA514A00FF1957 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34F011D62AFA514A00FF1957 /* Assets.xcassets */; };
@@ -30,6 +29,7 @@
 		34F011F52AFA531400FF1957 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F011F42AFA531400FF1957 /* SettingsView.swift */; };
 		34F011F72AFA532D00FF1957 /* TermsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F011F62AFA532D00FF1957 /* TermsView.swift */; };
 		34F3A7922B24E7A0001045A0 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 34F3A7912B24E7A0001045A0 /* KeychainSwift */; };
+		A311728F2C2269770046A62D /* LoadingSign.swift in Sources */ = {isa = PBXBuildFile; fileRef = A311728E2C2269770046A62D /* LoadingSign.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,7 +43,6 @@
 		3489422C2AFBF5270035B716 /* LibaryPicture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LibaryPicture.png; sourceTree = "<group>"; };
 		348942302AFC0D5F0035B716 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		349EF5F02B09058200AC8CA1 /* RequestLimitTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestLimitTracker.swift; sourceTree = "<group>"; };
-		34C2B1D12B02F64200019CC1 /* LoadingSign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingSign.swift; sourceTree = "<group>"; };
 		34F011CF2AFA514800FF1957 /* VidBriefs-Final.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "VidBriefs-Final.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		34F011D22AFA514800FF1957 /* VidBriefs_FinalApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VidBriefs_FinalApp.swift; sourceTree = "<group>"; };
 		34F011D62AFA514A00FF1957 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -58,6 +57,7 @@
 		34F011F62AFA532D00FF1957 /* TermsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsView.swift; sourceTree = "<group>"; };
 		34F012002AFA5C0500FF1957 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		34F5F2502B02C05100EC6B28 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		A311728E2C2269770046A62D /* LoadingSign.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LoadingSign.swift; path = "VidBriefs-Final/LoadingSign/LoadingSign.swift"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,7 +86,7 @@
 		346D1FE72AFDABD900F84B27 /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
-				34C2B1D12B02F64200019CC1 /* LoadingSign.swift */,
+				A311728E2C2269770046A62D /* LoadingSign.swift */,
 				34F011E22AFA520F00FF1957 /* AppNavigation.swift */,
 				34F011D22AFA514800FF1957 /* VidBriefs_FinalApp.swift */,
 				349EF5F02B09058200AC8CA1 /* RequestLimitTracker.swift */,
@@ -260,8 +260,8 @@
 				34F011D32AFA514800FF1957 /* VidBriefs_FinalApp.swift in Sources */,
 				34F011EB2AFA529200FF1957 /* FeedbackView.swift in Sources */,
 				34F011F32AFA52F700FF1957 /* RootView.swift in Sources */,
-				34C2B1D22B02F64200019CC1 /* LoadingSign.swift in Sources */,
 				34F011F12AFA52DB00FF1957 /* LibaryView.swift in Sources */,
+				A311728F2C2269770046A62D /* LoadingSign.swift in Sources */,
 				343065B12B06508D00F7FAF9 /* UIColorExtensions.swift in Sources */,
 				345F47B32C02791800C739C3 /* APIManager.swift in Sources */,
 				34F011E32AFA520F00FF1957 /* AppNavigation.swift in Sources */,

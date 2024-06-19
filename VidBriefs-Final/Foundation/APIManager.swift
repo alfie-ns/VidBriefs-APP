@@ -101,7 +101,7 @@ struct APIManager {
                     let words = transcript.split(separator: " ") // Split the transcript into words
                     print("Words in transcript: \(words.count)") // Log the number of words in the transcript
                     
-                    if words.count < 105000 //
+                    if words.count < 120000 {// if transcript less then 120,000
                         print("one-prompt summarisation") // summarise in one go
                         
                         fetchOneGPTSummary(transcript: transcript, customInsight: userPrompt) { finalSummary in
