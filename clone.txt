@@ -1,9 +1,20 @@
 #!/bin/bash
 
-# Clone the repository
-git clone https://github.com/alfie-ns/VidBriefs-APP
+# Find the next available number
+base_name="vidbriefs-app"
+I=1
+while [ -d "${base_name}-${I}" ]; do
+  I=$((I + 1))
+done
+new_name="${base_name}-${I}"
 
-# Copy the .env file to the cloned repository
-cp .env VidBriefs-APP/
+# Clone the repository into the new directory, init into new_name variable
+git clone https://github.com/alfie-ns/vidbriefs-app "$new_name"
 
-echo "Repository cloned and .env file copied in to vidbriefs-app successfully."
+# Change directory to the cloned repository
+cd "$new_name"
+
+# Copy the .env file, backout of vidbriefs-app-{n}, backout of APP, copy .env from this directory into repo
+cp ../../.env .
+
+echo "Repository cloned as $new_name and .env file copied."
