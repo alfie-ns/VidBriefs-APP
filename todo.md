@@ -1,0 +1,1 @@
+- [ ] Make ted talks summarisation also work in insight view, switch between youtube and tedtalks

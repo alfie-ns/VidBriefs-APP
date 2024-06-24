@@ -24,10 +24,11 @@ extension UIResponder { // Extends UIResponder to find and manage the current fi
         UIResponder._currentFirstResponder = self
     }
     
-    var globalFrame: CGRect? {
-        guard let view = self as? UIView else { return nil }
-        return view.window?.convert(view.bounds, from: view)
-    }
+    var globalFrame: CGRect? { 
+    // Retrieves the global frame of the current first responder.
+    guard let view = self as? UIView else { return nil } // Checks if the responder is a UIView.
+    return view.window?.convert(view.bounds, from: view) // Converts the view's bounds to the window's coordinate space.
+}
 }
 
 
