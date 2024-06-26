@@ -16,6 +16,22 @@ enum TranscriptSource {
     //case udemy
     //case khanAcademy
     //case skillshare
+    //case researchPapers
+    //case books
+    //case articles
+    //case blogs
+    //case forums
+    //case socialMedia
+    //case newsArticles
+    //case podcasts
+    //case audiobooks
+    //case interviews?
+    //case documentaries
+    //case webinars
+    //case onlineCourses?
+    //case onlineTutorials?
+    // perhaps the AI, since it's on the users phone ios app, it can copy text directly from the users phone
+    
 }
 
 struct APIManager {

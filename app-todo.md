@@ -6,3 +6,4 @@
 - [ ] Develop a study planner within the app that suggests TED Talks, YouTube videos, and lecture notes based on the user’s study goals and schedule
 - [ ] Interactive quiz and flashcards
 - [ ] Gamification and Rewards System (Leaderboard, Badges, Points, Teams, etc)
+- [ ] perhaps the AI, since it's on the users phone ios app, it can copy text directly from the users phone
