@@ -8,6 +8,16 @@
 import Foundation // Import Foundation(used for URLSession and JSON decoding)
 import KeychainSwift // Import KeychainSwift(used for storing API keys)
 
+enum TranscriptSource {
+    case youtube
+    case tedTalk
+    //case vimeo
+    //case coursera
+    //case udemy
+    //case khanAcademy
+    //case skillshare
+}
+
 struct APIManager {
 
    struct ConversationHistory {
@@ -81,59 +91,65 @@ struct APIManager {
     }
     
 
-        // Function to handle all custom insight requests from API for transcript to turn into an insight
-        static func handleCustomInsightAll(yt_url: String, userPrompt: String, completion: @escaping (Bool, String?) -> Void) {
+    // Function to handle all custom insight requests from API for transcript to turn into an insight
+    static func handleCustomInsightAll(url: String, source: TranscriptSource, userPrompt: String, completion: @escaping (Bool, String?) -> Void) {
 
-            // Step 0: Init conversation history
-            // ----------------------------------
-            ConversationHistory.clear()
-            ConversationHistory.addUserMessage(userPrompt)
-            // Begin the conversation with the user prompt
-                    
-            // Step 1: Get the entire transcript
-            // ----------------------------------
+        // Step 0: Init conversation history
+        // ----------------------------------
+        ConversationHistory.clear()
+        ConversationHistory.addUserMessage(userPrompt)
+        // Begin the conversation with the user prompt
 
-            // Call gettranscript function and pass the url entered by the user as "transcript" parameter
-            GetTranscript(yt_url: yt_url) { (success, transcript) in
-                if success, let transcript = transcript { // If successful API call 'transcriptt' = the transcript got
-                    print("Transcript from youtube: \(transcript)") // Verify transcript fetched by displaying it
-                    
-                    let words = transcript.split(separator: " ") // Split the transcript into words
-                    print("Words in transcript: \(words.count)") // Log the number of words in the transcript
-                    
-                    if words.count < 120000 {// if transcript less then 120,000
-                        print("one-prompt summarisation") // summarise in one go
-                        
-                        fetchOneGPTSummary(transcript: transcript, customInsight: userPrompt) { finalSummary in
-                            if let finalSummary = finalSummary {
-                                completion(true, finalSummary)
-                            }
-                            else { // if...
-                                completion(false, "GPT could not be reached, check the API key is correct")
-                            }
-                        }
-                    }
-                    else if words.count > 10500 {
-                        print("Chunk summarisation")
-                        let chunks = breakIntoChunks(transcript: transcript) // Call breakIntoChunks and pass the transcript
-                        fetchGPTSummaries(chunks: chunks, customInsight: userPrompt) { (finalSummary) in
-                            if let finalSummary = finalSummary {
-                                completion(true, finalSummary)
-                            }
-                            else {
-                                completion(false, "GPT could not be reached, check the API key is correct")
-                            }
-                        }
-                    }
-                    else {
-                        print("Error")
-                    }
-                    
-                } else {
-                    completion(false, "Could not get the transcript, check the url is correct")
-                }
+        // Step 1: Get the entire transcript
+        // ----------------------------------
+
+        // Choose the appropriate function to fetch the transcript based on the source
+        switch source {
+        case .youtube:
+            GetTranscript(yt_url: url) { (success, transcript) in
+                processTranscriptFetchResult(success: success, transcript: transcript, userPrompt: userPrompt, completion: completion)
+            }
+        case .tedTalk:
+            GetTedTalkTranscript(ted_url: url) { (success, transcript) in
+                processTranscriptFetchResult(success: success, transcript: transcript, userPrompt: userPrompt, completion: completion)
             }
         }
+    }
+
+    private static func processTranscriptFetchResult(success: Bool, transcript: String?, userPrompt: String, completion: @escaping (Bool, String?) -> Void) {
+        if success, let transcript = transcript {
+            print("Transcript: \(transcript)")
+
+            let words = transcript.split(separator: " ")
+            print("Words in transcript: \(words.count)")
+
+            if words.count < 120000 {
+                print("one-prompt summarisation")
+
+                fetchOneGPTSummary(transcript: transcript, customInsight: userPrompt) { finalSummary in
+                    if let finalSummary = finalSummary {
+                        completion(true, finalSummary)
+                    } else {
+                        completion(false, "GPT could not be reached, check the API key is correct")
+                    }
+                }
+            } else if words.count > 10500 {
+                print("Chunk summarisation")
+                let chunks = breakIntoChunks(transcript: transcript)
+                fetchGPTSummaries(chunks: chunks, customInsight: userPrompt) { (finalSummary) in
+                    if let finalSummary = finalSummary {
+                        completion(true, finalSummary)
+                    } else {
+                        completion(false, "GPT could not be reached, check the API key is correct")
+                    }
+                }
+            } else {
+                print("Error")
+            }
+        } else {
+            completion(false, "Could not get the transcript, check the url is correct")
+        }
+    }
     
    static func fetchOneGPTSummary(transcript: String, customInsight: String, completion: @escaping (String?) -> Void) {
         let apiUrl = URL(string: "https://api.openai.com/v1/chat/completions")! // OpenAI API URL ('!' means it must have a value)
@@ -410,10 +426,55 @@ struct APIManager {
             }
         }.resume() // Resume the task if it's in a suspended state; this starts the network call
     }
+
+    // NEW - TEST [ ] 
+    static func GetTedTalkTranscript(ted_url: String, completion: @escaping (Bool, String?) -> Void) {
+
+        let getTedTalkTranscriptUrl = URL(string: "http://127.0.0.1:8000/ted_talks/get_tedtalk_transcripts/")! // Adjust the URL to your Django endpoint
+
+        var request = URLRequest(url: getTedTalkTranscriptUrl)
+        request.httpMethod = "POST"
+        request.timeoutInterval = 3000
+
+        let parameters: [String: Any] = [
+            "url": ted_url
+        ]
+
+        request.httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: [])
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let httpResponse = response as? HTTPURLResponse else {
+                completion(false, "Fetch failed.")
+                return
+            }
+
+            switch httpResponse.statusCode {
+            case 200...299:
+                if let data = data {
+                    do {
+                        let decodedData = try JSONDecoder().decode([String: String].self, from: data)
+                        if let responseString = decodedData["response"] {
+                            completion(true, responseString)
+                        } else {
+                            completion(false, "Key not found.")
+                        }
+                    } catch {
+                        completion(false, "Decoding failed.")
+                    }
+                } else {
+                    completion(false, "No data.")
+                }
+            default:
+                completion(false, "Fetch failed with status code: \(httpResponse.statusCode).")
+            }
+        }.resume()
+    }
     
     // BREAK TRANSCRIPT INTO CHUNKS
     // Break into chunks and process an entire video transcript if token length exceeds 80,000
     static func breakIntoChunks(transcript: String, maxTokens: Int = 80000) -> [String] {
+
         var chunks: [String] = [] // Holds the chunks of transcript text
         let words = transcript.split(separator: " ") // Splits transcript into words
         var chunk: [String] = [] // Temp storage for the current chunk
