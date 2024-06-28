@@ -5,14 +5,10 @@ import AVFoundation
 struct InsightView: View {
     // MARK: - Properties
     
-    // Navigation
     @Binding var currentPath: AppNavigationPath
     var customLoading: CustomLoadingView!
-    
-    // Environment
     @EnvironmentObject var settings: SharedSettings
     
-    // State variables for video input and processing
     @State private var urlInput: String = ""
     @State private var customInsight: String = ""
     @State private var apiResponse = ""
@@ -23,18 +19,12 @@ struct InsightView: View {
     @State private var showingActionSheet = false
     @State private var videoTitle: String = ""
     @State private var videoTranscript: String = ""
-    
-    // Text-to-speech
     @State private var speechSynthesizer = AVSpeechSynthesizer()
     
-    // New states for chat functionality
     @State private var chatMessages: [ChatMessage] = []
     @State private var currentMessage: String = ""
     @State private var isVideoLoaded: Bool = false
     
-    // MARK: - Predefined Questions
-    
-    // List of predefined questions for video analysis
     let questions = [
         "What are the step-by-step instructions for replicating the process demonstrated in the video?",
         "Based on the content, provide a practical action plan.",
@@ -46,7 +36,6 @@ struct InsightView: View {
     
     var body: some View {
         ZStack {
-            // Background gradient
             LinearGradient(
                 gradient: Gradient(colors: [Color.black, Color.customTeal, Color.gray]),
                 startPoint: .top,
@@ -54,7 +43,6 @@ struct InsightView: View {
             )
             .edgesIgnoringSafeArea(.all)
             
-            // Main content
             if !settings.termsAccepted {
                 termsAndConditionsView
             } else {
@@ -62,12 +50,10 @@ struct InsightView: View {
             }
         }
         .edgesIgnoringSafeArea(.all)
-        .keyboardAdaptive() // Custom modifier to handle keyboard appearance
     }
     
     // MARK: - Subviews
     
-    // View for accepting terms and conditions
     var termsAndConditionsView: some View {
         Button("Press here to sign the terms and conditions") {
             currentPath = .terms
@@ -78,61 +64,62 @@ struct InsightView: View {
         .cornerRadius(10)
     }
     
-    // Main content view that switches between video input and chat
     var mainContentView: some View {
-        VStack {
-            if !isVideoLoaded {
-                videoInputView
-            } else {
-                chatView
-            }
+        VStack(spacing: 20) {
+            
+            Text("VidBriefs")
+                .font(.system(size: 48, weight: .heavy))
+                .foregroundColor(.white)
+                .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 2)
+                .padding(.vertical, 20)
+                .padding(.top, 40)
+            
+            videoInputSection
+            
+            Divider().background(Color.white)
+            
+            chatSection
         }
         .padding()
     }
     
-    // View for entering YouTube URL and initiating video analysis
-    var videoInputView: some View {
-        VStack(spacing: 20) {
-            Text("YouTube Video Analyzer")
-                .font(.largeTitle)
-                .foregroundColor(.white)
+    var videoInputSection: some View {
+        VStack(spacing: 18) {
+            TextField("Enter YouTube URL", text: $urlInput)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .autocapitalization(.none)
+            
+            TextField("Enter your question about the video", text: $customInsight)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
             
             HStack {
-                TextField("Enter YouTube URL", text: $urlInput)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .autocapitalization(.none)
-                
-                // Paste button for clipboard content
-                Button(action: {
-                    if let clipboardContent = UIPasteboard.general.string {
-                        urlInput = clipboardContent
-                    }
-                }) {
-                    Image(systemName: "doc.on.clipboard")
-                        .foregroundColor(.white)
+                Button("Load Video") {
+                    loadVideo()
                 }
+                .padding()
+                .foregroundColor(.white)
+                .background(Color.customTeal)
+                .cornerRadius(10)
+                
+                Button("Ask Question") {
+                    askQuestion()
+                }
+                .padding()
+                .foregroundColor(.white)
+                .background(Color.customTeal)
+                .cornerRadius(10)
+                .disabled(urlInput.isEmpty || customInsight.isEmpty)
             }
-            .padding(.horizontal)
             
-            // Button to initiate video analysis
-            Button("Analyze Video") {
-                loadVideo()
-            }
-            .padding()
-            .foregroundColor(.white)
-            .background(Color.customTeal)
-            .cornerRadius(10)
-            
-            // Loading indicator
             if isLoading {
                 CustomLoadingSwiftUIView()
                     .frame(width: 50, height: 50)
             }
         }
+        .padding(.top, 60)
     }
     
-    // Chat interface for interacting with the AI about the video
-    var chatView: some View {
+    var chatSection: some View {
         VStack {
             ScrollViewReader { proxy in
                 ScrollView {
@@ -144,21 +131,16 @@ struct InsightView: View {
                     }
                 }
                 .onChange(of: chatMessages) { _ in
-                    // Scroll to the bottom when a new message is added
                     if let lastMessage = chatMessages.last {
                         proxy.scrollTo(lastMessage.id, anchor: .bottom)
                     }
                 }
             }
             
-            Divider()
-            
-            // Message input area
             HStack {
-                TextField("Type a message or select a question", text: $currentMessage)
+                TextField("Type a message", text: $currentMessage)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                 
-                // Send message button
                 Button(action: sendMessage) {
                     Image(systemName: "paperplane.fill")
                         .foregroundColor(.white)
@@ -167,21 +149,6 @@ struct InsightView: View {
                         .cornerRadius(10)
                 }
                 .disabled(currentMessage.isEmpty)
-                
-                // Predefined questions menu
-                Menu {
-                    ForEach(questions, id: \.self) { question in
-                        Button(question) {
-                            currentMessage = question
-                        }
-                    }
-                } label: {
-                    Image(systemName: "list.bullet")
-                        .foregroundColor(.white)
-                        .padding(8)
-                        .background(Color.customTeal)
-                        .cornerRadius(10)
-                }
             }
             .padding()
         }
@@ -189,7 +156,6 @@ struct InsightView: View {
     
     // MARK: - Methods
     
-    // Loads the YouTube video transcript
     func loadVideo() {
         isLoading = true
         APIManager.GetTranscript(yt_url: urlInput) { success, transcript in
@@ -198,7 +164,6 @@ struct InsightView: View {
                 if success, let transcript = transcript {
                     videoTranscript = transcript
                     isVideoLoaded = true
-                    APIManager.ConversationHistory.clear()
                     APIManager.ConversationHistory.addAssistantMessage("Video transcript loaded successfully. How can I help you with this video?")
                     chatMessages.append(ChatMessage(content: "Video loaded successfully. How can I help you with this video?", isUser: false))
                 } else {
@@ -208,15 +173,34 @@ struct InsightView: View {
         }
     }
     
-    // Sends a message to the AI and processes the response
+    func askQuestion() {
+        isLoading = true
+        APIManager.handleCustomInsightAll(url: urlInput, source: .youtube, userPrompt: customInsight) { success, response in
+            DispatchQueue.main.async {
+                isLoading = false
+                if success, let response = response {
+                    APIManager.ConversationHistory.addUserMessage(customInsight)
+                    APIManager.ConversationHistory.addAssistantMessage(response)
+                    chatMessages.append(ChatMessage(content: customInsight, isUser: true))
+                    chatMessages.append(ChatMessage(content: response, isUser: false))
+                    customInsight = ""
+                } else {
+                    chatMessages.append(ChatMessage(content: "Failed to get insight. Please try again.", isUser: false))
+                }
+            }
+        }
+    }
+    
     func sendMessage() {
         let userMessage = currentMessage
+        APIManager.ConversationHistory.addUserMessage(userMessage)
         chatMessages.append(ChatMessage(content: userMessage, isUser: true))
         currentMessage = ""
         
         APIManager.chatWithGPT(message: userMessage) { response in
             DispatchQueue.main.async {
                 if let response = response {
+                    APIManager.ConversationHistory.addAssistantMessage(response)
                     chatMessages.append(ChatMessage(content: response, isUser: false))
                 } else {
                     chatMessages.append(ChatMessage(content: "Sorry, I couldn't process that request. Please try again.", isUser: false))
@@ -225,7 +209,6 @@ struct InsightView: View {
         }
     }
     
-    // Speaks the given text using text-to-speech
     func speak(text: String) {
         if speechSynthesizer.isSpeaking {
             speechSynthesizer.stopSpeaking(at: .immediate)
@@ -237,16 +220,16 @@ struct InsightView: View {
     }
 }
 
-// MARK: - Supporting Structures
-
-// Represents a chat message
-struct ChatMessage: Identifiable {
+struct ChatMessage: Identifiable, Equatable {
     let id = UUID()
     let content: String
     let isUser: Bool
+    
+    static func == (lhs: ChatMessage, rhs: ChatMessage) -> Bool {
+        lhs.id == rhs.id && lhs.content == rhs.content && lhs.isUser == rhs.isUser
+    }
 }
 
-// Custom view for chat bubbles
 struct ChatBubble: View {
     let message: ChatMessage
     
@@ -263,8 +246,6 @@ struct ChatBubble: View {
         .padding(.horizontal)
     }
 }
-
-// MARK: - Preview
 
 struct InsightView_Previews: PreviewProvider {
     static var previews: some View {
