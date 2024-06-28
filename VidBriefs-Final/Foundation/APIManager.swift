@@ -38,7 +38,7 @@ struct APIManager {
 
    struct ConversationHistory {
         static var messages: [[String: String]] = [
-            ["role": "system", "content": "You are a helpful assistant."]
+            ["role": "system", "content": "You are a helpful assistant that provides insights about YouTube videos."]
         ]
 
         static func addUserMessage(_ message: String) {
@@ -51,7 +51,7 @@ struct APIManager {
 
         static func clear() {
             messages = [
-                ["role": "system", "content": "You are a helpful assistant."]
+                ["role": "system", "content": "You are a helpful assistant that provides insights about YouTube videos."]
             ]
         }
     }
@@ -168,33 +168,32 @@ struct APIManager {
     }
     
    static func fetchOneGPTSummary(transcript: String, customInsight: String, completion: @escaping (String?) -> Void) {
-        let apiUrl = URL(string: "https://api.openai.com/v1/chat/completions")! // OpenAI API URL ('!' means it must have a value)
-        var request = URLRequest(url: apiUrl) // Create a new URLRequest object with the given URL
-        request.httpMethod = "POST" // Set the HTTP method to POST
-        request.addValue("Bearer \(openai_apikey)", forHTTPHeaderField: "Authorization") // Include the API key in the request headers
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type") // Set the content type of the request to JSON
-        request.timeoutInterval = 300.0 // Set a timeout interval of 5 minutes
+        let apiUrl = URL(string: "https://api.openai.com/v1/chat/completions")!
+        var request = URLRequest(url: apiUrl)
+        request.httpMethod = "POST"
+        request.addValue("Bearer \(openai_apikey)", forHTTPHeaderField: "Authorization")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.timeoutInterval = 300.0
 
-        var messages = ConversationHistory.messages // Initialize messages with the conversation history
-        messages.append(["role": "user", "content": "Please summarise this YouTube video transcript: \(transcript). Only after you have fully traversed the entire transcript, answer the user's question regarding the video using parts of this: \(customInsight)."])
-        // Pass the transcript and question to the model and start the conversation
+        ConversationHistory.addUserMessage("Please summarize this YouTube video transcript: \(transcript). Only after you have fully traversed the entire transcript, answer the user's question regarding the video using parts of this: \(customInsight).")
+
         let requestBody: [String: Any] = [
-            "model": "gpt-4o", // Specify the model to use: GPT-4o
-            "messages": messages // Pass the messages array as the conversation history
+            "model": "gpt-4o",
+            "messages": ConversationHistory.messages
         ]
 
         do {
-            request.httpBody = try JSONSerialization.data(withJSONObject: requestBody, options: []) // Serialize the request body to JSON
+            request.httpBody = try JSONSerialization.data(withJSONObject: requestBody, options: [])
         } catch {
-            completion(nil) // Complete with nil due to error
-            return // Exit the function
+            completion(nil)
+            return
         }
 
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
             if let data = data, let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
                 if let choices = json["choices"] as? [[String: Any]], let message = choices.first?["message"] as? [String: Any], let text = message["content"] as? String {
-                    ConversationHistory.addAssistantMessage(text) // Add the assistant's response to the conversation history
-                    completion(text) // Pass the assistant's response to the completion handler
+                    ConversationHistory.addAssistantMessage(text)
+                    completion(text)
                 } else {
                     completion(nil)
                 }
@@ -202,7 +201,7 @@ struct APIManager {
                 completion(nil)
             }
         }
-        task.resume() // Start the network task
+        task.resume()
     }
 
 
@@ -516,6 +515,43 @@ struct APIManager {
         }
         
         return chunks // Send back all the chunks made
+    }
+
+    static func chatWithGPT(message: String, completion: @escaping (String?) -> Void) {
+        let apiUrl = URL(string: "https://api.openai.com/v1/chat/completions")!
+        var request = URLRequest(url: apiUrl)
+        request.httpMethod = "POST"
+        request.addValue("Bearer \(openai_apikey)", forHTTPHeaderField: "Authorization")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.timeoutInterval = 300.0
+
+        ConversationHistory.addUserMessage(message)
+
+        let requestBody: [String: Any] = [
+            "model": "gpt-4",
+            "messages": ConversationHistory.messages
+        ]
+
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: requestBody, options: [])
+        } catch {
+            completion(nil)
+            return
+        }
+
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            if let data = data, let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                if let choices = json["choices"] as? [[String: Any]], let message = choices.first?["message"] as? [String: Any], let text = message["content"] as? String {
+                    ConversationHistory.addAssistantMessage(text)
+                    completion(text)
+                } else {
+                    completion(nil)
+                }
+            } else {
+                completion(nil)
+            }
+        }
+        task.resume()
     }
 
 }
