@@ -1,3 +1,10 @@
+//
+//  InsightView.swift
+//  Youtube-Summarizer
+//
+//  Created by Alfie Nurse on 02/09/2023.
+//
+
 import SwiftUI
 import Combine
 import AVFoundation

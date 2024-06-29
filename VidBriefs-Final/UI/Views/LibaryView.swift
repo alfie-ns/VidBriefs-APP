@@ -1,3 +1,10 @@
+//
+//  LibraryView.swift
+//  Youtube-Summarizer
+//
+//  Created by Alfie Nurse on 02/09/2023.
+//
+
 import SwiftUI
 
 struct LibraryView: View {
@@ -27,7 +34,9 @@ struct LibraryView: View {
                     
                     Spacer()
                     
-                    Button(action: startNewChat) {
+                    Button(action: {
+                        self.startNewChat()
+                    }) {
                         Text("New Chat")
                             .padding()
                             .background(Color.customTeal)
@@ -62,7 +71,7 @@ struct LibraryView: View {
                     ForEach(savedInsights) { insight in
                         HStack {
                             Button(action: {
-                                openConversation(insight)
+                                self.startNewChat(existingConversation: insight)
                             }) {
                                 Text(insight.title)
                                     .foregroundColor(.black)
@@ -102,8 +111,16 @@ struct LibraryView: View {
         }
     }
     
-    private func startNewChat() {
-        let newChat = InsightView(currentPath: $currentPath)
+    //private func startNewChat() {
+    //    let newChat = InsightView(currentPath: $currentPath)
+    //    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+    //       let window = windowScene.windows.first {
+    //        window.rootViewController?.present(UIHostingController(rootView: newChat), animated: true, completion: nil)
+    //    }
+    //}
+
+    private func startNewChat(existingConversation: VideoInsight? = nil) {
+        let newChat = InsightView(currentPath: $currentPath, existingConversation: existingConversation)
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let window = windowScene.windows.first {
             window.rootViewController?.present(UIHostingController(rootView: newChat), animated: true, completion: nil)
