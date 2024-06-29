@@ -37,8 +37,8 @@ enum TranscriptSource {
 struct APIManager {
     static var currentConversationId: UUID? //
 
-    struct ConversationHistory {
-        static var conversations: [UUID: [[String: String]]] = [:]
+    class ConversationHistory {
+        private static var conversations: [UUID: [[String: String]]] = [:]
         
         static func createNewConversation() -> UUID {
             let id = UUID()
@@ -51,11 +51,15 @@ struct APIManager {
         }
         
         static func addUserMessage(_ message: String, forConversation id: UUID) {
-            conversations[id]?.append(["role": "user", "content": message])
+            conversations[id, default: []].append(["role": "user", "content": message])
         }
         
         static func addAssistantMessage(_ message: String, forConversation id: UUID) {
-            conversations[id]?.append(["role": "assistant", "content": message])
+            conversations[id, default: []].append(["role": "assistant", "content": message])
+        }
+        
+        static func addSystemMessage(_ message: String, forConversation id: UUID) {
+            conversations[id, default: []].append(["role": "system", "content": message])
         }
         
         static func getMessages(forConversation id: UUID) -> [[String: String]] {
@@ -115,6 +119,10 @@ struct APIManager {
     
     func retrieveOpenAIKey() -> String? { // Function to retrieve the OpenAI API key from the keychain
         return ProcessInfo.processInfo.environment["openai-apikey"] // Return the OpenAI API key from the environment
+    }
+    
+    static func addSystemMessage(_ message: String, forConversation id: UUID) {
+        ConversationHistory.addSystemMessage(message, forConversation: id)
     }
     
 
@@ -536,6 +544,9 @@ struct APIManager {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.timeoutInterval = 300.0
 
+        // Add the new user message to the conversation history
+        ConversationHistory.addUserMessage(message, forConversation: conversationId)
+        
         let messages = ConversationHistory.getMessages(forConversation: conversationId)
         
         let requestBody: [String: Any] = [
@@ -570,6 +581,8 @@ struct APIManager {
                    let firstChoice = choices.first,
                    let message = firstChoice["message"] as? [String: Any],
                    let content = message["content"] as? String {
+                    // Add the AI's response to the conversation history
+                    ConversationHistory.addAssistantMessage(content, forConversation: conversationId)
                     completion(content)
                 } else {
                     print("Unexpected JSON structure")

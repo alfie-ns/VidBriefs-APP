@@ -3,18 +3,13 @@ import Combine
 import AVFoundation
 
 struct InsightView: View {
-    @State private var currentConversationId: UUID? // to differentiate between conversations
-    // MARK: - Properties
-    
     @Binding var currentPath: AppNavigationPath
-    var customLoading: CustomLoadingView!
     @EnvironmentObject var settings: SharedSettings
     
     @State private var urlInput: String = ""
     @State private var customInsight: String = ""
     @State private var apiResponse = ""
     @State private var isResponseExpanded = false
-    @State private var savedInsights: [VideoInsight] = []
     @State private var isLoading = false
     @State private var selectedQuestion: String = ""
     @State private var showingActionSheet = false
@@ -25,24 +20,19 @@ struct InsightView: View {
     @State private var chatMessages: [ChatMessage] = []
     @State private var currentMessage: String = ""
     @State private var isVideoLoaded: Bool = false
+    @State private var existingConversation: VideoInsight?
     
-    let questions = [
-        "What are the step-by-step instructions for replicating the process demonstrated in the video?",
-        "Based on the content, provide a practical action plan.",
-        "Explain this video",
-        // ... (other questions)
-    ]
+    @State private var currentConversationId: UUID?
     
+    @Environment(\.presentationMode) var presentationMode
     
-    
-    
-    // MARK: - Body
+    init(currentPath: Binding<AppNavigationPath>, existingConversation: VideoInsight? = nil) {
+        self._currentPath = currentPath
+        self._existingConversation = State(initialValue: existingConversation)
+    }
     
     var body: some View {
         ZStack {
-            Button("New Conversation") {
-                startNewConversation()
-            }
             LinearGradient(
                 gradient: Gradient(colors: [Color.black, Color.customTeal, Color.gray]),
                 startPoint: .top,
@@ -50,44 +40,40 @@ struct InsightView: View {
             )
             .edgesIgnoringSafeArea(.all)
             
-            if !settings.termsAccepted {
-                termsAndConditionsView
-            } else {
-                mainContentView
+            VStack(spacing: 20) {
+                Text("VidBriefs")
+                    .font(.system(size: 48, weight: .heavy))
+                    .foregroundColor(.white)
+                    .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 2)
+                    .padding(.vertical, 20)
+                
+                videoInputSection
+                
+                Divider().background(Color.white)
+                
+                chatSection
             }
+            .padding()
         }
         .edgesIgnoringSafeArea(.all)
+        .navigationBarItems(leading: backButton, trailing: newChatButton)
     }
-    
-    // MARK: - Subviews
-    
-    var termsAndConditionsView: some View {
-        Button("Press here to sign the terms and conditions") {
-            currentPath = .terms
+
+    var backButton: some View {
+        Button(action: {
+            self.presentationMode.wrappedValue.dismiss()
+        }) {
+            Image(systemName: "chevron.left")
+            Text("Back")
         }
         .foregroundColor(.white)
-        .padding()
-        .background(Color.customTeal.opacity(0.7))
-        .cornerRadius(10)
     }
-    
-    var mainContentView: some View {
-        VStack(spacing: 20) {
-            
-            Text("VidBriefs")
-                .font(.system(size: 48, weight: .heavy))
-                .foregroundColor(.white)
-                .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 2)
-                .padding(.vertical, 20)
-                .padding(.top, 40)
-            
-            videoInputSection
-            
-            Divider().background(Color.white)
-            
-            chatSection
+
+    var newChatButton: some View {
+        Button(action: startNewChat) {
+            Text("New Chat")
         }
-        .padding()
+        .foregroundColor(.white)
     }
     
     var videoInputSection: some View {
@@ -115,15 +101,15 @@ struct InsightView: View {
                 .foregroundColor(.white)
                 .background(Color.customTeal)
                 .cornerRadius(10)
-                .disabled(urlInput.isEmpty || customInsight.isEmpty)
+                .disabled(!isVideoLoaded || customInsight.isEmpty)
             }
             
             if isLoading {
-                CustomLoadingSwiftUIView()
-                    .frame(width: 50, height: 50)
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .scaleEffect(1.5)
             }
         }
-        .padding(.top, 60)
     }
     
     var chatSection: some View {
@@ -161,55 +147,47 @@ struct InsightView: View {
         }
     }
     
-    // MARK: - Methods
+    func startNewChat() {
+        urlInput = ""
+        customInsight = ""
+        chatMessages.removeAll()
+        isVideoLoaded = false
+        currentConversationId = nil
+        videoTranscript = ""
+    }
     
     func loadVideo() {
         isLoading = true
+        currentConversationId = APIManager.ConversationHistory.createNewConversation()
+        print("Starting new conversation with ID: \(currentConversationId?.uuidString ?? "nil")")
+        
         APIManager.GetTranscript(yt_url: urlInput) { success, transcript in
             DispatchQueue.main.async {
                 isLoading = false
                 if success, let transcript = transcript {
-                    videoTranscript = transcript
+                    self.videoTranscript = transcript
                     isVideoLoaded = true
-                    APIManager.ConversationHistory.addAssistantMessage("Video transcript loaded successfully. How can I help you with this video?", forConversation: currentConversationId ?? UUID())
+                    print("Video transcript loaded successfully")
+                    APIManager.ConversationHistory.addSystemMessage("The following is a transcript of the video: \(transcript)", forConversation: self.currentConversationId!)
                     chatMessages.append(ChatMessage(content: "Video loaded successfully. How can I help you with this video?", isUser: false))
-                    // TODO: [ ] CHATGPT SAYS TO ACTUALLY LOAD THE TRANSCRIPT INTO THE CONVERSATIONHISTORY NOW?
                 } else {
+                    print("Failed to load video transcript")
                     chatMessages.append(ChatMessage(content: "Failed to load video. Please check the URL and try again.", isUser: false))
                 }
             }
         }
     }
     
-    func startNewConversation() {
-        currentConversationId = APIManager.ConversationHistory.createNewConversation()
-        chatMessages.removeAll()
-        isVideoLoaded = false
-        videoTranscript = ""
-        urlInput = ""
-        print("Started a new conversation with ID: \(currentConversationId!)") // debugging
-    }
-    
     func askQuestion() {
         isLoading = true
-        guard let conversationId = currentConversationId else {
-            print("Error: currentConversationId is nil.")
-            return
-        }
-        print("Asking question with conversation ID: \(conversationId)")
-
         APIManager.handleCustomInsightAll(url: urlInput, source: .youtube, userPrompt: customInsight) { success, response in
             DispatchQueue.main.async {
                 isLoading = false
                 if success, let response = response {
-                    print("Received response: \(response)")
-                    APIManager.ConversationHistory.addUserMessage(customInsight, forConversation: conversationId)
-                    APIManager.ConversationHistory.addAssistantMessage(response, forConversation: conversationId)
                     chatMessages.append(ChatMessage(content: customInsight, isUser: true))
                     chatMessages.append(ChatMessage(content: response, isUser: false))
                     customInsight = ""
                 } else {
-                    print("Failed to get insight. API call was not successful.")
                     chatMessages.append(ChatMessage(content: "Failed to get insight. Please try again.", isUser: false))
                 }
             }
@@ -217,24 +195,26 @@ struct InsightView: View {
     }
     
     func sendMessage() {
-        guard let id = currentConversationId else {
-            // If there's no current conversation, start a new one
-            startNewConversation()
+        guard let conversationId = currentConversationId else {
+            print("Error: No active conversation")
+            chatMessages.append(ChatMessage(content: "Error: No active conversation. Please load a video first.", isUser: false))
             return
         }
         
         let userMessage = currentMessage
-        APIManager.ConversationHistory.addUserMessage(userMessage, forConversation: id)
         chatMessages.append(ChatMessage(content: userMessage, isUser: true))
         currentMessage = ""
         
-        APIManager.chatWithGPT(message: userMessage, conversationId: id) { response in
+        print("Sending message to GPT. ConversationId: \(conversationId)")
+        
+        APIManager.chatWithGPT(message: userMessage, conversationId: conversationId) { response in
             DispatchQueue.main.async {
                 if let response = response {
-                    APIManager.ConversationHistory.addAssistantMessage(response, forConversation: id)
+                    print("Received response from GPT: \(response)")
                     chatMessages.append(ChatMessage(content: response, isUser: false))
                     saveConversation()
                 } else {
+                    print("Error: No response received from GPT")
                     chatMessages.append(ChatMessage(content: "Sorry, I couldn't process that request. Please try again.", isUser: false))
                 }
             }
@@ -242,9 +222,11 @@ struct InsightView: View {
     }
     
     func saveConversation() {
+        guard let conversationId = currentConversationId else { return }
+        
         let title = "Conversation about \(urlInput.isEmpty ? "General Topic" : urlInput)"
         let insight = chatMessages.map { $0.isUser ? "User: \($0.content)" : "AI: \($0.content)" }.joined(separator: "\n")
-        let newInsight = VideoInsight(title: title, insight: insight)
+        let newInsight = VideoInsight(id: conversationId, title: title, insight: insight, messages: chatMessages)
         
         if var savedInsights = UserDefaults.standard.data(forKey: "savedInsights"),
            var decodedInsights = try? JSONDecoder().decode([VideoInsight].self, from: savedInsights) {
@@ -258,31 +240,7 @@ struct InsightView: View {
             }
         }
     }
-    
-    func clearChat() {
-        chatMessages.removeAll()
-        APIManager.ConversationHistory.clear()
-    }
-    
-    func speak(text: String) {
-        if speechSynthesizer.isSpeaking {
-            speechSynthesizer.stopSpeaking(at: .immediate)
-        } else {
-            let utterance = AVSpeechUtterance(string: text)
-            utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
-            speechSynthesizer.speak(utterance)
-        }
-    }
-}
 
-struct ChatMessage: Identifiable, Equatable {
-    let id = UUID()
-    let content: String
-    let isUser: Bool
-    
-    static func == (lhs: ChatMessage, rhs: ChatMessage) -> Bool {
-        lhs.id == rhs.id && lhs.content == rhs.content && lhs.isUser == rhs.isUser
-    }
 }
 
 struct ChatBubble: View {
@@ -299,13 +257,5 @@ struct ChatBubble: View {
             if !message.isUser { Spacer() }
         }
         .padding(.horizontal)
-    }
-}
-
-struct InsightView_Previews: PreviewProvider {
-    static var previews: some View {
-        let settings = SharedSettings()
-        InsightView(currentPath: .constant(.root))
-            .environmentObject(settings)
     }
 }
