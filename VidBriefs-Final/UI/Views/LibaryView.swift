@@ -6,9 +6,16 @@ enum ActiveAlert { // Enum for the alert
     case clearAll, selectedInsight
 }
 
-struct VideoInsight: Codable { // Struct for the video insight, codable for encoding && decoding   
-    var title: String // Title of the insight: String
-    var insight: String // Insights given to the user: String
+struct VideoInsight: Codable {
+    var title: String
+    var insight: String
+    var timestamp: Date
+    
+    init(title: String, insight: String) {
+        self.title = title
+        self.insight = insight
+        self.timestamp = Date()
+    }
 }
 
 

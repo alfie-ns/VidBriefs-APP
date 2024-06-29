@@ -3,6 +3,7 @@ import Combine
 import AVFoundation
 
 struct InsightView: View {
+    @State private var currentConversationId: UUID? // to differentiate between conversations
     // MARK: - Properties
     
     @Binding var currentPath: AppNavigationPath
@@ -32,10 +33,16 @@ struct InsightView: View {
         // ... (other questions)
     ]
     
+    
+    
+    
     // MARK: - Body
     
     var body: some View {
         ZStack {
+            Button("New Conversation") {
+                startNewConversation()
+            }
             LinearGradient(
                 gradient: Gradient(colors: [Color.black, Color.customTeal, Color.gray]),
                 startPoint: .top,
@@ -164,8 +171,9 @@ struct InsightView: View {
                 if success, let transcript = transcript {
                     videoTranscript = transcript
                     isVideoLoaded = true
-                    APIManager.ConversationHistory.addAssistantMessage("Video transcript loaded successfully. How can I help you with this video?")
+                    APIManager.ConversationHistory.addAssistantMessage("Video transcript loaded successfully. How can I help you with this video?", forConversation: currentConversationId ?? UUID())
                     chatMessages.append(ChatMessage(content: "Video loaded successfully. How can I help you with this video?", isUser: false))
+                    // TODO: [ ] CHATGPT SAYS TO ACTUALLY LOAD THE TRANSCRIPT INTO THE CONVERSATIONHISTORY NOW?
                 } else {
                     chatMessages.append(ChatMessage(content: "Failed to load video. Please check the URL and try again.", isUser: false))
                 }
@@ -173,18 +181,35 @@ struct InsightView: View {
         }
     }
     
+    func startNewConversation() {
+        currentConversationId = APIManager.ConversationHistory.createNewConversation()
+        chatMessages.removeAll()
+        isVideoLoaded = false
+        videoTranscript = ""
+        urlInput = ""
+        print("Started a new conversation with ID: \(currentConversationId!)") // debugging
+    }
+    
     func askQuestion() {
         isLoading = true
+        guard let conversationId = currentConversationId else {
+            print("Error: currentConversationId is nil.")
+            return
+        }
+        print("Asking question with conversation ID: \(conversationId)")
+
         APIManager.handleCustomInsightAll(url: urlInput, source: .youtube, userPrompt: customInsight) { success, response in
             DispatchQueue.main.async {
                 isLoading = false
                 if success, let response = response {
-                    APIManager.ConversationHistory.addUserMessage(customInsight)
-                    APIManager.ConversationHistory.addAssistantMessage(response)
+                    print("Received response: \(response)")
+                    APIManager.ConversationHistory.addUserMessage(customInsight, forConversation: conversationId)
+                    APIManager.ConversationHistory.addAssistantMessage(response, forConversation: conversationId)
                     chatMessages.append(ChatMessage(content: customInsight, isUser: true))
                     chatMessages.append(ChatMessage(content: response, isUser: false))
                     customInsight = ""
                 } else {
+                    print("Failed to get insight. API call was not successful.")
                     chatMessages.append(ChatMessage(content: "Failed to get insight. Please try again.", isUser: false))
                 }
             }
@@ -192,21 +217,51 @@ struct InsightView: View {
     }
     
     func sendMessage() {
+        guard let id = currentConversationId else {
+            // If there's no current conversation, start a new one
+            startNewConversation()
+            return
+        }
+        
         let userMessage = currentMessage
-        APIManager.ConversationHistory.addUserMessage(userMessage)
+        APIManager.ConversationHistory.addUserMessage(userMessage, forConversation: id)
         chatMessages.append(ChatMessage(content: userMessage, isUser: true))
         currentMessage = ""
         
-        APIManager.chatWithGPT(message: userMessage) { response in
+        APIManager.chatWithGPT(message: userMessage, conversationId: id) { response in
             DispatchQueue.main.async {
                 if let response = response {
-                    APIManager.ConversationHistory.addAssistantMessage(response)
+                    APIManager.ConversationHistory.addAssistantMessage(response, forConversation: id)
                     chatMessages.append(ChatMessage(content: response, isUser: false))
+                    saveConversation()
                 } else {
                     chatMessages.append(ChatMessage(content: "Sorry, I couldn't process that request. Please try again.", isUser: false))
                 }
             }
         }
+    }
+    
+    func saveConversation() {
+        let title = "Conversation about \(urlInput.isEmpty ? "General Topic" : urlInput)"
+        let insight = chatMessages.map { $0.isUser ? "User: \($0.content)" : "AI: \($0.content)" }.joined(separator: "\n")
+        let newInsight = VideoInsight(title: title, insight: insight)
+        
+        if var savedInsights = UserDefaults.standard.data(forKey: "savedInsights"),
+           var decodedInsights = try? JSONDecoder().decode([VideoInsight].self, from: savedInsights) {
+            decodedInsights.append(newInsight)
+            if let encodedInsights = try? JSONEncoder().encode(decodedInsights) {
+                UserDefaults.standard.set(encodedInsights, forKey: "savedInsights")
+            }
+        } else {
+            if let encodedInsight = try? JSONEncoder().encode([newInsight]) {
+                UserDefaults.standard.set(encodedInsight, forKey: "savedInsights")
+            }
+        }
+    }
+    
+    func clearChat() {
+        chatMessages.removeAll()
+        APIManager.ConversationHistory.clear()
     }
     
     func speak(text: String) {

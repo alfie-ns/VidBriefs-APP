@@ -35,31 +35,42 @@ enum TranscriptSource {
 }
 
 struct APIManager {
+    static var currentConversationId: UUID? //
 
-   struct ConversationHistory {
-        static var messages: [[String: String]] = [
-            ["role": "system", "content": "You are a helpful assistant that provides insights about YouTube videos."]
-        ]
-
-        static func addUserMessage(_ message: String) {
-            messages.append(["role": "user", "content": message])
+    struct ConversationHistory {
+        static var conversations: [UUID: [[String: String]]] = [:]
+        
+        static func createNewConversation() -> UUID {
+            let id = UUID()
+            conversations[id] = [["role": "system", "content": "You are a helpful assistant that provides insights about YouTube videos."]]
+            return id
         }
-
-        static func addAssistantMessage(_ message: String) {
-            messages.append(["role": "assistant", "content": message])
-        }
-
+        
         static func clear() {
-            messages = [
-                ["role": "system", "content": "You are a helpful assistant that provides insights about YouTube videos."]
-            ]
+            conversations.removeAll()
+        }
+        
+        static func addUserMessage(_ message: String, forConversation id: UUID) {
+            conversations[id]?.append(["role": "user", "content": message])
+        }
+        
+        static func addAssistantMessage(_ message: String, forConversation id: UUID) {
+            conversations[id]?.append(["role": "assistant", "content": message])
+        }
+        
+        static func getMessages(forConversation id: UUID) -> [[String: String]] {
+            return conversations[id] ?? []
+        }
+        
+        static func clearConversation(_ id: UUID) {
+            conversations.removeValue(forKey: id)
         }
     }
     
     private static var keychain = KeychainSwift() // Create a KeychainSwift object to store API keys -> secure storage of API keys
 
-    static var openai_apikey: String { // Static variable to store the OpenAI API key
-        keychain.get("openai-apikey") ?? "" // Get the OpenAI API key from the keychain or return an empty string
+    static var openai_apikey: String {
+        ProcessInfo.processInfo.environment["openai-apikey"] ?? ""
     }
     
     // Structure to store and manage request timestamps to only allow less than 3 requests a month
@@ -113,7 +124,7 @@ struct APIManager {
         // Step 0: Init conversation history
         // ----------------------------------
         ConversationHistory.clear()
-        ConversationHistory.addUserMessage(userPrompt)
+        ConversationHistory.addUserMessage(userPrompt, forConversation: APIManager.currentConversationId ?? UUID())
         // Begin the conversation with the user prompt
 
         // Step 1: Get the entire transcript
@@ -149,7 +160,7 @@ struct APIManager {
                         completion(false, "GPT could not be reached, check the API key is correct")
                     }
                 }
-            } else if words.count > 10500 {
+            } else if words.count > 12000 {
                 print("Chunk summarisation")
                 let chunks = breakIntoChunks(transcript: transcript)
                 fetchGPTSummaries(chunks: chunks, customInsight: userPrompt) { (finalSummary) in
@@ -175,11 +186,11 @@ struct APIManager {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.timeoutInterval = 300.0
 
-        ConversationHistory.addUserMessage("Please summarize this YouTube video transcript: \(transcript). Only after you have fully traversed the entire transcript, answer the user's question regarding the video using parts of this: \(customInsight).")
+       ConversationHistory.addUserMessage("Please summarize this YouTube video transcript: \(transcript). Only after you have fully traversed the entire transcript, answer the user's question regarding the video using parts of this: \(customInsight).", forConversation: APIManager.currentConversationId ?? UUID())
 
         let requestBody: [String: Any] = [
             "model": "gpt-4o",
-            "messages": ConversationHistory.messages
+            "messages": ConversationHistory.getMessages(forConversation: APIManager.currentConversationId ?? UUID())
         ]
 
         do {
@@ -192,7 +203,7 @@ struct APIManager {
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
             if let data = data, let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
                 if let choices = json["choices"] as? [[String: Any]], let message = choices.first?["message"] as? [String: Any], let text = message["content"] as? String {
-                    ConversationHistory.addAssistantMessage(text)
+                    ConversationHistory.addAssistantMessage(text, forConversation: APIManager.currentConversationId ?? UUID())
                     completion(text)
                 } else {
                     completion(nil)
@@ -386,7 +397,7 @@ struct APIManager {
     // GET TRANSCRIPT API CALL
     static func GetTranscript(yt_url: String, completion: @escaping (Bool, String?) -> Void) {
         
-        let getTranscriptUrl = URL(string: "http://127.0.0.1:8000/response/get_youtube_transcript/")! // '!' means 'must have a value
+        let getTranscriptUrl = URL(string: "http://127.0.0.1:8000/youtube/get_youtube_transcript/")! // '!' means 'must have a value
         //let getTranscriptUrl = URL(string: "http://34.66.187.223:8000/response/get_youtube_transcript/")!
         
         // Makes request to the api for youtube transcript
@@ -517,7 +528,7 @@ struct APIManager {
         return chunks // Send back all the chunks made
     }
 
-    static func chatWithGPT(message: String, completion: @escaping (String?) -> Void) {
+    static func chatWithGPT(message: String, conversationId: UUID, completion: @escaping (String?) -> Void) {
         let apiUrl = URL(string: "https://api.openai.com/v1/chat/completions")!
         var request = URLRequest(url: apiUrl)
         request.httpMethod = "POST"
@@ -525,29 +536,47 @@ struct APIManager {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.timeoutInterval = 300.0
 
-        ConversationHistory.addUserMessage(message)
-
+        let messages = ConversationHistory.getMessages(forConversation: conversationId)
+        
         let requestBody: [String: Any] = [
             "model": "gpt-4",
-            "messages": ConversationHistory.messages
+            "messages": messages
         ]
 
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: requestBody, options: [])
         } catch {
+            print("Error serializing request body: \(error)")
             completion(nil)
             return
         }
 
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-            if let data = data, let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                if let choices = json["choices"] as? [[String: Any]], let message = choices.first?["message"] as? [String: Any], let text = message["content"] as? String {
-                    ConversationHistory.addAssistantMessage(text)
-                    completion(text)
+            if let error = error {
+                print("Error in API call: \(error)")
+                completion(nil)
+                return
+            }
+            
+            guard let data = data else {
+                print("No data received from API")
+                completion(nil)
+                return
+            }
+            
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                   let choices = json["choices"] as? [[String: Any]],
+                   let firstChoice = choices.first,
+                   let message = firstChoice["message"] as? [String: Any],
+                   let content = message["content"] as? String {
+                    completion(content)
                 } else {
+                    print("Unexpected JSON structure")
                     completion(nil)
                 }
-            } else {
+            } catch {
+                print("Error parsing JSON: \(error)")
                 completion(nil)
             }
         }
