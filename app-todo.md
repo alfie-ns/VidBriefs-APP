@@ -1,7 +1,7 @@
 # App To-Do List
 
 - [X] Make IOS APP part for ted_talks
-- [ ] A conversation is not be accessed from the libraryview
+- [X] FIX: A conversation is not be accessed from the libraryview
 - [ ] Test ted_talks API on IOS APP
 - [ ] Choose between ChatGPT or Claude?
 - [ ] Personalised learning paths
