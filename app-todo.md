@@ -2,6 +2,7 @@
 
 - [X] Make IOS APP part for ted_talks
 - [X] FIX: A conversation is not be accessed from the libraryview
+- [ ] Get the speaking/speech functionality working again
 - [ ] Test ted_talks API on IOS APP
 - [ ] Choose between ChatGPT or Claude?
 - [ ] Personalised learning paths
