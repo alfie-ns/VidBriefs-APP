@@ -9,6 +9,8 @@ cp "$SCHEME_FILE" "${SCHEME_FILE}.bak"
 # Use xmlstarlet to modify the environment variable value
 xmlstarlet ed -L -u '//EnvironmentVariable[@key="openai-apikey"]/@value' -v '???' "$SCHEME_FILE"
 
+sleep 3 # wait for file to be written
+
 # if key's value is safe, commit and push
 if grep -q 'value="???' "$SCHEME_FILE"; then
     # Print a message to indicate the variable has been set
