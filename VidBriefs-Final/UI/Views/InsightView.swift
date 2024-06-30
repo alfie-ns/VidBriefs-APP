@@ -71,8 +71,11 @@ struct InsightView: View {
         }
         .edgesIgnoringSafeArea(.all)
         .navigationBarItems(leading: backButton, trailing: newChatButton)
+        .onDisappear {
+            saveConversation()
+        }
     }
-
+    
     var backButton: some View {
         Button(action: {
             self.presentationMode.wrappedValue.dismiss()
@@ -82,7 +85,7 @@ struct InsightView: View {
         }
         .foregroundColor(.white)
     }
-
+    
     var newChatButton: some View {
         Button(action: startNewChat) {
             Text("New Chat")
@@ -95,9 +98,6 @@ struct InsightView: View {
             TextField("Enter YouTube URL", text: $urlInput)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .autocapitalization(.none)
-            
-            TextField("Enter your question about the video", text: $customInsight)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
             
             HStack {
                 Button("Load Video") {
@@ -217,11 +217,11 @@ struct InsightView: View {
             DispatchQueue.main.async {
                 if let response = response {
                     print("Received response from GPT: \(response)")
-                    chatMessages.append(ChatMessage(content: response, isUser: false))
-                    saveConversation()
+                    self.chatMessages.append(ChatMessage(id: UUID(), content: response, isUser: false))
+                    self.saveConversation()  // Save after each message
                 } else {
                     print("Error: No response received from GPT")
-                    chatMessages.append(ChatMessage(content: "Sorry, I couldn't process that request. Please try again.", isUser: false))
+                    self.chatMessages.append(ChatMessage(id: UUID(), content: "Sorry, I couldn't process that request. Please try again.", isUser: false))
                 }
             }
         }
@@ -230,34 +230,49 @@ struct InsightView: View {
     func saveConversation() {
         guard let conversationId = currentConversationId else { return }
         
-        let title = "Conversation about \(urlInput.isEmpty ? "General Topic" : urlInput)"
-        let insight = chatMessages.map { $0.isUser ? "User: \($0.content)" : "AI: \($0.content)" }.joined(separator: "\n")
-        
-        // Check if the conversation already exists
-        if var savedInsights = UserDefaults.standard.data(forKey: "savedInsights"),
-           var decodedInsights = try? JSONDecoder().decode([VideoInsight].self, from: savedInsights) {
-            if let index = decodedInsights.firstIndex(where: { $0.id == conversationId }) {
-                // Update existing conversation
-                decodedInsights[index].title = title
-                decodedInsights[index].insight = insight
-                decodedInsights[index].messages = chatMessages
+        generateBriefTitle { briefTitle in
+            let title = briefTitle ?? "Untitled Conversation"
+            let insight = self.chatMessages.map { $0.isUser ? "User: \($0.content)" : "AI: \($0.content)" }.joined(separator: "\n")
+            
+            // Check if the conversation already exists
+            if var savedInsights = UserDefaults.standard.data(forKey: "savedInsights"),
+               var decodedInsights = try? JSONDecoder().decode([VideoInsight].self, from: savedInsights) {
+                if let index = decodedInsights.firstIndex(where: { $0.id == conversationId }) {
+                    // Update existing conversation
+                    decodedInsights[index].title = title
+                    decodedInsights[index].insight = insight
+                    decodedInsights[index].messages = self.chatMessages
+                } else {
+                    // Add new conversation
+                    let newInsight = VideoInsight(id: conversationId, title: title, insight: insight, messages: self.chatMessages)
+                    decodedInsights.append(newInsight)
+                }
+                if let encodedInsights = try? JSONEncoder().encode(decodedInsights) {
+                    UserDefaults.standard.set(encodedInsights, forKey: "savedInsights")
+                }
             } else {
-                // Add new conversation
-                let newInsight = VideoInsight(id: conversationId, title: title, insight: insight, messages: chatMessages)
-                decodedInsights.append(newInsight)
-            }
-            if let encodedInsights = try? JSONEncoder().encode(decodedInsights) {
-                UserDefaults.standard.set(encodedInsights, forKey: "savedInsights")
-            }
-        } else {
-            // No existing conversations, create a new array
-            let newInsight = VideoInsight(id: conversationId, title: title, insight: insight, messages: chatMessages)
-            if let encodedInsight = try? JSONEncoder().encode([newInsight]) {
-                UserDefaults.standard.set(encodedInsight, forKey: "savedInsights")
+                // No existing conversations, create a new array
+                let newInsight = VideoInsight(id: conversationId, title: title, insight: insight, messages: self.chatMessages)
+                if let encodedInsight = try? JSONEncoder().encode([newInsight]) {
+                    UserDefaults.standard.set(encodedInsight, forKey: "savedInsights")
+                }
             }
         }
     }
-
+    
+    func generateBriefTitle(completion: @escaping (String?) -> Void) {
+        let prompt = "Create a very brief title (3-5 words) for this conversation about a YouTube video: \(urlInput)"
+        
+        let tempConversationId = UUID()  // Create a temporary UUID
+        
+        APIManager.chatWithGPT(message: prompt, conversationId: tempConversationId) { response in
+            DispatchQueue.main.async {
+                completion(response?.trimmingCharacters(in: .whitespacesAndNewlines))
+                // Clean up the temporary conversation
+                APIManager.ConversationHistory.clearConversation(tempConversationId)
+            }
+        }
+    }
 }
 
 struct ChatBubble: View {
