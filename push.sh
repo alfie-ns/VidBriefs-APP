@@ -20,8 +20,8 @@ find /Users/oladeanio/Library/CloudStorage/GoogleDrive-alfienurse@gmail.com/My\ 
 
 # if key's value is safe, commit and push
 if grep -q 'value="???' "$SCHEME_FILE"; then
-    # Print a message to indicate the variable has been set
 
+    # Print a message to indicate the variable has been set
     echo ""
     print_bold "openai-apikey has been set to ??? in the Xcode scheme"
     echo ""
@@ -35,6 +35,6 @@ if grep -q 'value="???' "$SCHEME_FILE"; then
     # Push the changes to the repository
     git push
 else
-    echo "Failed to set openai-apikey in the Xcode scheme"
+    print_bold "Failed to set openai-apikey in the Xcode scheme"
     exit 1
 fi
