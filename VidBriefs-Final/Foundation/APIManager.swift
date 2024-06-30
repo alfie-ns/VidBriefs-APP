@@ -38,36 +38,59 @@ struct APIManager {
     static var currentConversationId: UUID? //
 
     class ConversationHistory {
-        private static var conversations: [UUID: [[String: String]]] = [:]
+        private static let conversationsKey = "ConversationsHistory"
+        
+        private static func saveConversations(_ conversations: [UUID: [[String: String]]]) {
+            UserDefaults.standard.set(try? JSONEncoder().encode(conversations), forKey: conversationsKey)
+        }
+        
+        private static func loadConversations() -> [UUID: [[String: String]]] {
+            guard let data = UserDefaults.standard.data(forKey: conversationsKey),
+                  let conversations = try? JSONDecoder().decode([UUID: [[String: String]]].self, from: data) else {
+                return [:]
+            }
+            return conversations
+        }
         
         static func createNewConversation() -> UUID {
             let id = UUID()
+            var conversations = loadConversations()
             conversations[id] = [["role": "system", "content": "You are a helpful assistant that provides insights about YouTube videos."]]
+            saveConversations(conversations)
             return id
         }
         
         static func clear() {
-            conversations.removeAll()
+            saveConversations([:])
         }
         
         static func addUserMessage(_ message: String, forConversation id: UUID) {
+            var conversations = loadConversations()
             conversations[id, default: []].append(["role": "user", "content": message])
+            saveConversations(conversations)
         }
         
         static func addAssistantMessage(_ message: String, forConversation id: UUID) {
+            var conversations = loadConversations()
             conversations[id, default: []].append(["role": "assistant", "content": message])
+            saveConversations(conversations)
         }
         
         static func addSystemMessage(_ message: String, forConversation id: UUID) {
+            var conversations = loadConversations()
             conversations[id, default: []].append(["role": "system", "content": message])
+            saveConversations(conversations)
         }
         
         static func getMessages(forConversation id: UUID) -> [[String: String]] {
+            let conversations = loadConversations()
             return conversations[id] ?? []
         }
         
         static func clearConversation(_ id: UUID) {
+            var conversations = loadConversations()
             conversations.removeValue(forKey: id)
+            saveConversations(conversations)
         }
     }
     

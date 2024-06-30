@@ -36,6 +36,13 @@ struct InsightView: View {
     init(currentPath: Binding<AppNavigationPath>, existingConversation: VideoInsight? = nil) {
         self._currentPath = currentPath
         self._existingConversation = State(initialValue: existingConversation)
+        
+        if let conversation = existingConversation {
+            _urlInput = State(initialValue: conversation.title.replacingOccurrences(of: "Conversation about ", with: ""))
+            _chatMessages = State(initialValue: conversation.messages)
+            _currentConversationId = State(initialValue: conversation.id)
+            _isVideoLoaded = State(initialValue: true)
+        }
     }
     
     var body: some View {
@@ -101,14 +108,6 @@ struct InsightView: View {
                 .background(Color.customTeal)
                 .cornerRadius(10)
                 
-                Button("Ask Question") {
-                    askQuestion()
-                }
-                .padding()
-                .foregroundColor(.white)
-                .background(Color.customTeal)
-                .cornerRadius(10)
-                .disabled(!isVideoLoaded || customInsight.isEmpty)
             }
             
             if isLoading {
@@ -233,15 +232,26 @@ struct InsightView: View {
         
         let title = "Conversation about \(urlInput.isEmpty ? "General Topic" : urlInput)"
         let insight = chatMessages.map { $0.isUser ? "User: \($0.content)" : "AI: \($0.content)" }.joined(separator: "\n")
-        let newInsight = VideoInsight(id: conversationId, title: title, insight: insight, messages: chatMessages)
         
+        // Check if the conversation already exists
         if var savedInsights = UserDefaults.standard.data(forKey: "savedInsights"),
            var decodedInsights = try? JSONDecoder().decode([VideoInsight].self, from: savedInsights) {
-            decodedInsights.append(newInsight)
+            if let index = decodedInsights.firstIndex(where: { $0.id == conversationId }) {
+                // Update existing conversation
+                decodedInsights[index].title = title
+                decodedInsights[index].insight = insight
+                decodedInsights[index].messages = chatMessages
+            } else {
+                // Add new conversation
+                let newInsight = VideoInsight(id: conversationId, title: title, insight: insight, messages: chatMessages)
+                decodedInsights.append(newInsight)
+            }
             if let encodedInsights = try? JSONEncoder().encode(decodedInsights) {
                 UserDefaults.standard.set(encodedInsights, forKey: "savedInsights")
             }
         } else {
+            // No existing conversations, create a new array
+            let newInsight = VideoInsight(id: conversationId, title: title, insight: insight, messages: chatMessages)
             if let encodedInsight = try? JSONEncoder().encode([newInsight]) {
                 UserDefaults.standard.set(encodedInsight, forKey: "savedInsights")
             }
