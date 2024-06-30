@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Path to the xcscheme file
-SCHEME_FILE="/Users/oladeanio/Library/CloudStorage/GoogleDrive-alfienurse@gmail.com/My Drive/Dev/VidBriefs/APP/Xcode/vidbriefs-app/VidBriefs-Final.xcodeproj/xcshareddata/xcschemes/VidBriefs-Final.xcscheme"
+SCHEME_FILE="/Users/oladeanio/Library/CloudStorage/GoogleDrive-alfienurse@gmail.com/My Drive/Dev/VidBriefs/APP/vidbriefs-app/VidBriefs-Final.xcodeproj/xcshareddata/xcschemes/VidBriefs-Final.xcscheme"
 
 # Backup the original scheme file
 cp "$SCHEME_FILE" "${SCHEME_FILE}.bak"
