@@ -10,29 +10,37 @@ import Combine
 import AVFoundation
 
 struct InsightView: View {
-    @Binding var currentPath: AppNavigationPath
-    @EnvironmentObject var settings: SharedSettings
+    @Binding var currentPath: AppNavigationPath // bind to the currentPath state in ContentView
+    @EnvironmentObject var settings: SharedSettings // get the shared settings object
     
-    @State private var urlInput: String = ""
-    @State private var customInsight: String = ""
-    @State private var apiResponse = ""
-    @State private var isResponseExpanded = false
-    @State private var isLoading = false
-    @State private var selectedQuestion: String = ""
-    @State private var showingActionSheet = false
-    @State private var videoTitle: String = ""
-    @State private var videoTranscript: String = ""
-    @State private var speechSynthesizer = AVSpeechSynthesizer()
+    @State private var urlInput: String = "" // init as empty string
+    @State private var customInsight: String = "" // init as empty string
+    @State private var apiResponse = "" // init as empty string
+
+    @State private var isResponseExpanded = false // init as false
+    @State private var isLoading = false // init as false
+    @State private var selectedQuestion: String = "" // init as empty string
+    @State private var showingActionSheet = false // init as false
+
+    @State private var videoTitle: String = "" // init as empty string
+    @State private var videoTranscript: String = "" // init as empty string
     
-    @State private var chatMessages: [ChatMessage] = []
-    @State private var currentMessage: String = ""
-    @State private var isVideoLoaded: Bool = false
-    @State private var existingConversation: VideoInsight?
+    @State private var chatMessages: [ChatMessage] = [] // init as empty array
+    @State private var currentMessage: String = "" // init as empty string
+    @State private var isVideoLoaded: Bool = false // init as false
+    @State private var existingConversation: VideoInsight? // ...
+
+    @State private var speechSynthesizer = AVSpeechSynthesizer() // init AVSpeechSynthesizer instance for text-to-speech
+    @State private var isSpeaking = false // init as false
+    @State private var speechRate: Float = 0.5 // init as 0.5(normal speed)
     
-    @State private var currentConversationId: UUID?
+    @State private var currentConversationId: UUID? // ...
     
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.presentationMode) var presentationMode // get the presentation mode(used to dismiss the view)
     
+    // MARK: - Body
+
+    // the following 'init' function is used to initialise the VideoInsight object
     init(currentPath: Binding<AppNavigationPath>, existingConversation: VideoInsight? = nil) {
         self._currentPath = currentPath
         self._existingConversation = State(initialValue: existingConversation)
@@ -61,9 +69,11 @@ struct InsightView: View {
                     .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 2)
                     .padding(.vertical, 20)
                 
-                videoInputSection
+                videoInputSection // ???
                 
                 Divider().background(Color.white)
+
+                speechRateControl // to make speech rate adjustable
                 
                 chatSection
             }
@@ -124,7 +134,7 @@ struct InsightView: View {
                 ScrollView {
                     LazyVStack {
                         ForEach(chatMessages) { message in
-                            ChatBubble(message: message)
+                            ChatBubble(message: message, speak: speakMessage, speechRate: speechRate)
                                 .id(message.id)
                         }
                     }
@@ -151,6 +161,36 @@ struct InsightView: View {
             }
             .padding()
         }
+    }
+
+    func speakMessage(_ message: String) {
+        if isSpeaking {
+            speechSynthesizer.stopSpeaking(at: .immediate)
+            isSpeaking = false
+        } else {
+            let utterance = AVSpeechUtterance(string: message)
+            utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+            utterance.rate = speechRate
+            speechSynthesizer.speak(utterance)
+            isSpeaking = true
+        }
+    }
+
+    var speechRateControl: some View {
+        VStack {
+            Text("Speech Rate: \(speechRate, specifier: "%.2f")")
+                .foregroundColor(.white)
+            
+            HStack {
+                Text("Slow")
+                    .foregroundColor(.white)
+                Slider(value: $speechRate, in: 0.1...1.0)
+                    .accentColor(.customTeal)
+                Text("Fast")
+                    .foregroundColor(.white)
+            }
+        }
+        .padding()
     }
     
     func startNewChat() {
@@ -276,16 +316,30 @@ struct InsightView: View {
 }
 
 struct ChatBubble: View {
-    let message: ChatMessage
-    
-    var body: some View {
-        HStack {
-            if message.isUser { Spacer() }
-            Text(message.content)
-                .padding()
-                .background(message.isUser ? Color.blue : Color.gray)
-                .foregroundColor(.white)
-                .cornerRadius(10)
+    let message: ChatMessage // init ChatMessage object as message
+    let speak: (String) -> Void //init speak as a function that takes a string and returns void(nothing, just function call)
+    let speechRate: Float // init speechRate as a float(0-1)
+
+    var body: some View { // body of the ChatBubble
+        HStack { // horizontal stack
+            if message.isUser { Spacer() } // if the message is from the user, add a spacer to push message to right
+            
+            VStack(alignment: .leading, spacing: 5) {
+                Text(message.content)
+                    .padding()
+                    .background(message.isUser ? Color.blue : Color.gray)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                
+                Button(action: {
+                    speak(message.content)
+                }) {
+                    Image(systemName: "speaker.wave.2.fill")
+                        .foregroundColor(.white)
+                }
+                .padding(.leading, 10)
+            }
+            
             if !message.isUser { Spacer() }
         }
         .padding(.horizontal)

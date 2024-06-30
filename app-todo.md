@@ -2,7 +2,9 @@
 
 - [X] Make IOS APP part for ted_talks
 - [X] FIX: A conversation is not be accessed from the libraryview
-- [ ] Get the speaking/speech functionality working again
+- [X] Get the speaking/speech functionality working again(where it's highltighting the test it's read out)
+- [ ] give speed conrol to voice funcitonality
+- [ ] Give user options to personalise it to them, maybe with the AI to know how they'd like the summarisations?
 - [ ] Test ted_talks API on IOS APP
 - [ ] Choose between ChatGPT or Claude?
 - [ ] Personalised learning paths
