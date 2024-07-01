@@ -1,2 +1,2 @@
 #!/bin/bash
-xed . # Open Xcode
+xed . # Open Xcode in current directory
