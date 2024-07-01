@@ -7,6 +7,7 @@
 
 import Foundation // Import Foundation(used for URLSession and JSON decoding)
 import KeychainSwift // Import KeychainSwift(used for storing API keys)
+import UIKit // for highlightiing
 
 enum TranscriptSource {
     case youtube
@@ -483,6 +484,34 @@ struct APIManager {
             }
         }.resume() // Resume the task if it's in a suspended state; this starts the network call
     }
+
+    static func highlightWords(in text: String, words: [String]) -> NSAttributedString {
+        
+    let attributedString = NSMutableAttributedString(string: text)
+    let wholeRange = NSRange(location: 0, length: text.utf16.count)
+    
+    // Default attributes
+    attributedString.addAttribute(.foregroundColor, value: UIColor.white, range: wholeRange)
+    attributedString.addAttribute(.font, value: UIFont.systemFont(ofSize: 16), range: wholeRange)
+    
+    for word in words {
+        let pattern = "\\b\(NSRegularExpression.escapedPattern(for: word))\\b"
+        do {
+            let regex = try NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
+            let matches = regex.matches(in: text, options: [], range: wholeRange)
+            
+            for match in matches {
+                attributedString.addAttribute(.backgroundColor, value: UIColor.yellow, range: match.range)
+                attributedString.addAttribute(.foregroundColor, value: UIColor.black, range: match.range)
+                attributedString.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: 16), range: match.range)
+            }
+        } catch {
+            print("Error creating regex: \(error.localizedDescription)")
+        }
+    }
+    
+    return attributedString
+}
 
     // NEW - TEST [ ] 
     static func GetTedTalkTranscript(ted_url: String, completion: @escaping (Bool, String?) -> Void) {

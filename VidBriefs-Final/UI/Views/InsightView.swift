@@ -10,83 +10,115 @@ import Combine
 import AVFoundation
 
 struct InsightView: View {
-    @Binding var currentPath: AppNavigationPath // bind to the currentPath state in ContentView
-    @EnvironmentObject var settings: SharedSettings // get the shared settings object
-    
-    @State private var urlInput: String = "" // init as empty string
-    @State private var customInsight: String = "" // init as empty string
-    @State private var apiResponse = "" // init as empty string
 
-    @State private var isResponseExpanded = false // init as false
-    @State private var isLoading = false // init as false
-    @State private var selectedQuestion: String = "" // init as empty string
-    @State private var showingActionSheet = false // init as false
+    // MARK: - Properties ---------------------------------------------------------------------------------------------------------------------------------------------------
 
-    @State private var videoTitle: String = "" // init as empty string
-    @State private var videoTranscript: String = "" // init as empty string
-    
-    @State private var chatMessages: [ChatMessage] = [] // init as empty array
-    @State private var currentMessage: String = "" // init as empty string
-    @State private var isVideoLoaded: Bool = false // init as false
-    @State private var existingConversation: VideoInsight? // ...
+    // Navigation and Environment
+    @Binding var currentPath: AppNavigationPath // Binding to the current path of app's navigation
+    @EnvironmentObject var settings: SharedSettings // Environment shared settings object
+    @Environment(\.presentationMode) var presentationMode // Environment variable for presentation mode, to dismiss views by swiping down
 
-    @State private var speechSynthesizer = AVSpeechSynthesizer() // init AVSpeechSynthesizer instance for text-to-speech
-    @State private var isSpeaking = false // init as false
-    @State private var speechRate: Float = 0.5 // init as 0.5(normal speed)
-    
-    @State private var currentConversationId: UUID? // ...
-    
-    @Environment(\.presentationMode) var presentationMode // get the presentation mode(used to dismiss the view)
-    
-    // MARK: - Body
+    // Video Input and Processing
+    @State private var urlInput: String = ""
+    @State private var videoTitle: String = ""
+    @State private var videoTranscript: String = ""
+    @State private var isVideoLoaded: Bool = false
+    @State private var isLoading = false
 
-    // the following 'init' function is used to initialise the VideoInsight object
+    // Chat and Conversation
+    @State private var chatMessages: [ChatMessage] = [] // Chat messages as an array of ChatMessage objects
+    @State private var currentMessage: String = "" // Current message being sent
+    @State private var currentConversationId: UUID?
+    @State private var existingConversation: VideoInsight?
+
+    // Insights and API: API Response and Summarisations
+    @State private var customInsight: String = ""
+    @State private var apiResponse = ""
+    @State private var isResponseExpanded = false
+    @State private var selectedQuestion: String = ""
+
+    // UI Control; 
+    @State private var showingActionSheet = false
+
+    // Speech Synthesis: Text-to-Speech
+    @State private var speechSynthesizer = AVSpeechSynthesizer()
+    @State private var isSpeaking = false
+    @State private var speechRate: Float = 0.5
+
+    // Text Highlighting
+    @State private var highlightedWords: [String] = []
+    @State private var isHighlighting: Bool = false
+
+    // Summary Customisation
+    @State private var summaryLength: String = "medium"
+    @State private var summaryStyle: String = "neutral"
+    @State private var includeKeyPoints: Bool = false
+    
+    // MARK: - Body ---------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    // function to initialise the VideoInsight object
     init(currentPath: Binding<AppNavigationPath>, existingConversation: VideoInsight? = nil) {
-        self._currentPath = currentPath
+        // Initialise the currentPath binding
+        self._currentPath = currentPath 
+        
+        // Initialize the existingConversation state variable
+        // If nil is passed, it will create a State with nil value:
         self._existingConversation = State(initialValue: existingConversation)
         
+        // If an existing conversation is provided, initialize other state variables
         if let conversation = existingConversation {
+            // Set the URL input to the conversation title, removing the "Conversation about " prefix
             _urlInput = State(initialValue: conversation.title.replacingOccurrences(of: "Conversation about ", with: ""))
+            
+            // Initialize chat messages with the existing conversation's messages
             _chatMessages = State(initialValue: conversation.messages)
+            
+            // Set the current conversation ID
             _currentConversationId = State(initialValue: conversation.id)
+            
+            // Mark the video as loaded since we're restoring an existing conversation
             _isVideoLoaded = State(initialValue: true)
         }
     }
     
     var body: some View {
-        ZStack {
-            LinearGradient(
+        ZStack { // ZStack to stack the views on top of each other - e.g. background gradient, VStack, etc.
+            LinearGradient( // Background gradient
                 gradient: Gradient(colors: [Color.black, Color.customTeal, Color.gray]),
-                startPoint: .top,
-                endPoint: .bottom
+                startPoint: .top,    // Gradient starts from the top of the view
+                endPoint: .bottom    // and transitions with top(black)->middle(customTeal)->bottom(gray)
             )
-            .edgesIgnoringSafeArea(.all)
+            .edgesIgnoringSafeArea(.all) // so background stretches to the edges of the screen
+            // This creates a vertical gradient that transitions from black at the top, 
+            // through customTeal in the middle, to gray at the bottom
             
-            VStack(spacing: 20) {
-                Text("VidBriefs")
-                    .font(.system(size: 48, weight: .heavy))
+            VStack(spacing: 20) { 
+                Text("VidBriefs") // start/top of the VStack/body
+                    .font(.system(size: 42, weight: .heavy))
                     .foregroundColor(.white)
-                    .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 2)
+                    .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 2) // shadow effect
                     .padding(.vertical, 20)
-                
-                videoInputSection // ???
-                
-                Divider().background(Color.white)
 
-                speechRateControl // to make speech rate adjustable
+                    .padding(.top, 20)
                 
-                chatSection
+                videoInputSection // to input the video URL and load the video
+                
+                Divider().background(Color.white) // horizontal line (hr)
+                
+                speechRateControl // to ajust voice speed
+                
+                chatSection // to display the chat messages and input field pushed to bottom
             }
-            .padding()
+            .padding() // space around the VStack
         }
-        .edgesIgnoringSafeArea(.all)
-        .navigationBarItems(leading: backButton, trailing: newChatButton)
-        .onDisappear {
-            saveConversation()
+        .edgesIgnoringSafeArea(.all) // so background stretches to the edges of the screen
+        .navigationBarItems(leading: backButton, trailing: newChatButton) // navigation bar items, back button and new chat button
+        .onDisappear { // when the view disappears
+            saveConversation() // save the conversation into background
         }
     }
     
-    var backButton: some View {
+    var backButton: some View { //
         Button(action: {
             self.presentationMode.wrappedValue.dismiss()
         }) {
@@ -103,7 +135,7 @@ struct InsightView: View {
         .foregroundColor(.white)
     }
     
-    var videoInputSection: some View {
+    var videoInputSection: some View { // view that's stacked on top
         VStack(spacing: 18) {
             TextField("Enter YouTube URL", text: $urlInput)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -117,24 +149,29 @@ struct InsightView: View {
                 .foregroundColor(.white)
                 .background(Color.customTeal)
                 .cornerRadius(10)
-                
+
+                Button("Customization")
+                // ...
+
+                Button("Regenerate")
+                // ...
             }
             
-            if isLoading {
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    .scaleEffect(1.5)
+            if isLoading { // if the video is loading from API
+                ProgressView() // show a progress view, loading spinner
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))  // style the spinner tint to white
+                    .scaleEffect(1.5) // scale the spinner to 1.5x??
             }
         }
     }
     
-    var chatSection: some View {
-        VStack {
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack {
+    var chatSection: some View { // view that's stacked at the bottom
+        VStack { // TOP
+            ScrollViewReader { proxy in // ScrollViewReader to scroll to the bottom of the chat
+                ScrollView { // ScrollView so user can scroll
+                    LazyVStack { //
                         ForEach(chatMessages) { message in
-                            ChatBubble(message: message, speak: speakMessage, speechRate: speechRate)
+                            ChatBubble(message: message, speak: speakMessage, speechRate: speechRate, highlightedWords: highlightedWords, isHighlighting: isHighlighting)
                                 .id(message.id)
                         }
                     }
@@ -158,11 +195,36 @@ struct InsightView: View {
                         .cornerRadius(10)
                 }
                 .disabled(currentMessage.isEmpty)
+                
+                Button(action: toggleHighlighting) {
+                    Image(systemName: isHighlighting ? "highlighter" : "text.magnifyingglass")
+                        .foregroundColor(.white)
+                        .padding(8)
+                        .background(Color.orange)
+                        .cornerRadius(10)
+                }
             }
             .padding()
         }
     }
-
+    
+    
+    func toggleHighlighting() {
+        isHighlighting.toggle()
+        if isHighlighting {
+            highlightedWords = extractKeywords(from: videoTranscript)
+        } else {
+            highlightedWords = []
+        }
+    }
+    
+    func extractKeywords(from text: String) -> [String] {
+        let words = text.components(separatedBy: .whitespacesAndNewlines)
+        let commonWords = Set(["the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for", "of", "with", "by"])
+        return Array(Set(words.filter { $0.count > 3 && !commonWords.contains($0.lowercased()) })).prefix(20).map { $0 }
+    }
+    
+    
     func speakMessage(_ message: String) {
         if isSpeaking {
             speechSynthesizer.stopSpeaking(at: .immediate)
@@ -175,7 +237,7 @@ struct InsightView: View {
             isSpeaking = true
         }
     }
-
+    
     var speechRateControl: some View {
         VStack {
             Text("Speech Rate: \(speechRate, specifier: "%.2f")")
@@ -313,23 +375,49 @@ struct InsightView: View {
             }
         }
     }
+    
+}
+
+struct AttributedTextView: UIViewRepresentable {
+    let attributedText: NSAttributedString
+
+    func makeUIView(context: Context) -> UITextView {
+        let textView = UITextView()
+        textView.isEditable = false
+        textView.isScrollEnabled = false
+        textView.backgroundColor = .clear
+        return textView
+    }
+
+    func updateUIView(_ uiView: UITextView, context: Context) {
+        uiView.attributedText = attributedText
+    }
 }
 
 struct ChatBubble: View {
-    let message: ChatMessage // init ChatMessage object as message
-    let speak: (String) -> Void //init speak as a function that takes a string and returns void(nothing, just function call)
-    let speechRate: Float // init speechRate as a float(0-1)
+    let message: ChatMessage
+    let speak: (String) -> Void
+    let speechRate: Float
+    let highlightedWords: [String]
+    let isHighlighting: Bool
 
-    var body: some View { // body of the ChatBubble
-        HStack { // horizontal stack
-            if message.isUser { Spacer() } // if the message is from the user, add a spacer to push message to right
+    var body: some View {
+        HStack {
+            if message.isUser { Spacer() }
             
             VStack(alignment: .leading, spacing: 5) {
-                Text(message.content)
-                    .padding()
-                    .background(message.isUser ? Color.blue : Color.gray)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
+                if isHighlighting {
+                    AttributedTextView(attributedText: APIManager.highlightWords(in: message.content, words: highlightedWords))
+                        .padding()
+                        .background(message.isUser ? Color.blue : Color.gray)
+                        .cornerRadius(10)
+                } else {
+                    Text(message.content)
+                        .padding()
+                        .background(message.isUser ? Color.blue : Color.gray)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
                 
                 Button(action: {
                     speak(message.content)
