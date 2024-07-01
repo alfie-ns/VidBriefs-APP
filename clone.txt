@@ -1,20 +1,53 @@
 #!/bin/bash
 
-# Find the next available number
-base_name="vidbriefs-app"
-I=1
-while [ -d "${base_name}-${I}" ]; do
-  I=$((I + 1))
-done
-new_name="${base_name}-${I}"
+# Function to print bold text
+print_bold() {
+  BOLD=$(tput bold)
+  NORMAL=$(tput sgr0)
+  echo -e "${BOLD}$1${NORMAL}"
+}
 
-# Clone the repository into the new directory, init into new_name variable
-git clone https://github.com/alfie-ns/vidbriefs-app "$new_name"
+# Clone the repository
+git clone https://github.com/alfie-ns/vidbriefs-app
 
-# Change directory to the cloned repository
-cd "$new_name"
+# Path to the .env file outside the cloned repo
+ENV_FILE="/Users/oladeanio/Library/CloudStorage/GoogleDrive-alfienurse@gmail.com/My Drive/Dev/VidBriefs/APP/.env"
 
-# Copy the .env file, backout of vidbriefs-app-{n}, backout of APP, copy .env from this directory into repo
-cp ../../.env .
+# Navigate to the cloned repository directory
+cd vidbriefs-app
 
-echo "Repository cloned as $new_name and .env file copied."
+# Path to the xcscheme file
+SCHEME_FILE="VidBriefs-Final.xcodeproj/xcshareddata/xcschemes/VidBriefs-Final.xcscheme"
+
+# Check if the .env file exists
+if [ ! -f "$ENV_FILE" ]; then
+  echo ".env file not found."
+  exit 1
+fi
+
+# Read the API key from the .env file
+OPENAI_API_KEY=$(grep -E '^OPENAI_API_KEY=' "$ENV_FILE" | cut -d '=' -f 2)
+# Extract the value of OPENAI_API_KEY from the .env file
+# -d specifies the delimiter, a character that separates fields
+# '=' is used as the delimiter
+# -f specifies the field number
+# 2 refers to the second field, which contains the value
+
+if [ -z "$OPENAI_API_KEY" ]; then # if the API key empty string
+  print_bold "API key not found in .env file."
+  exit 1
+fi
+
+# Use xmlstarlet to modify the environment variable value
+xmlstarlet ed -L -u '//EnvironmentVariable[@key="openai-apikey"]/@value' -v "$OPENAI_API_KEY" "$SCHEME_FILE"
+
+# Verify the change
+if grep -q "value=\"$OPENAI_API_KEY\"" "$SCHEME_FILE"; then
+    echo ""
+    print_bold "openai-apikey has been set to $OPENAI_API_KEY in the Xcode scheme"
+    echo ""
+    exit 0
+else
+    echo "Failed to set openai-apikey in the Xcode scheme"
+    exit 1
+fi

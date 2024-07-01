@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Get the current directory name
+# Get the current directory's name
 current_dir=$(basename "$PWD")
 
 # 1. Run the push script

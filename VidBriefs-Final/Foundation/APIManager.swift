@@ -10,8 +10,8 @@ import KeychainSwift // Import KeychainSwift(used for storing API keys)
 import UIKit // for highlightiing
 
 enum TranscriptSource {
-    case youtube
-    case tedTalk
+    case youtube // [X]
+    case tedTalk // [ ]
     //case vimeo
     //case coursera
     //case udemy
@@ -36,72 +36,72 @@ enum TranscriptSource {
 }
 
 struct APIManager {
-    static var currentConversationId: UUID? //
+    static var currentConversationId: UUID? // static variable to store the current conversation id(UUID=Universally Unique Identifier)
 
-    class ConversationHistory {
-        private static let conversationsKey = "ConversationsHistory"
+    class ConversationHistory { // Class to manage the conversation history
+        private static let conversationKey = "ConversationsHistory" // Key to store the conversation history in UserDefaults
         
-        private static func saveConversations(_ conversations: [UUID: [[String: String]]]) {
-            UserDefaults.standard.set(try? JSONEncoder().encode(conversations), forKey: conversationsKey)
-        }
+        private static func saveConversation(_ conversations: [UUID: [[String: String]]]) {
+            UserDefaults.standard.set(try? JSONEncoder().encode(conversations), forKey: conversationKey)
+        } // Function to save the conversation history to UserDefaults as JSON, using the conversationKey
         
-        private static func loadConversations() -> [UUID: [[String: String]]] {
-            guard let data = UserDefaults.standard.data(forKey: conversationsKey),
+        private static func loadConversation() -> [UUID: [[String: String]]] { // load a conversation saved in UserDefaults
+            guard let data = UserDefaults.standard.data(forKey: conversationKey), // guard statement to check if data exists for the conversationKey
                   let conversations = try? JSONDecoder().decode([UUID: [[String: String]]].self, from: data) else {
-                return [:]
+                return [:] // '[:]' is an empty dictionary(key-value pair)
             }
             return conversations
         }
         
-        static func createNewConversation() -> UUID {
-            let id = UUID()
-            var conversations = loadConversations()
-            conversations[id] = [["role": "system", "content": "You are a helpful assistant that provides insights about YouTube videos."]]
-            saveConversations(conversations)
-            return id
+        static func createNewConversation() -> UUID { // Create a new conversation and return the UUID(Universally Unique Identifier)
+            let id = UUID() // init UUID to id
+            var conversations = loadConversation() // load the conversations
+            conversations[id] = [["role": "system", "content": "You are a helpful assistant that provides insights about YouTube videos."]] // Add a system message to the conversation
+            saveConversation(conversations) // Save the conversation
+            return id // Return the UUID
         }
         
-        static func clear() {
-            saveConversations([:])
+        static func clear() { // Clear the conversation history
+            saveConversation([:]) // Save an empty dictionary to the conversationKey, thus clearing values(conversations)
         }
         
-        static func addUserMessage(_ message: String, forConversation id: UUID) {
-            var conversations = loadConversations()
+        static func addUserMessage(_ message: String, forConversation id: UUID) { // Add user message to message array for each conversation
+            var conversations = loadConversation() // first load the conversation 
             conversations[id, default: []].append(["role": "user", "content": message])
-            saveConversations(conversations)
+            saveConversation(conversations)
         }
         
         static func addAssistantMessage(_ message: String, forConversation id: UUID) {
-            var conversations = loadConversations()
+            var conversations = loadConversation()
             conversations[id, default: []].append(["role": "assistant", "content": message])
-            saveConversations(conversations)
+            saveConversation(conversations)
         }
         
         static func addSystemMessage(_ message: String, forConversation id: UUID) {
-            var conversations = loadConversations()
+            var conversations = loadConversation()
             conversations[id, default: []].append(["role": "system", "content": message])
-            saveConversations(conversations)
+            saveConversation(conversations)
         }
         
         static func getMessages(forConversation id: UUID) -> [[String: String]] {
-            let conversations = loadConversations()
+            let conversations = loadConversation()
             return conversations[id] ?? []
         }
         
         static func clearConversation(_ id: UUID) {
-            var conversations = loadConversations()
+            var conversations = loadConversation()
             conversations.removeValue(forKey: id)
-            saveConversations(conversations)
+            saveConversation(conversations)
         }
     }
     
     private static var keychain = KeychainSwift() // Create a KeychainSwift object to store API keys -> secure storage of API keys
 
     static var openai_apikey: String {
-        ProcessInfo.processInfo.environment["openai-apikey"] ?? ""
+        ProcessInfo.processInfo.environment["openai-apikey"] ?? "" // fetch OpenAI API key from xcode scheme
     }
     
-    // Structure to store and manage request timestamps to only allow less than 3 requests a month
+    // Structure to store and manage request timestamps to only allow less than 5 requests a month
     struct RequestTracker {
         static var timestamps: [Date] = [] // Array to store request timestamps
 
@@ -111,7 +111,7 @@ struct APIManager {
 
         static func isRequestAllowed() -> Bool { // bool function to check if request is allowed
             cleanUpOldTimestamps() // Clean up old timestamps before checking
-            return timestamps.count < 3 // Return true if less than 3 requests have been made in the last week
+            return timestamps.count < 5 // Return true if less than 5 requests have been made in the last week
         }
 
         static func addTimestamp() { // func to append a new timestamp to the timestamps array
@@ -261,8 +261,7 @@ struct APIManager {
         for (index, chunk) in chunks.enumerated() { // For each index(to count the chunks) and chunk
             dispatchGroup.enter() // Enter DispatchGroup
             print("Entered Dispatch Group for chunk \(index + 1)") // Log numbered interation of the loop
-//          let openai_apikey = UserDefaults.standard.string(forKey: "openai_apikey") ?? "" // Use users API key [X] [ ] store in keychain
-            
+       
             // Create request to OpenAI
             var request = URLRequest(url: apiUrl)
             request.httpMethod = "POST" // POST request
@@ -602,7 +601,7 @@ struct APIManager {
         let messages = ConversationHistory.getMessages(forConversation: conversationId)
         
         let requestBody: [String: Any] = [
-            "model": "gpt-4",
+            "model": "gpt-4o",
             "messages": messages
         ]
 
