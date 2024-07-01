@@ -587,7 +587,7 @@ struct APIManager {
         return chunks // Send back all the chunks made
     }
 
-    static func chatWithGPT(message: String, conversationId: UUID, completion: @escaping (String?) -> Void) {
+    static func chatWithGPT(message: String, conversationId: UUID, customization: [String: Any], completion: @escaping (String?) -> Void) {
         let apiUrl = URL(string: "https://api.openai.com/v1/chat/completions")!
         var request = URLRequest(url: apiUrl)
         request.httpMethod = "POST"
@@ -600,9 +600,16 @@ struct APIManager {
         
         let messages = ConversationHistory.getMessages(forConversation: conversationId)
         
+        // Create a system message with customization instructions
+        let customizationInstructions = createCustomizationInstructions(customization)
+        let systemMessage = ["role": "system", "content": customizationInstructions]
+        
+        // Add the system message to the beginning of the messages array
+        var updatedMessages = [systemMessage] + messages
+        
         let requestBody: [String: Any] = [
             "model": "gpt-4o",
-            "messages": messages
+            "messages": updatedMessages
         ]
 
         do {
@@ -628,10 +635,10 @@ struct APIManager {
             
             do {
                 if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                   let choices = json["choices"] as? [[String: Any]],
-                   let firstChoice = choices.first,
-                   let message = firstChoice["message"] as? [String: Any],
-                   let content = message["content"] as? String {
+                let choices = json["choices"] as? [[String: Any]],
+                let firstChoice = choices.first,
+                let message = firstChoice["message"] as? [String: Any],
+                let content = message["content"] as? String {
                     // Add the AI's response to the conversation history
                     ConversationHistory.addAssistantMessage(content, forConversation: conversationId)
                     completion(content)
@@ -647,4 +654,173 @@ struct APIManager {
         task.resume()
     }
 
+    private static func createCustomizationInstructions(_ customization: [String: Any]) -> String {
+        let length = customization["length"] as? String ?? "medium"
+        let style = customization["style"] as? String ?? "neutral"
+        let includeKeyPoints = customization["includeKeyPoints"] as? Bool ?? false
+
+        var instructions = "Please provide a "
+        
+        switch length {
+        case "short":
+            instructions += "brief and concise (<200 letters) "
+        case "long":
+            instructions += "detailed and comprehensive (around 750 letters) "
+        default:
+            instructions += "moderate-length (around 500 letters) "
+        }
+        
+        instructions += "summary in a "
+        
+        switch style {
+            case "formal":
+                instructions += "formal and professional tone. "
+            case "casual":
+                instructions += "casual and conversational tone. "
+            case "humorous":
+                instructions += "humorous and light-hearted tone. "
+            case "academic":
+                instructions += "academic and scholarly tone. "
+            case "simplified":
+                instructions += "simplified tone, explaining concepts as if to a beginner. "
+            case "technical":
+                instructions += "technical tone, using industry-specific terminology. "
+            case "storytelling":
+                instructions += "narrative tone, presenting information as a story. "
+            case "journalistic":
+                instructions += "journalistic tone, presenting facts objectively. "
+            case "enthusiastic":
+                instructions += "enthusiastic and energetic tone. "
+            case "skeptical":
+                instructions += "skeptical tone, questioning and analyzing claims. "
+            case "poetic":
+                instructions += "poetic and lyrical tone. "
+            case "inspirational":
+                instructions += "inspirational and motivational tone. "
+            case "analytical":
+                instructions += "analytical tone, breaking down information systematically. "
+            case "empathetic":
+                instructions += "empathetic tone, showing understanding and compassion. "
+            case "persuasive":
+                instructions += "persuasive tone, presenting arguments convincingly. "
+            case "educational":
+                instructions += "educational tone, focusing on teaching and explaining. "
+            default:
+                instructions += "neutral tone. "
+        }
+        
+        if includeKeyPoints {
+            if let keyPointCount = customization["keyPointCount"] as? Int {
+                instructions += "Include \(keyPointCount) key points. "
+            }
+            
+            if let keyPointPosition = customization["keyPointPosition"] as? String {
+                switch keyPointPosition {
+                case "start":
+                    instructions += "Start with the key points. "
+                case "end":
+                    instructions += "End with the key points. "
+                case "throughout":
+                    instructions += "Highlight key points throughout. "
+                default:
+                    instructions += "Include key points at the end. "
+                }
+            }
+            
+            if let keyPointFormat = customization["keyPointFormat"] as? String {
+                switch keyPointFormat {
+                case "bullet":
+                    instructions += "Use bullet points for key points. "
+                case "numbered":
+                    instructions += "Use a numbered list for key points. "
+                case "bold":
+                    instructions += "Present key points in bold. "
+                case "paragraph":
+                    instructions += "Present key points as a separate paragraph. "
+                default:
+                    instructions += "Format key points to fit the overall style. "
+                }
+            }
+            
+            if let keyPointDepth = customization["keyPointDepth"] as? String {
+                switch keyPointDepth {
+                case "surface":
+                    instructions += "Keep key points surface-level. "
+                case "detailed":
+                    instructions += "Provide detailed key points with brief explanations. "
+                case "analytical":
+                    instructions += "Include analytical key points with insights. "
+                default:
+                    instructions += "Provide balanced key points. "
+                }
+            }
+            
+            if let keyPointTheme = customization["keyPointTheme"] as? String {
+                instructions += "Focus key points on the theme of '\(keyPointTheme)'. "
+            }
+            
+            if let keyPointPrefix = customization["keyPointPrefix"] as? String {
+                instructions += "Prefix each key point with '\(keyPointPrefix)'. "
+            }
+        }
+        
+        return instructions
+    }
+
+    func addKeyPointInstructions(_ customization: [String: Any], to instructions: inout String) {
+        if customization["includeKeyPoints"] as? Bool == true {
+            if let keyPointCount = customization["keyPointCount"] as? Int {
+                instructions += "Include \(keyPointCount) key points. "
+            }
+            
+            if let keyPointPosition = customization["keyPointPosition"] as? String {
+                switch keyPointPosition {
+                case "start":
+                    instructions += "Start with the key points. "
+                case "end":
+                    instructions += "End with the key points. "
+                case "throughout":
+                    instructions += "Highlight key points throughout. "
+                default:
+                    instructions += "Include key points at the end. "
+                }
+            }
+            
+            if let keyPointFormat = customization["keyPointFormat"] as? String {
+                switch keyPointFormat {
+                case "bullet":
+                    instructions += "Use bullet points for key points. "
+                case "numbered":
+                    instructions += "Use a numbered list for key points. "
+                case "bold":
+                    instructions += "Present key points in bold. "
+                case "paragraph":
+                    instructions += "Present key points as a separate paragraph. "
+                default:
+                    instructions += "Format key points to fit the overall style. "
+                }
+            }
+            
+            if let keyPointDepth = customization["keyPointDepth"] as? String {
+                switch keyPointDepth {
+                case "surface":
+                    instructions += "Keep key points surface-level. "
+                case "detailed":
+                    instructions += "Provide detailed key points with brief explanations. "
+                case "analytical":
+                    instructions += "Include analytical key points with insights. "
+                default:
+                    instructions += "Provide balanced key points. "
+                }
+            }
+            
+            if let keyPointTheme = customization["keyPointTheme"] as? String {
+                instructions += "Focus key points on the theme of '\(keyPointTheme)'. "
+            }
+            
+            if let keyPointPrefix = customization["keyPointPrefix"] as? String {
+                instructions += "Prefix each key point with '\(keyPointPrefix)'. "
+            }
+        }
+    }
 }

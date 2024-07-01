@@ -53,6 +53,7 @@ struct InsightView: View {
     @State private var summaryLength: String = "medium"
     @State private var summaryStyle: String = "neutral"
     @State private var includeKeyPoints: Bool = false
+    @State private var showingCustomizationSheet = false
     
     // MARK: - Body ---------------------------------------------------------------------------------------------------------------------------------------------------
     
@@ -150,10 +151,23 @@ struct InsightView: View {
                 .background(Color.customTeal)
                 .cornerRadius(10)
 
-                Button("Customization")
-                // ...
+                Button("Customise") {
+                    showingCustomizationSheet = true
+                }
+                .padding()
+                .background(Color.customTeal)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+                .sheet(isPresented: $showingCustomizationSheet) {
+                    SummaryCustomisationView(
+                        summaryLength: $summaryLength,
+                        summaryStyle: $summaryStyle,
+                        includeKeyPoints: $includeKeyPoints
+                    )
+                }
+                
 
-                Button("Regenerate")
+                //Button("Regenerate")
                 // ...
             }
             
@@ -308,6 +322,12 @@ struct InsightView: View {
             chatMessages.append(ChatMessage(content: "Error: No active conversation. Please load a video first.", isUser: false))
             return
         }
+
+        let customizationOptions: [String: Any] = [
+            "length": summaryLength,
+            "style": summaryStyle,
+            "includeKeyPoints": includeKeyPoints
+        ]
         
         let userMessage = currentMessage
         chatMessages.append(ChatMessage(content: userMessage, isUser: true))
@@ -315,7 +335,7 @@ struct InsightView: View {
         
         print("Sending message to GPT. ConversationId: \(conversationId)")
         
-        APIManager.chatWithGPT(message: userMessage, conversationId: conversationId) { response in
+        APIManager.chatWithGPT(message: userMessage, conversationId: conversationId, customization: customizationOptions) { response in
             DispatchQueue.main.async {
                 if let response = response {
                     print("Received response from GPT: \(response)")
@@ -367,12 +387,50 @@ struct InsightView: View {
         
         let tempConversationId = UUID()  // Create a temporary UUID
         
-        APIManager.chatWithGPT(message: prompt, conversationId: tempConversationId) { response in
+        let customizationOptions: [String: Any] = [
+            "length": "short",
+            "style": "neutral",
+            "includeKeyPoints": false
+        ]
+        
+        APIManager.chatWithGPT(message: prompt, conversationId: tempConversationId, customization: customizationOptions) { response in
             DispatchQueue.main.async {
                 completion(response?.trimmingCharacters(in: .whitespacesAndNewlines))
                 // Clean up the temporary conversation
                 APIManager.ConversationHistory.clearConversation(tempConversationId)
             }
+        }
+    }
+    
+    struct SummaryCustomisationView: View {
+        @Binding var summaryLength: String
+        @Binding var summaryStyle: String
+        @Binding var includeKeyPoints: Bool
+        
+        var body: some View {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Customize Summary")
+                    .font(.headline)
+                
+                Picker("Length", selection: $summaryLength) {
+                    Text("Short").tag("short")
+                    Text("Medium").tag("medium")
+                    Text("Long").tag("long")
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                
+                Picker("Style", selection: $summaryStyle) {
+                    Text("Formal").tag("formal")
+                    Text("Neutral").tag("neutral")
+                    Text("Casual").tag("casual")
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                
+                Toggle("Include Key Points", isOn: $includeKeyPoints)
+            }
+            .padding()
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(10)
         }
     }
     
@@ -393,6 +451,8 @@ struct AttributedTextView: UIViewRepresentable {
         uiView.attributedText = attributedText
     }
 }
+
+
 
 struct ChatBubble: View {
     let message: ChatMessage
