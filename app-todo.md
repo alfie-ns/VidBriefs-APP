@@ -1,7 +1,5 @@
 # App To-Do List
 
-"ive senf you the code(remeber tbey are the whole file...
-
 - [X] Make IOS APP part for ted_talks
 - [X] FIX: A conversation is not be accessed from the libraryview
 - [X] Get the speaking/speech functionality working again(where it's highltighting the test it's read out)
