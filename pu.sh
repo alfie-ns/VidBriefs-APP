@@ -33,7 +33,7 @@ if grep -q 'value="???' "$SCHEME_FILE"; then
     git commit -m "Set openai-apikey to ??? before push"
 
     # Push the changes to the repository
-    git push
+    git push -f origin main # force push
 else
     print_bold "Failed to set openai-apikey in the Xcode scheme"
     exit 1
