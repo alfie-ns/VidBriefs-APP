@@ -278,7 +278,7 @@ struct InsightView: View {
         videoTranscript = ""
     }
     
-    func loadVideo() {
+    func loadVideo() { // LOAD VIDEO INTO CONVERSATION
         isLoading = true
         currentConversationId = APIManager.ConversationHistory.createNewConversation()
         print("Starting new conversation with ID: \(currentConversationId?.uuidString ?? "nil")")
@@ -300,6 +300,8 @@ struct InsightView: View {
         }
     }
     
+    // OLD---------------------------------------------------------------------------------------------------------------------------------------------------
+
     func askQuestion() {
         isLoading = true
         APIManager.handleCustomInsightAll(url: urlInput, source: .youtube, userPrompt: customInsight) { success, response in
@@ -315,7 +317,9 @@ struct InsightView: View {
             }
         }
     }
-    
+    // ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    // NEW---------------------------------------------------------------------------------------------------------------------------------------------------
     func sendMessage() {
         guard let conversationId = currentConversationId else {
             print("Error: No active conversation")

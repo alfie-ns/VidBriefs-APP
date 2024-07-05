@@ -5,12 +5,10 @@
 - [X] Get the speaking/speech functionality working again(where it's highltighting the test it's read out)
 - [X] give speed conrol to voice funcitonality
 - [X] Add swipe functionality to the library view to go back to the main view/particular conversation
+- [ ] reinstare tandom insight in homeview
 - [ ] reinstate questions array to choose from
 - [ ] reinstate formatting in chatbubble messages from the AI
 - [ ] The customisation doesn't really work
-
-
-
 - [ ] Different categories for how indepth it should go, in letters:(250, 500, 750, 1000)
 - [ ] Test ted_talks API on IOS APP
 - [ ] Give user options to personalise it to them, maybe with the AI to know how they'd like the summarisations?

@@ -6,8 +6,8 @@ struct HomeView: View { // HomeView
     @EnvironmentObject var settings: SharedSettings // link to environmental 'settingss' objects
 
     @State private var savedInsights: [String] = [] // arraay to hold insights
-    @State private var currentRandomInsight: String = "No insights available" // ... something initalzied
-    @State private var appearanceCount = 0 
+    @State private var currentRandomInsight: String = "No insights available" // current random insights
+    @State private var appearanceCount = 0
 
     var randomInsight: String { // save the random insight to a 'computed property', essentially this means the property does not store a value directly but computes it on the fly each time it's accessed
         savedInsights.randomElement() ?? "No insights available" // pick a random element from the savedInsights array, or provide a default message if the array is empty

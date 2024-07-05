@@ -35,65 +35,9 @@ enum TranscriptSource {
     
 }
 
-struct APIManager {
-    static var currentConversationId: UUID? // static variable to store the current conversation id(UUID=Universally Unique Identifier)
+// MARK: - APIManager ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    class ConversationHistory { // Class to manage the conversation history
-        private static let conversationKey = "ConversationsHistory" // Key to store the conversation history in UserDefaults
-        
-        private static func saveConversation(_ conversations: [UUID: [[String: String]]]) {
-            UserDefaults.standard.set(try? JSONEncoder().encode(conversations), forKey: conversationKey)
-        } // Function to save the conversation history to UserDefaults as JSON, using the conversationKey
-        
-        private static func loadConversation() -> [UUID: [[String: String]]] { // load a conversation saved in UserDefaults
-            guard let data = UserDefaults.standard.data(forKey: conversationKey), // guard statement to check if data exists for the conversationKey
-                  let conversations = try? JSONDecoder().decode([UUID: [[String: String]]].self, from: data) else {
-                return [:] // '[:]' is an empty dictionary(key-value pair)
-            }
-            return conversations
-        }
-        
-        static func createNewConversation() -> UUID { // Create a new conversation and return the UUID(Universally Unique Identifier)
-            let id = UUID() // init UUID to id
-            var conversations = loadConversation() // load the conversations
-            conversations[id] = [["role": "system", "content": "You are a helpful assistant that provides insights about YouTube videos."]] // Add a system message to the conversation
-            saveConversation(conversations) // Save the conversation
-            return id // Return the UUID
-        }
-        
-        static func clear() { // Clear the conversation history
-            saveConversation([:]) // Save an empty dictionary to the conversationKey, thus clearing values(conversations)
-        }
-        
-        static func addUserMessage(_ message: String, forConversation id: UUID) { // Add user message to message array for each conversation
-            var conversations = loadConversation() // first load the conversation 
-            conversations[id, default: []].append(["role": "user", "content": message])
-            saveConversation(conversations)
-        }
-        
-        static func addAssistantMessage(_ message: String, forConversation id: UUID) {
-            var conversations = loadConversation()
-            conversations[id, default: []].append(["role": "assistant", "content": message])
-            saveConversation(conversations)
-        }
-        
-        static func addSystemMessage(_ message: String, forConversation id: UUID) {
-            var conversations = loadConversation()
-            conversations[id, default: []].append(["role": "system", "content": message])
-            saveConversation(conversations)
-        }
-        
-        static func getMessages(forConversation id: UUID) -> [[String: String]] {
-            let conversations = loadConversation()
-            return conversations[id] ?? []
-        }
-        
-        static func clearConversation(_ id: UUID) {
-            var conversations = loadConversation()
-            conversations.removeValue(forKey: id)
-            saveConversation(conversations)
-        }
-    }
+struct APIManager {
     
     private static var keychain = KeychainSwift() // Create a KeychainSwift object to store API keys -> secure storage of API keys
 
@@ -149,17 +93,19 @@ struct APIManager {
         ConversationHistory.addSystemMessage(message, forConversation: id)
     }
     
-
+    // NOT USED ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     // Function to handle all custom insight requests from API for transcript to turn into an insight
     static func handleCustomInsightAll(url: String, source: TranscriptSource, userPrompt: String, completion: @escaping (Bool, String?) -> Void) {
 
         // Step 0: Init conversation history
         // ----------------------------------
+
         ConversationHistory.clear()
         ConversationHistory.addUserMessage(userPrompt, forConversation: APIManager.currentConversationId ?? UUID())
+
         // Begin the conversation with the user prompt
 
-        // Step 1: Get the entire transcript
+        // Step 1: clone entire transcript
         // ----------------------------------
 
         // Choose the appropriate function to fetch the transcript based on the source
@@ -174,7 +120,7 @@ struct APIManager {
             }
         }
     }
-
+    // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private static func processTranscriptFetchResult(success: Bool, transcript: String?, userPrompt: String, completion: @escaping (Bool, String?) -> Void) {
         if success, let transcript = transcript {
             print("Transcript: \(transcript)")
@@ -211,6 +157,8 @@ struct APIManager {
     }
     
    static func fetchOneGPTSummary(transcript: String, customInsight: String, completion: @escaping (String?) -> Void) {
+
+        // Propeties - API URL, Request, Headers, 300 second timeout
         let apiUrl = URL(string: "https://api.openai.com/v1/chat/completions")!
         var request = URLRequest(url: apiUrl)
         request.httpMethod = "POST"
@@ -218,7 +166,14 @@ struct APIManager {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.timeoutInterval = 300.0
 
-       ConversationHistory.addUserMessage("Please summarize this YouTube video transcript: \(transcript). Only after you have fully traversed the entire transcript, answer the user's question regarding the video using parts of this: \(customInsight).", forConversation: APIManager.currentConversationId ?? UUID())
+        let message = """
+                          Watch and learn the YouTube video transcript: \(transcript). 
+                          Only after you have fully traversed the entire transcript, 
+                          answer the user's question regarding the video using parts of : \(customInsight).
+
+                      """
+
+        ConversationHistory.addUserMessage(message, forConversation: APIManager.currentConversationId ?? UUID())
 
         let requestBody: [String: Any] = [
             "model": "gpt-4o",
@@ -587,72 +542,7 @@ struct APIManager {
         return chunks // Send back all the chunks made
     }
 
-    static func chatWithGPT(message: String, conversationId: UUID, customization: [String: Any], completion: @escaping (String?) -> Void) {
-        let apiUrl = URL(string: "https://api.openai.com/v1/chat/completions")!
-        var request = URLRequest(url: apiUrl)
-        request.httpMethod = "POST"
-        request.addValue("Bearer \(openai_apikey)", forHTTPHeaderField: "Authorization")
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.timeoutInterval = 300.0
-
-        // Add the new user message to the conversation history
-        ConversationHistory.addUserMessage(message, forConversation: conversationId)
-        
-        let messages = ConversationHistory.getMessages(forConversation: conversationId)
-        
-        // Create a system message with customization instructions
-        let customizationInstructions = createCustomizationInstructions(customization)
-        let systemMessage = ["role": "system", "content": customizationInstructions]
-        
-        // Add the system message to the beginning of the messages array
-        var updatedMessages = [systemMessage] + messages
-        
-        let requestBody: [String: Any] = [
-            "model": "gpt-4o",
-            "messages": updatedMessages
-        ]
-
-        do {
-            request.httpBody = try JSONSerialization.data(withJSONObject: requestBody, options: [])
-        } catch {
-            print("Error serializing request body: \(error)")
-            completion(nil)
-            return
-        }
-
-        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-            if let error = error {
-                print("Error in API call: \(error)")
-                completion(nil)
-                return
-            }
-            
-            guard let data = data else {
-                print("No data received from API")
-                completion(nil)
-                return
-            }
-            
-            do {
-                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                let choices = json["choices"] as? [[String: Any]],
-                let firstChoice = choices.first,
-                let message = firstChoice["message"] as? [String: Any],
-                let content = message["content"] as? String {
-                    // Add the AI's response to the conversation history
-                    ConversationHistory.addAssistantMessage(content, forConversation: conversationId)
-                    completion(content)
-                } else {
-                    print("Unexpected JSON structure")
-                    completion(nil)
-                }
-            } catch {
-                print("Error parsing JSON: \(error)")
-                completion(nil)
-            }
-        }
-        task.resume()
-    }
+    
 
     private static func createCustomizationInstructions(_ customization: [String: Any]) -> String {
         let length = customization["length"] as? String ?? "medium"
@@ -823,4 +713,133 @@ struct APIManager {
             }
         }
     }
+    
+    // Mark: - Conversation ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    static var currentConversationId: UUID? // static variable to store the current conversation id(UUI(Universally Unique Identifier)
+
+    static func chatWithGPT(message: String, conversationId: UUID, customization: [String: Any], completion: @escaping (String?) -> Void) {
+        let apiUrl = URL(string: "https://api.openai.com/v1/chat/completions")!
+        var request = URLRequest(url: apiUrl)
+        request.httpMethod = "POST"
+        request.addValue("Bearer \(openai_apikey)", forHTTPHeaderField: "Authorization")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.timeoutInterval = 300.0
+
+        // Add the new user message to the conversation history
+        ConversationHistory.addUserMessage(message, forConversation: conversationId)
+        
+        let messages = ConversationHistory.getMessages(forConversation: conversationId)
+        
+        // Create a system message with customization instructions
+        let customizationInstructions = createCustomizationInstructions(customization)
+        let systemMessage = ["role": "system", "content": customizationInstructions]
+        
+        // Add the system message to the beginning of the messages array
+        var updatedMessages = [systemMessage] + messages
+        
+        let requestBody: [String: Any] = [
+            "model": "gpt-4o",
+            "messages": updatedMessages
+        ]
+
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: requestBody, options: [])
+        } catch {
+            print("Error serializing request body: \(error)")
+            completion(nil)
+            return
+        }
+
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            if let error = error {
+                print("Error in API call: \(error)")
+                completion(nil)
+                return
+            }
+            
+            guard let data = data else {
+                print("No data received from API")
+                completion(nil)
+                return
+            }
+            
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                let choices = json["choices"] as? [[String: Any]],
+                let firstChoice = choices.first,
+                let message = firstChoice["message"] as? [String: Any],
+                let content = message["content"] as? String {
+                    // Add the AI's response to the conversation history
+                    ConversationHistory.addAssistantMessage(content, forConversation: conversationId)
+                    completion(content)
+                } else {
+                    print("Unexpected JSON structure")
+                    completion(nil)
+                }
+            } catch {
+                print("Error parsing JSON: \(error)")
+                completion(nil)
+            }
+        }
+        task.resume()
+    }
+    
+    class ConversationHistory { // Class to manage the conversation history
+            private static let conversationKey = "ConversationsHistory" // Key to store the conversation history in UserDefaults
+            
+            private static func saveConversation(_ conversations: [UUID: [[String: String]]]) {
+                UserDefaults.standard.set(try? JSONEncoder().encode(conversations), forKey: conversationKey)
+            } // Function to save the conversation history to UserDefaults as JSON, using the conversationKey
+            
+            private static func loadConversation() -> [UUID: [[String: String]]] { // load a conversation saved in UserDefaults
+                guard let data = UserDefaults.standard.data(forKey: conversationKey), // guard statement to check if data exists for the conversationKey
+                      let conversations = try? JSONDecoder().decode([UUID: [[String: String]]].self, from: data) else {
+                    return [:] // '[:]' is an empty dictionary(key-value pair)
+                }
+                return conversations
+            }
+            
+            static func createNewConversation() -> UUID { // Create a new conversation and return the UUID(Universally Unique Identifier)
+                let id = UUID() // init UUID to id
+                var conversations = loadConversation() // load the conversations
+                conversations[id] = [["role": "system", "content": "You are a helpful assistant that provides insights about YouTube videos."]] // Add a system message to the conversation
+                saveConversation(conversations) // Save the conversation
+                return id // Return the UUID
+            }
+            
+            static func clear() { // Clear the conversation history
+                saveConversation([:]) // Save an empty dictionary to the conversationKey, thus clearing values(conversations)
+            }
+            
+            static func addUserMessage(_ message: String, forConversation id: UUID) { // Add user message to message array for each conversation
+                var conversations = loadConversation() // first load the conversation
+                conversations[id, default: []].append(["role": "user", "content": message])
+                saveConversation(conversations)
+            }
+            
+            static func addAssistantMessage(_ message: String, forConversation id: UUID) {
+                var conversations = loadConversation()
+                conversations[id, default: []].append(["role": "assistant", "content": message])
+                saveConversation(conversations)
+            }
+            
+            static func addSystemMessage(_ message: String, forConversation id: UUID) {
+                var conversations = loadConversation()
+                conversations[id, default: []].append(["role": "system", "content": message])
+                saveConversation(conversations)
+            }
+            
+            static func getMessages(forConversation id: UUID) -> [[String: String]] {
+                let conversations = loadConversation()
+                return conversations[id] ?? []
+            }
+            
+            static func clearConversation(_ id: UUID) {
+                var conversations = loadConversation()
+                conversations.removeValue(forKey: id)
+                saveConversation(conversations)
+            }
+        }
+    
+    
 }
