@@ -1,17 +1,24 @@
 import SwiftUI
+//import SharedSettings
 
 struct HomeView: View { // HomeView
     
     @Binding var currentPath: AppNavigationPath // bind to the currentPath
     @EnvironmentObject var settings: SharedSettings // link to environmental 'settingss' objects
 
-    @State private var savedInsights: [String] = [] // arraay to hold insights
+    @State private var savedInsights: [VideoInsight] = [] // array to hold save initial insights conversational data
     @State private var currentRandomInsight: String = "No insights available" // current random insights
     @State private var appearanceCount = 0
 
-    var randomInsight: String { // save the random insight to a 'computed property', essentially this means the property does not store a value directly but computes it on the fly each time it's accessed
-        savedInsights.randomElement() ?? "No insights available" // pick a random element from the savedInsights array, or provide a default message if the array is empty
+    var randomInsight: String {
+        if let randomInsight = savedInsights.randomElement() {
+            // Assuming the AI's summarization is stored in the 'insight' property
+            return randomInsight.insight
+        }
+        return "No insights available"
     }
+
+
     // main body of view
     var body: some View {
         ZStack(alignment: .topTrailing) { // Align content to the top trailing
@@ -79,24 +86,24 @@ struct HomeView: View { // HomeView
             .cornerRadius(10) // corner radius 10
             .padding(.trailing, 20) // padding from the trailing edge
             .padding(.top, 20) // padding from the top
-            .onAppear { // when the view appears
-                appearanceCount += 1 // increment the appearance count
-                UserDefaults.standard.set(appearanceCount, forKey: "appearanceCount") // save the appearance count to UserDefaults as 'appearanceCount'
+            .onAppear {
+                appearanceCount += 1
+                UserDefaults.standard.set(appearanceCount, forKey: "appearanceCount")
+                loadInsights()
+                print("Appearance count: \(appearanceCount)")
 
-                print("Appearance Count: \(appearanceCount)") // print the appearance count
-
-                
-                if appearanceCount % 5 == 0 || savedInsights.isEmpty { // if the appearance count is divisible by 5 OR savedInsights is empty  
-                    if let insights = UserDefaults.standard.object(forKey: "savedInsights") as? [String] { // if there are saved insights in UserDefaults
-                        self.savedInsights = insights // set the loaded insights to the savedInsights array
-                        print("Saved Insights: \(self.savedInsights)") // print the saved insights in the console
-                    } else { // if there are no saved insights in UserDefaults
-                        print("No saved insights found in UserDefaults") // print message in console
-                    }
+                if appearanceCount % 5 == 0 || savedInsights.isEmpty {
+                    if let savedData = UserDefaults.standard.data(forKey: "savedInsights"),
+                       let decodedInsights = try? JSONDecoder().decode([VideoInsight].self, from: savedData) {
+                        self.savedInsights = decodedInsights
+                        print("Saved Insights: \(self.savedInsights)") // print the saved insights in the consol
+                    } else {
+                        print("No saved insights found")
                 }
             }
         }
     }
+}
     
     // Enhanced actionButton function to handle actions.
     func actionButton(title: String, iconName: String, action: @escaping () -> Void) -> some View {
@@ -120,6 +127,18 @@ struct HomeView: View { // HomeView
             .background(Color.blue) // background color blue
             .foregroundColor(.white) // font color white
             .cornerRadius(10) // corner radius 10
+        }
+    }
+
+    func loadInsights() {
+        if let savedData = UserDefaults.standard.data(forKey: "savedInsights"),
+        let decodedInsights = try? JSONDecoder().decode([VideoInsight].self, from: savedData) {
+            self.savedInsights = decodedInsights
+            if let randomInsight = decodedInsights.randomElement() {
+                self.currentRandomInsight = randomInsight.insight
+            } else {
+                self.currentRandomInsight = "No insights available"
+            }
         }
     }
 }
