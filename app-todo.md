@@ -6,6 +6,9 @@
 - [X] give speed conrol to voice funcitonality
 - [X] Add swipe functionality to the library view to go back to the main view/particular conversation
 
+make yt shorts and instgram reals
+
+claudia: im trying to hard when irs not that hard, go over foundational things
 
 
 - [ ] slider to change background colour
