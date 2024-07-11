@@ -6,17 +6,14 @@
 - [X] give speed conrol to voice funcitonality
 - [X] Add swipe functionality to the library view to go back to the main view/particular conversation
 
-make yt shorts and instgram reals
-
-claudia: im trying to hard when irs not that hard, go over foundational things
-
 
 - [ ] slider to change background colour
 - [ ] Cusstom insight is the summarisation itself, NOT the entire conversation, that instead should be saved to a conversational variable
 - [ ] make sure random insight is saved, if it is then it's a problem with homew view
 - [ ] reinstare random insight in homeview
 - [ ] reinstate questions array to choose from
-- [ ] reinstate formatting in chatbubble messages from the AI
+- [X] reinstate formatting in chatbubble messages from the AI
+- [ ] Get AI to create shorts for longer videos??
 - [ ] The customisation doesn't really work
 - [ ] Different categories for how indepth it should go, in letters:(250, 500, 750, 1000)
 - [ ] Test ted_talks API on IOS APP
