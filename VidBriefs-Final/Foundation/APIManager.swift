@@ -41,9 +41,9 @@ struct APIManager {
     
     private static var keychain = KeychainSwift() // Create a KeychainSwift object to store API keys -> secure storage of API keys
 
-    static var openai_apikey: String {
-        ProcessInfo.processInfo.environment["openai-apikey"] ?? "" // fetch OpenAI API key from xcode scheme
-    }
+    static var openai_apikey: String { // Computed property to retrieve the OpenAI API key from the scheme environment
+        ProcessInfo.processInfo.environment["openai-apikey"] ?? "" 
+    } // If openai-apikey is not found in the environment, return an empty string
     
     // Structure to store and manage request timestamps to only allow less than 5 requests a month
     struct RequestTracker {
