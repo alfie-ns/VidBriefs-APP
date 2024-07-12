@@ -16,7 +16,7 @@ struct InsightView: View {
     // Navigation and Environment
     @Binding var currentPath: AppNavigationPath // Binding to the current path of app's navigation
     @EnvironmentObject var settings: SharedSettings // Environment shared settings object
-    @Environment(\.presentationMode) var presentationMode // Environment variable for presentation mode, to dismiss views by swiping down
+    @Environment(\.presentationMode) var presentationMode // Environment variable for presentation mode(to dismiss views by swiping down)
 
     // Video Input and Processing
     @State private var urlInput: String = ""
@@ -54,10 +54,24 @@ struct InsightView: View {
     @State private var summaryStyle: String = "neutral"
     @State private var includeKeyPoints: Bool = false
     @State private var showingCustomizationSheet = false
+
+    // pre-set questions array
+    let presetQuestions = [
+        "What are the main arguments and how are they supported?",
+        "How does this content relate to broader societal trends or academic discourse?",
+        "What potential biases or limitations are present in the video's perspective?",
+        "Can you provide a critical analysis of the methodology or logic used?",
+        "How might the ideas presented impact future developments in this field?",
+        "What ethical considerations arise from the content of this video?",
+        "How does this video compare to other authoritative sources on the topic?",
+        "What are the most surprising or counterintuitive points made?",
+        "Can you summarize this video in the style of a famous philosopher or scientist?",
+        "If this video were a movie, what genre would it be and who would star in it?",
+        "What would be a funny but relevant meme to represent the main idea of this video?",
+        "If the main concept of this video was a superhero, what would be its origin story and superpowers?"
+    ]
     
-    // MARK: - Body ---------------------------------------------------------------------------------------------------------------------------------------------------
-    
-    // function to initialise the VideoInsight object
+    // Function to initialise the VideoInsight object
     init(currentPath: Binding<AppNavigationPath>, existingConversation: VideoInsight? = nil) {
         // Initialise the currentPath binding
         self._currentPath = currentPath 
@@ -66,7 +80,7 @@ struct InsightView: View {
         // If nil is passed, it will create a State with nil value:
         self._existingConversation = State(initialValue: existingConversation)
         
-        // If an existing conversation is provided, initialize other state variables
+        // If an existing conversation is provided, initialise other state variables
         if let conversation = existingConversation {
             // Set the URL input to the conversation title, removing the "Conversation about " prefix
             _urlInput = State(initialValue: conversation.title.replacingOccurrences(of: "Conversation about ", with: ""))
@@ -81,6 +95,8 @@ struct InsightView: View {
             _isVideoLoaded = State(initialValue: true)
         }
     }
+    
+    // MARK: - Body ---------------------------------------------------------------------------------------------------------------------------------------------------
     
     var body: some View {
         ZStack { // ZStack to stack the views on top of each other - e.g. background gradient, VStack, etc.
@@ -109,6 +125,7 @@ struct InsightView: View {
                 speechRateControl // to ajust voice speed
                 
                 chatSection // to display the chat messages and input field pushed to bottom
+
             }
             .padding() // space around the VStack
         }
@@ -135,6 +152,8 @@ struct InsightView: View {
         }
         .foregroundColor(.white)
     }
+
+    // MARK: - Views ---------------------------------------------------------------------------------------------------------------------------------------------------
     
     var videoInputSection: some View { // view that's stacked on top
         VStack(spacing: 18) {
@@ -166,7 +185,6 @@ struct InsightView: View {
                     )
                 }
                 
-
                 //Button("Regenerate")
                 // ...
             }
@@ -196,6 +214,24 @@ struct InsightView: View {
                     }
                 }
             }
+
+            Picker("Select a question", selection: $selectedQuestion) {
+                Text("Choose a question...").tag("")
+                ForEach(presetQuestions, id: \.self) { question in
+                    Text(question).tag(question)
+                }
+            }
+            .pickerStyle(MenuPickerStyle())
+            .foregroundColor(.customTeal)
+            .onChange(of: selectedQuestion) { newValue in
+                if !newValue.isEmpty {
+                    currentMessage = newValue
+                    selectedQuestion = "" // Reset selection after filling the input
+                }
+            }
+            .padding()
+            .background(Color.white.opacity(0.1))
+            .cornerRadius(10)
             
             HStack {
                 TextField("Type a message", text: $currentMessage)
@@ -209,35 +245,12 @@ struct InsightView: View {
                         .cornerRadius(10)
                 }
                 .disabled(currentMessage.isEmpty)
-                
-                Button(action: toggleHighlighting) {
-                    Image(systemName: isHighlighting ? "highlighter" : "text.magnifyingglass")
-                        .foregroundColor(.white)
-                        .padding(8)
-                        .background(Color.orange)
-                        .cornerRadius(10)
-                }
             }
             .padding()
         }
     }
     
-    
-    func toggleHighlighting() {
-        isHighlighting.toggle()
-        if isHighlighting {
-            highlightedWords = extractKeywords(from: videoTranscript)
-        } else {
-            highlightedWords = []
-        }
-    }
-    
-    func extractKeywords(from text: String) -> [String] {
-        let words = text.components(separatedBy: .whitespacesAndNewlines)
-        let commonWords = Set(["the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for", "of", "with", "by"])
-        return Array(Set(words.filter { $0.count > 3 && !commonWords.contains($0.lowercased()) })).prefix(20).map { $0 }
-    }
-    
+    // MARK: - Functions ---------------------------------------------------------------------------------------------------------------------------------------------------
     
     func speakMessage(_ message: String) {
         if isSpeaking {
@@ -440,24 +453,34 @@ struct InsightView: View {
     
 }
 
+// This struct creates a SwiftUI view that wraps a UITextView to display attributed text
 struct AttributedTextView: UIViewRepresentable {
+    // Property to hold the attributed text that will be displayed
     let attributedText: NSAttributedString
 
+    // This function creates and returns a configured UITextView
     func makeUIView(context: Context) -> UITextView {
+        // Create a new instance of UITextView
         let textView = UITextView()
+        // Disable editing of the text view
         textView.isEditable = false
+        // Disable scrolling in the text view
         textView.isScrollEnabled = false
+        // Set the background of the text view to be transparent
         textView.backgroundColor = .clear
+        // Return the configured text view
         return textView
     }
 
+    // This function updates the UITextView when the SwiftUI view updates
     func updateUIView(_ uiView: UITextView, context: Context) {
+        // Set the attributed text of the UITextView to the struct's attributedText property
         uiView.attributedText = attributedText
     }
 }
 
 
-
+// ChatBubble struct - to display the chat messages in the chat section
 struct ChatBubble: View {
     let message: ChatMessage
     let speak: (String) -> Void
@@ -497,3 +520,5 @@ struct ChatBubble: View {
         .padding(.horizontal)
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
