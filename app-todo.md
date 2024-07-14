@@ -10,7 +10,7 @@
 - [ ] Cusstom insight is the summarisation itself, NOT the entire conversation, that instead should be saved to a conversational variable
 - [ ] make sure random insight is saved, if it is then it's a problem with homew view
 - [ ] reinstare random insight in homeview
-- [ ] reinstate questions array to choose from
+- [X] reinstate questions array to choose from
 - [X] reinstate formatting in chatbubble messages from the AI
 - [ ] Get AI to create shorts for longer videos??
 - [ ] The customisation doesn't really work
