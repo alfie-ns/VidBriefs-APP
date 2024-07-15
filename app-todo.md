@@ -8,9 +8,13 @@
 - [X] give speed conrol to voice funcitonality
 - [X] Add swipe functionality to the library view to go back to the main view/particular conversation
 
+---
+
 - [ ] PERSONALITY-PICKER - InsightView.swift line 42
 - [ ] slider to change background colour
 - [ ] Make the AI be able to search on the internet for more info, and specify it's happening with a 'browing' tag
+
+---
 
 - [ ] Cusstom insight is the summarisation itself, NOT the entire conversation, that instead should be saved to a conversational variable
 - [ ] make sure random insight is saved, if it is then it's a problem with homew view
