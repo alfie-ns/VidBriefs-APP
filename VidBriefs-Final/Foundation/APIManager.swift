@@ -38,6 +38,18 @@ enum TranscriptSource {
 // MARK: - APIManager ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 struct APIManager {
+
+    // Mark: - [ ] Personality Picker ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @State private var showingPersonalityPicker = true
+    @State private var selectedPersonality = "friendly and helpful"
+
+    let personalityOptions = [
+        "concise", "analytical", "creative", "humorous", 
+        "empathetic", "motivational", "skeptical", "educational", 
+        "technical", "casual", "formal", "enthusiastic"
+    ]
+    // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
     
     private static var keychain = KeychainSwift() // Create a KeychainSwift object to store API keys -> secure storage of API keys
 

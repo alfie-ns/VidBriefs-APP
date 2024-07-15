@@ -1,17 +1,20 @@
 # App To-Do List
 
 - [X] Make IOS APP part for ted_talks
+- [X] reinstate questions array to choose from
+- [X] reinstate formatting in chatbubble messages from the AI
 - [X] FIX: A conversation is not be accessed from the libraryview
 - [X] Get the speaking/speech functionality working again(where it's highltighting the test it's read out)
 - [X] give speed conrol to voice funcitonality
 - [X] Add swipe functionality to the library view to go back to the main view/particular conversation
+
+- [ ] PERSONALITY-PICKER - InsightView.swift line 42
 - [ ] slider to change background colour
 - [ ] Make the AI be able to search on the internet for more info, and specify it's happening with a 'browing' tag
+
 - [ ] Cusstom insight is the summarisation itself, NOT the entire conversation, that instead should be saved to a conversational variable
 - [ ] make sure random insight is saved, if it is then it's a problem with homew view
 - [ ] reinstare random insight in homeview
-- [X] reinstate questions array to choose from
-- [X] reinstate formatting in chatbubble messages from the AI
 - [ ] Get AI to create shorts for longer videos??
 - [ ] The customisation doesn't really work
 - [ ] Different categories for how indepth it should go, in letters:(250, 500, 750, 1000)
