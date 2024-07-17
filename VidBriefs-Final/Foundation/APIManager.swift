@@ -41,8 +41,8 @@ struct APIManager {
 
     // Mark: - [ ] Personality Picker ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    @State private var showingPersonalityPicker = true
-    @State private var selectedPersonality = "friendly and helpful"
+    //@State private var showingPersonalityPicker = true
+    //@State private var selectedPersonality = "friendly and helpful"
 
     let personalityOptions = [
         "concise", "analytical", "creative", "humorous", 
