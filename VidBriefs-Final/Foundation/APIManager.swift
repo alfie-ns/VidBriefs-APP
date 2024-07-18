@@ -188,7 +188,7 @@ struct APIManager {
         ConversationHistory.addUserMessage(message, forConversation: APIManager.currentConversationId ?? UUID())
 
         let requestBody: [String: Any] = [
-            "model": "gpt-4o",
+            "model": "gpt-4o-mini",
             "messages": ConversationHistory.getMessages(forConversation: APIManager.currentConversationId ?? UUID())
         ]
 
@@ -270,7 +270,7 @@ struct APIManager {
             // Request Body for OpenAI API call
             let requestBody: [String: Any] = [
                 
-                "model": "gpt-4o", // [ ] OPTION TO CHANGE TO 3.5
+                "model": "gpt-4o-mini", // [ ] OPTION TO CHANGE TO 3.5
                 "messages": systemMessages // Pass systemMessages list as messages for API call
             ]
             
@@ -343,7 +343,7 @@ struct APIManager {
                 // Construct the body of the request with the task and the summaries
                 let requestBody: [String: Any] = [
                     
-                    "model": "gpt-4o", // Specify  model to use
+                    "model": "gpt-4o-mini", // Specify  model to use
                     "messages": [["role": "system", "content": """
                                 
                                   Your task is now to summarise all the relevant pieces
@@ -750,7 +750,7 @@ struct APIManager {
         var updatedMessages = [systemMessage] + messages
         
         let requestBody: [String: Any] = [
-            "model": "gpt-4o",
+            "model": "gpt-4o-mini",
             "messages": updatedMessages
         ]
 
