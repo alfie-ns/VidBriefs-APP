@@ -101,10 +101,10 @@ struct InsightView: View {
     
     var body: some View {
         ZStack { // ZStack to stack the views on top of each other - e.g. background gradient, VStack, etc.
-            LinearGradient( // Background gradient
-                gradient: Gradient(colors: [Color.black, Color.customTeal, Color.gray]),
-                startPoint: .top,    // Gradient starts from the top of the view
-                endPoint: .bottom    // and transitions with top(black)->middle(customTeal)->bottom(gray)
+            LinearGradient(
+                gradient: Gradient(colors: [Color.black, Color.customTeal.opacity(0.8)]),
+                startPoint: .top,
+                endPoint: .bottom
             )
             .edgesIgnoringSafeArea(.all) // so background stretches to the edges of the screen
             // This creates a vertical gradient that transitions from black at the top, 
@@ -154,7 +154,7 @@ struct InsightView: View {
         .foregroundColor(.white)
     }
 
-    // MARK: - Views ---------------------------------------------------------------------------------------------------------------------------------------------------
+    // MARK: - View ---------------------------------------------------------------------------------------------------------------------------------------------------
     
     var videoInputSection: some View { // view that's stacked on top
         VStack(spacing: 18) {
@@ -236,12 +236,30 @@ struct InsightView: View {
                 }
             }
 
-            Picker("Select a question", selection: $selectedQuestion) {
-                Text("Choose a question...").tag("")
+            Menu {
                 ForEach(presetQuestions, id: \.self) { question in
-                    Text(question).tag(question)
+                    Button(action: {
+                        self.currentMessage = question
+                        self.selectedQuestion = ""
+                    }) {
+                        Text(question)
+                    }
                 }
+            } label: {
+                HStack {
+                    Text(selectedQuestion.isEmpty ? "Choose a question..." : selectedQuestion)
+                        .foregroundColor(.white)
+                    Spacer()
+                    Image(systemName: "chevron.down")
+                        .foregroundColor(.white)
+                }
+                .padding()
+                .background(Color.customTeal.opacity(0.6))
+                .cornerRadius(10)
+                .frame(maxWidth: .infinity)
             }
+            .padding(.horizontal)
+            
             .pickerStyle(MenuPickerStyle())
             .foregroundColor(.customTeal)
             .onChange(of: selectedQuestion) { newValue in
