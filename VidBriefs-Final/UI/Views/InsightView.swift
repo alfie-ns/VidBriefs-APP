@@ -30,6 +30,7 @@ struct InsightView: View {
     @State private var currentMessage: String = "" // Current message being sent
     @State private var currentConversationId: UUID?
     @State private var existingConversation: VideoInsight?
+    @State private var showingSaveConfirmation = false
 
     // Insights and API: API Response and Summarisations
     @State private var customInsight: String = ""
@@ -55,7 +56,7 @@ struct InsightView: View {
     @State private var includeKeyPoints: Bool = false
     @State private var showingCustomizationSheet = false
 
-    // pre-set questions array
+    // pre-set questions array [ ] 
     let presetQuestions = [
         "What are the main arguments and how are they supported?",
         "How does this content relate to broader societal trends or academic discourse?",
@@ -136,7 +137,7 @@ struct InsightView: View {
         }
     }
     
-    var backButton: some View { //
+    var backButton: some View { // button
         Button(action: {
             self.presentationMode.wrappedValue.dismiss()
         }) {
@@ -187,6 +188,26 @@ struct InsightView: View {
                 
                 //Button("Regenerate")
                 // ...
+
+                //Button("Highlight") {
+                // ...
+
+                //Button("Save") {
+                // save the conversation
+
+                //Button("Share") {
+                // ...
+
+                //Button("Export") {
+                // ...
+
+                //Button("Delete") {
+                // ...
+
+                //Button("More") {
+                // this will be something where the user can ask questions and iit will have insight of where
+
+
             }
             
             if isLoading { // if the video is loading from API
