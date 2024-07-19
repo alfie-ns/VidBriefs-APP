@@ -750,7 +750,7 @@ struct APIManager {
         var updatedMessages = [systemMessage] + messages
         
         let requestBody: [String: Any] = [
-            "model": "gpt-4o-mini",
+            "model": "gpt-4o",
             "messages": updatedMessages
         ]
 
