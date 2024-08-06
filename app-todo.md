@@ -7,6 +7,7 @@
 - [X] Get the speaking/speech functionality working again(where it's highltighting the test it's read out)
 - [X] give speed conrol to voice funcitonality
 - [X] Add swipe functionality to the library view to go back to the main view/particular conversation
+- [ ] put TedTalksView in the app navigation
 
 ---
 

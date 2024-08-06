@@ -29,6 +29,7 @@
 		34F011F52AFA531400FF1957 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F011F42AFA531400FF1957 /* SettingsView.swift */; };
 		34F011F72AFA532D00FF1957 /* TermsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F011F62AFA532D00FF1957 /* TermsView.swift */; };
 		34F3A7922B24E7A0001045A0 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 34F3A7912B24E7A0001045A0 /* KeychainSwift */; };
+		A30BC5092C62D9B70065CF62 /* TedTalkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30BC5082C62D9B70065CF62 /* TedTalkView.swift */; };
 		A311728F2C2269770046A62D /* LoadingSign.swift in Sources */ = {isa = PBXBuildFile; fileRef = A311728E2C2269770046A62D /* LoadingSign.swift */; };
 /* End PBXBuildFile section */
 
@@ -57,6 +58,7 @@
 		34F011F62AFA532D00FF1957 /* TermsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsView.swift; sourceTree = "<group>"; };
 		34F012002AFA5C0500FF1957 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		34F5F2502B02C05100EC6B28 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		A30BC5082C62D9B70065CF62 /* TedTalkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TedTalkView.swift; sourceTree = "<group>"; };
 		A311728E2C2269770046A62D /* LoadingSign.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LoadingSign.swift; path = "VidBriefs-Final/LoadingSign/LoadingSign.swift"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -128,6 +130,7 @@
 				34F011F42AFA531400FF1957 /* SettingsView.swift */,
 				34F011F62AFA532D00FF1957 /* TermsView.swift */,
 				348942302AFC0D5F0035B716 /* AboutView.swift */,
+				A30BC5082C62D9B70065CF62 /* TedTalkView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -251,6 +254,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A30BC5092C62D9B70065CF62 /* TedTalkView.swift in Sources */,
 				34F011ED2AFA52AB00FF1957 /* HomeView.swift in Sources */,
 				34F011EF2AFA52C300FF1957 /* InsightView.swift in Sources */,
 				349EF5F12B09058200AC8CA1 /* RequestLimitTracker.swift in Sources */,

@@ -157,7 +157,7 @@ struct InsightView: View {
     // MARK: - View ---------------------------------------------------------------------------------------------------------------------------------------------------
     
     var videoInputSection: some View { // view that's stacked on top
-        VStack(spacing: 18) {
+        VStack(spacing: 18) { // TOP
             TextField("Enter YouTube URL", text: $urlInput)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .autocapitalization(.none)
@@ -219,7 +219,7 @@ struct InsightView: View {
     }
     
     var chatSection: some View { // view that's stacked at the bottom
-        VStack { // TOP
+        VStack {
             ScrollViewReader { proxy in // ScrollViewReader to scroll to the bottom of the chat
                 ScrollView { // ScrollView so user can scroll
                     LazyVStack { //
