@@ -107,71 +107,67 @@ struct AppNavigation: View {
 import SwiftUI
 
 @MainActor
-struct AppNavigation: View { // main struct for the app navigation
-    
-    // State variable to track the current navigation path
+struct AppNavigation: View {
     @State private var currentPath: AppNavigationPath = .root
-    
+    @State private var showingTedTalkView = false
+
     var body: some View {
-        ZStack { // ZStack overlays views, allowing conditional navigation views to be layered
-            if AppNavigationPath.tabs.contains(currentPath) { 
-                // If the current path corresponds to a tab, create the tab view, creatomg a tab 
-                createTabView() // setting up this entire tabbed interface structure for the respective view/
-            } else {
-                // Otherwise, create the corresponding view for the current path
-                createView(for: currentPath)
+        NavigationView {
+            ZStack {
+                if AppNavigationPath.tabs.contains(currentPath) {
+                    createTabView()
+                } else {
+                    createView(for: currentPath)
+                }
             }
-            // In a TabView, only one tab's content (Home, Insights, Library, Settings, Terms, Feedback, TedTalks)
-            // is visible at a time. Switching tabs replaces the visible content entirely.
-            // Views like 'about' that aren't in the tab bar would be navigated to separately,
-            // typically pushing onto a navigation stack rather than being part of the TabView.
+            .background(Color.customTeal)
+            .edgesIgnoringSafeArea(.all)
+            .fullScreenCover(isPresented: $showingTedTalkView) {
+                TedTalkView(currentPath: $currentPath)
+            }
         }
-        .background(Color.customTeal) // Set background color
-        .edgesIgnoringSafeArea(.all) // Extend background to cover the entire screen
     }
-    
-    // Function to create the tab view for paths in the `tabs` list
+
     @ViewBuilder
     private func createTabView() -> some View {
-        TabView(selection: $currentPath) { // TabView binding to `currentPath`
+        TabView(selection: $currentPath) {
             ForEach(AppNavigationPath.tabs, id: \.self) { path in
-                // Iterate over all tab paths, creating a view for each
                 createView(for: path)
                     .tabItem {
-                        // Set the tab's label and icon based on the enum's properties
                         Label(path.tabLabel, systemImage: path.tabIcon)
                     }
-                    .tag(path) // Tag the tab item with its corresponding path
+                    .tag(path)
             }
         }
-        .tabViewStyle(PageTabViewStyle()) // Use the page style for tabs
-        .edgesIgnoringSafeArea(.all) // Ensure the tab view covers the entire screen
+        .tabViewStyle(PageTabViewStyle())
+        .edgesIgnoringSafeArea(.all)
     }
-    
-    // Function to create the corresponding view for a given path
+
     @ViewBuilder
     private func createView(for path: AppNavigationPath) -> some View {
         switch path {
         case .root:
-            RootView(currentPath: $currentPath) // Root view
+            RootView(currentPath: $currentPath)
         case .home:
-            HomeView(currentPath: $currentPath) // Home view
+            HomeView(currentPath: $currentPath)
         case .insights:
-            InsightView(currentPath: $currentPath) // Insights view
+            InsightView(currentPath: $currentPath)
         case .libary:
-            LibraryView(currentPath: $currentPath) // Library view
+            LibraryView(currentPath: $currentPath)
         case .settings:
-            SettingsView(currentPath: $currentPath) // Settings view
+            SettingsView(currentPath: $currentPath)
         case .about:
-            AboutView(currentPath: $currentPath) // About view
+            AboutView(currentPath: $currentPath)
         case .terms:
-            TermsView(currentPath: $currentPath) // Terms view
+            TermsView(currentPath: $currentPath)
         case .feedback:
-            FeedbackView(currentPath: $currentPath) // Feedback view
+            FeedbackView(currentPath: $currentPath)
         case .tedtalks:
-            TedTalkView(currentPath: $currentPath) // TedTalks view
+            Button("Open TED Talks") {
+                showingTedTalkView = true
+            }
         default:
-            EmptyView() // Handle unexpected paths gracefully
+            EmptyView()
         }
     }
 }
