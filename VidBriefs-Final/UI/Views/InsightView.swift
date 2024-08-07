@@ -335,7 +335,7 @@ struct InsightView: View {
         currentConversationId = APIManager.ConversationHistory.createNewConversation()
         print("Starting new conversation with ID: \(currentConversationId?.uuidString ?? "nil")")
         
-        APIManager.GetTranscript(yt_url: urlInput) { success, transcript in
+        APIManager.GetYtTranscript(yt_url: urlInput) { success, transcript in
             DispatchQueue.main.async {
                 isLoading = false
                 if success, let transcript = transcript {
@@ -356,7 +356,7 @@ struct InsightView: View {
 
     func askQuestion() {
         isLoading = true
-        APIManager.handleCustomInsightAll(url: urlInput, source: .youtube, userPrompt: customInsight) { success, response in
+        APIManager.handleCustomInsightAll(input: urlInput, source: .youtube, userPrompt: customInsight) { success, response in
             DispatchQueue.main.async {
                 isLoading = false
                 if success, let response = response {

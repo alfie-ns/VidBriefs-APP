@@ -9,42 +9,31 @@ import SwiftUI
 import AVFoundation
 
 struct TedTalkView: View {
-
     // MARK: - Properties
 
-    // Navigation and Environment
     @Binding var currentPath: AppNavigationPath
     @EnvironmentObject var settings: SharedSettings
     @Environment(\.presentationMode) var presentationMode
 
-    // TED Talk Data
-    @State private var selectedTalk: TedTalkInfo?
+    @State private var selectedTalk: String?
     @State private var talkTranscript: String = ""
     @State private var isLoading = false
-
-    // Chat and Conversation
     @State private var tedChatMessages: [TedChatMessage] = []
     @State private var currentMessage: String = ""
     @State private var currentTedConversationId: UUID?
-
-    // Speech Synthesis
     @State private var speechSynthesizer = AVSpeechSynthesizer()
     @State private var isSpeaking = false
     @State private var speechRate: Float = 0.5
-
-    // UI Control
     @State private var showingTalkPicker = false
+    @State private var allTalks: [String] = []
+    @State private var recommendedTalks: [String] = []
 
     // MARK: - Body
 
     var body: some View {
         ZStack {
-            LinearGradient(
-                gradient: Gradient(colors: [Color.black, Color.red.opacity(0.8)]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .edgesIgnoringSafeArea(.all)
+            LinearGradient(gradient: Gradient(colors: [Color.black, Color.red.opacity(0.8)]), startPoint: .top, endPoint: .bottom)
+                .edgesIgnoringSafeArea(.all)
 
             VStack(spacing: 20) {
                 Text("TED Talks Insights")
@@ -65,9 +54,8 @@ struct TedTalkView: View {
         }
         .edgesIgnoringSafeArea(.all)
         .navigationBarItems(leading: backButton, trailing: newTedChatButton)
-        .onDisappear {
-            saveTedConversation()
-        }
+        .onAppear(perform: loadAllTalks)
+        .onDisappear(perform: saveTedConversation)
     }
 
     // MARK: - View Components
@@ -77,18 +65,18 @@ struct TedTalkView: View {
             Button(action: {
                 showingTalkPicker = true
             }) {
-                Text(selectedTalk?.title ?? "Select a TED Talk")
+                Text(selectedTalk ?? "Select a TED Talk")
                     .foregroundColor(.white)
                     .padding()
                     .background(Color.red)
                     .cornerRadius(10)
             }
             .sheet(isPresented: $showingTalkPicker) {
-                TedTalkPickerView(selectedTalk: $selectedTalk)
+                TedTalkPickerView(selectedTalk: $selectedTalk, allTalks: allTalks)
             }
 
             if let talk = selectedTalk {
-                Text("Speaker: \(talk.speaker)")
+                Text("Selected Talk: \(talk)")
                     .foregroundColor(.white)
             }
 
@@ -111,11 +99,11 @@ struct TedTalkView: View {
                         }
                     }
                 }
-                //.onChange(of: tedChatMessages) { _ in
-                //    if let lastMessage = tedChatMessages.last {
-                //        proxy.scrollTo(lastMessage.id, anchor: .bottom)
-                //    }
-                //}
+                .onChange(of: tedChatMessages) { _ in
+                    if let lastMessage = tedChatMessages.last {
+                        proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                    }
+                }
             }
 
             HStack {
@@ -158,18 +146,29 @@ struct TedTalkView: View {
                 .foregroundColor(.white)
 
             HStack {
-                Text("Slow")
-                    .foregroundColor(.white)
-                Slider(value: $speechRate, in: 0.1...1.0)
-                    .accentColor(.red)
-                Text("Fast")
-                    .foregroundColor(.white)
+                Text("Slow").foregroundColor(.white)
+                Slider(value: $speechRate, in: 0.1...1.0).accentColor(.red)
+                Text("Fast").foregroundColor(.white)
             }
         }
         .padding()
     }
 
     // MARK: - Functions
+
+    func loadAllTalks() {
+        APIManager.listAllTedTalks { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let talks):
+                    self.allTalks = talks
+                case .failure(let error):
+                    print("Failed to load TED Talks: \(error.localizedDescription)")
+                    // Handle error (e.g., show an alert to the user)
+                }
+            }
+        }
+    }
 
     func startNewTedChat() {
         selectedTalk = nil
@@ -178,35 +177,50 @@ struct TedTalkView: View {
         currentTedConversationId = nil
     }
 
-    func loadTalkTranscript() {
-        guard let talk = selectedTalk else { return }
-        isLoading = true
-        // Here you would typically load the transcript from your data source
-        // For this example, we'll just use a placeholder
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.talkTranscript = "This is a placeholder transcript for \(talk.title) by \(talk.speaker)."
-            self.isLoading = false
-            self.currentTedConversationId = UUID()
-            self.tedChatMessages.append(TedChatMessage(content: "TED Talk loaded. How can I help you with insights from this talk?", isUser: false))
-        }
-    }
-
     func sendTedMessage() {
-        guard let conversationId = currentTedConversationId else {
-            tedChatMessages.append(TedChatMessage(content: "Error: No active conversation. Please select a TED Talk first.", isUser: false))
-            return
-        }
-
         let userMessage = currentMessage
         tedChatMessages.append(TedChatMessage(content: userMessage, isUser: true))
         currentMessage = ""
 
-        // Here you would typically send the message to your AI model
-        // For this example, we'll just echo the message
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            let response = "This is a placeholder response to: \(userMessage)"
-            self.tedChatMessages.append(TedChatMessage(content: response, isUser: false))
-            self.saveTedConversation()
+        if selectedTalk == nil {
+            if let number = Int(userMessage), number > 0 && number <= recommendedTalks.count {
+                // User has selected a talk by number
+                let selectedTalkTitle = recommendedTalks[number - 1]
+                selectedTalk = selectedTalkTitle
+                tedChatMessages.append(TedChatMessage(content: "You've selected: \(selectedTalkTitle). What would you like to know about this talk?", isUser: false))
+            } else {
+                // Treat as a new query if it's not a valid number
+                APIManager.handleTedTalkConversation(userInput: userMessage) { response in
+                    DispatchQueue.main.async {
+                        self.tedChatMessages.append(TedChatMessage(content: response, isUser: false))
+                        if response.contains("Based on your input, here are some TED Talks you might be interested in:") {
+                            self.recommendedTalks = response.components(separatedBy: "\n")
+                                .filter { $0.contains(". ") }
+                                .map { $0.components(separatedBy: ". ")[1] }
+                        }
+                    }
+                }
+            }
+        } else if let talk = selectedTalk {
+            // Process query about the selected talk
+            APIManager.getTedTalkTranscript(title: talk) { result in
+                switch result {
+                case .success(let transcript):
+                    APIManager.chatWithGPT(message: "Based on the following TED Talk transcript, please answer the user's question: '\(userMessage)'\n\nTranscript:\n\(transcript)", conversationId: self.currentTedConversationId ?? UUID(), customization: [:]) { response in
+                        DispatchQueue.main.async {
+                            if let response = response {
+                                self.tedChatMessages.append(TedChatMessage(content: response, isUser: false))
+                            } else {
+                                self.tedChatMessages.append(TedChatMessage(content: "I'm sorry, I couldn't generate a response based on the transcript.", isUser: false))
+                            }
+                        }
+                    }
+                case .failure(let error):
+                    DispatchQueue.main.async {
+                        self.tedChatMessages.append(TedChatMessage(content: "I'm sorry, I couldn't fetch the transcript for this TED Talk. Error: \(error.localizedDescription)", isUser: false))
+                    }
+                }
+            }
         }
     }
 
@@ -229,35 +243,19 @@ struct TedTalkView: View {
     }
 }
 
-struct TedTalkInfo: Identifiable {
-    let id = UUID()
-    let title: String
-    let speaker: String
-}
-
 struct TedTalkPickerView: View {
-    @Binding var selectedTalk: TedTalkInfo?
+    @Binding var selectedTalk: String?
     @Environment(\.presentationMode) var presentationMode
-
-    let talks = [
-        TedTalkInfo(title: "The power of vulnerability", speaker: "Brené Brown"),
-        TedTalkInfo(title: "Your body language may shape who you are", speaker: "Amy Cuddy"),
-        TedTalkInfo(title: "How great leaders inspire action", speaker: "Simon Sinek")
-    ]
+    let allTalks: [String]
 
     var body: some View {
         NavigationView {
-            List(talks) { talk in
+            List(allTalks, id: \.self) { talk in
                 Button(action: {
                     selectedTalk = talk
                     presentationMode.wrappedValue.dismiss()
                 }) {
-                    VStack(alignment: .leading) {
-                        Text(talk.title)
-                            .font(.headline)
-                        Text(talk.speaker)
-                            .font(.subheadline)
-                    }
+                    Text(talk)
                 }
             }
             .navigationTitle("Select a TED Talk")
@@ -273,31 +271,36 @@ struct TedChatBubble: View {
     var body: some View {
         HStack {
             if message.isUser { Spacer() }
-
             VStack(alignment: .leading, spacing: 5) {
                 Text(message.content)
                     .padding()
                     .background(message.isUser ? Color.blue : Color.gray)
                     .foregroundColor(.white)
                     .cornerRadius(10)
-
-                Button(action: {
-                    speak(message.content)
-                }) {
+                Button(action: { speak(message.content) }) {
                     Image(systemName: "speaker.wave.2.fill")
                         .foregroundColor(.white)
                 }
                 .padding(.leading, 10)
             }
-
             if !message.isUser { Spacer() }
         }
         .padding(.horizontal)
     }
 }
 
-struct TedChatMessage: Identifiable {
-    let id = UUID()
+struct TedChatMessage: Identifiable, Equatable {
+    let id: UUID
     let content: String
     let isUser: Bool
+    
+    init(id: UUID = UUID(), content: String, isUser: Bool) {
+        self.id = id
+        self.content = content
+        self.isUser = isUser
+    }
+    
+    static func == (lhs: TedChatMessage, rhs: TedChatMessage) -> Bool {
+        return lhs.id == rhs.id && lhs.content == rhs.content && lhs.isUser == rhs.isUser
+    }
 }

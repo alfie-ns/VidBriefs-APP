@@ -61,6 +61,12 @@ struct SettingsView: View { // SettingsView structure
                         actionButton(title: "About", iconName: "info.circle.fill", action: {
                             currentPath = .about
                         })
+                        actionButton(title: "Ted Talks", iconName: "play.rectangle.fill", action: {
+                            currentPath = .tedtalks
+                        })
+                        actionButton(title: "Logout", iconName: "arrowshape.turn.up.left.fill", action: {
+                            showLogoutAlert = true
+                        })
                     }
                     .padding(.horizontal)
                     .alert(isPresented: $showTermsAlert) {

@@ -108,28 +108,23 @@ struct APIManager {
     
     // NOT USED ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     // Function to handle all custom insight requests from API for transcript to turn into an insight
-    static func handleCustomInsightAll(url: String, source: TranscriptSource, userPrompt: String, completion: @escaping (Bool, String?) -> Void) {
-
-        // Step 0: Init conversation history
-        // ----------------------------------
-
+    static func handleCustomInsightAll(input: String, source: TranscriptSource, userPrompt: String, completion: @escaping (Bool, String?) -> Void) {
         ConversationHistory.clear()
         ConversationHistory.addUserMessage(userPrompt, forConversation: APIManager.currentConversationId ?? UUID())
 
-        // Begin the conversation with the user prompt
-
-        // Step 1: clone entire transcript
-        // ----------------------------------
-
-        // Choose the appropriate function to fetch the transcript based on the source
         switch source {
         case .youtube:
-            GetTranscript(yt_url: url) { (success, transcript) in
+            GetYtTranscript(yt_url: input) { (success, transcript) in
                 processTranscriptFetchResult(success: success, transcript: transcript, userPrompt: userPrompt, completion: completion)
             }
         case .tedTalk:
-            GetTedTalkTranscript(ted_url: url) { (success, transcript) in
-                processTranscriptFetchResult(success: success, transcript: transcript, userPrompt: userPrompt, completion: completion)
+            getTedTalkTranscript(title: input) { result in
+                switch result {
+                case .success(let transcript):
+                    processTranscriptFetchResult(success: true, transcript: transcript, userPrompt: userPrompt, completion: completion)
+                case .failure(let error):
+                    completion(false, "Failed to fetch TED Talk transcript: \(error.localizedDescription)")
+                }
             }
         }
     }
@@ -392,9 +387,10 @@ struct APIManager {
             }
         }
 
-    
+    // Mark: YouTube API Call ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     // GET TRANSCRIPT API CALL
-    static func GetTranscript(yt_url: String, completion: @escaping (Bool, String?) -> Void) {
+    static func GetYtTranscript(yt_url: String, completion: @escaping (Bool, String?) -> Void) {
         
         let getTranscriptUrl = URL(string: "http://127.0.0.1:8000/youtube/get_youtube_transcript/")! // '!' means 'must have a value
         //let getTranscriptUrl = URL(string: "http://34.66.187.223:8000/response/get_youtube_transcript/")!
@@ -452,78 +448,8 @@ struct APIManager {
         }.resume() // Resume the task if it's in a suspended state; this starts the network call
     }
 
-    static func highlightWords(in text: String, words: [String]) -> NSAttributedString {
-        
-    let attributedString = NSMutableAttributedString(string: text)
-    let wholeRange = NSRange(location: 0, length: text.utf16.count)
-    
-    // Default attributes
-    attributedString.addAttribute(.foregroundColor, value: UIColor.white, range: wholeRange)
-    attributedString.addAttribute(.font, value: UIFont.systemFont(ofSize: 16), range: wholeRange)
-    
-    for word in words {
-        let pattern = "\\b\(NSRegularExpression.escapedPattern(for: word))\\b"
-        do {
-            let regex = try NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
-            let matches = regex.matches(in: text, options: [], range: wholeRange)
-            
-            for match in matches {
-                attributedString.addAttribute(.backgroundColor, value: UIColor.yellow, range: match.range)
-                attributedString.addAttribute(.foregroundColor, value: UIColor.black, range: match.range)
-                attributedString.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: 16), range: match.range)
-            }
-        } catch {
-            print("Error creating regex: \(error.localizedDescription)")
-        }
-    }
-    
-    return attributedString
-}
+    // Mark: - AI processing ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    // NEW - TEST [ ] 
-    static func GetTedTalkTranscript(ted_url: String, completion: @escaping (Bool, String?) -> Void) {
-
-        let getTedTalkTranscriptUrl = URL(string: "http://127.0.0.1:8000/ted_talks/get_tedtalk_transcripts/")! // Adjust the URL to your Django endpoint
-
-        var request = URLRequest(url: getTedTalkTranscriptUrl)
-        request.httpMethod = "POST"
-        request.timeoutInterval = 3000
-
-        let parameters: [String: Any] = [
-            "url": ted_url
-        ]
-
-        request.httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: [])
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let httpResponse = response as? HTTPURLResponse else {
-                completion(false, "Fetch failed.")
-                return
-            }
-
-            switch httpResponse.statusCode {
-            case 200...299:
-                if let data = data {
-                    do {
-                        let decodedData = try JSONDecoder().decode([String: String].self, from: data)
-                        if let responseString = decodedData["response"] {
-                            completion(true, responseString)
-                        } else {
-                            completion(false, "Key not found.")
-                        }
-                    } catch {
-                        completion(false, "Decoding failed.")
-                    }
-                } else {
-                    completion(false, "No data.")
-                }
-            default:
-                completion(false, "Fetch failed with status code: \(httpResponse.statusCode).")
-            }
-        }.resume()
-    }
-    
     // BREAK TRANSCRIPT INTO CHUNKS
     // Break into chunks and process an entire video transcript if token length exceeds 80,000
     static func breakIntoChunks(transcript: String, maxTokens: Int = 80000) -> [String] {
@@ -555,6 +481,164 @@ struct APIManager {
         return chunks // Send back all the chunks made
     }
 
+    static func highlightWords(in text: String, words: [String]) -> NSAttributedString {
+        
+    let attributedString = NSMutableAttributedString(string: text)
+    let wholeRange = NSRange(location: 0, length: text.utf16.count)
+    
+    // Default attributes
+    attributedString.addAttribute(.foregroundColor, value: UIColor.white, range: wholeRange)
+    attributedString.addAttribute(.font, value: UIFont.systemFont(ofSize: 16), range: wholeRange)
+    
+    for word in words {
+        let pattern = "\\b\(NSRegularExpression.escapedPattern(for: word))\\b"
+        do {
+            let regex = try NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
+            let matches = regex.matches(in: text, options: [], range: wholeRange)
+            
+            for match in matches {
+                attributedString.addAttribute(.backgroundColor, value: UIColor.yellow, range: match.range)
+                attributedString.addAttribute(.foregroundColor, value: UIColor.black, range: match.range)
+                attributedString.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: 16), range: match.range)
+            }
+        } catch {
+            print("Error creating regex: \(error.localizedDescription)")
+        }
+    }
+    
+    return attributedString
+}
+
+    // Mark: TED TALK API Call --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+    
+
+    static func listAllTedTalks(completion: @escaping (Result<[String], Error>) -> Void) {
+        let listTedTalksUrl = URL(string: "http://127.0.0.1:8000/ted_talks/list_all_talks/")!
+
+        URLSession.shared.dataTask(with: listTedTalksUrl) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(NSError(domain: "No data received", code: 0, userInfo: nil)))
+                return
+            }
+            
+            do {
+                let json = try JSONDecoder().decode([String: [String]].self, from: data)
+                if let tedTalks = json["ted_talks"] {
+                    completion(.success(tedTalks))
+                } else {
+                    completion(.failure(NSError(domain: "Invalid JSON structure", code: 0, userInfo: nil)))
+                }
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
+
+    static func recommendTedTalks(query: String, allTalks: [String], completion: @escaping ([String]) -> Void) {
+        // This is a simple recommendation system. You might want to improve it later.
+        let lowercasedQuery = query.lowercased()
+        let recommendations = allTalks.filter { talk in
+            talk.lowercased().contains(lowercasedQuery)
+        }
+        completion(Array(recommendations.prefix(5))) // Return top 5 recommendations
+    }
+
+    static func getTedTalkTranscript(title: String, completion: @escaping (Result<String, Error>) -> Void) {
+        let getTranscriptUrl = URL(string: "http://127.0.0.1:8000/ted_talks/get-transcript/")!
+        var request = URLRequest(url: getTranscriptUrl)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let parameters: [String: Any] = ["title": title]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: parameters)
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(NSError(domain: "No data received", code: 0, userInfo: nil)))
+                return
+            }
+            
+            do {
+                // Parse the JSON structure
+                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                   let transcript = json["transcript"] as? String {
+                    // Remove HTML tags from the transcript
+                    let cleanedTranscript = transcript.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression, range: nil)
+                    completion(.success(cleanedTranscript))
+                } else {
+                    completion(.failure(NSError(domain: "Invalid JSON structure", code: 0, userInfo: nil)))
+                }
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
+
+    // MARK: - TED Talk Conversation Flow
+
+    static func handleTedTalkConversation(userInput: String, completion: @escaping (String) -> Void) {
+        listAllTedTalks { result in
+            switch result {
+            case .success(let allTalks):
+                recommendTedTalks(query: userInput, allTalks: allTalks) { recommendations in
+                    if recommendations.isEmpty {
+                        completion("I couldn't find any TED Talks related to your query. Could you try a different topic?")
+                    } else {
+                        let recommendationsList = recommendations.enumerated().map { index, talk in
+                            return "\(index + 1). \(talk)"
+                        }.joined(separator: "\n")
+                        
+                        completion("Based on your input, here are some TED Talks you might be interested in:\n\n\(recommendationsList)\n\nWhich one would you like to know more about? Please respond with the number.")
+                    }
+                }
+            case .failure(let error):
+                completion("Sorry, I encountered an error while fetching TED Talks: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    static func processTedTalkSelection(selection: Int, recommendations: [String], userQuery: String, completion: @escaping (String) -> Void) {
+        guard selection > 0 && selection <= recommendations.count else {
+            completion("Invalid selection. Please choose a number from the list.")
+            return
+        }
+
+        let selectedTalk = recommendations[selection - 1]
+        getTedTalkTranscript(title: selectedTalk) { result in
+            switch result {
+            case .success(let transcript):
+                // Use GPT to summarize and answer the user's question
+                let prompt = """
+                Based on the following TED Talk transcript, please provide a summary and answer the user's question: "\(userQuery)"
+
+                TED Talk: \(selectedTalk)
+
+                Transcript:
+                \(transcript)
+                """
+                
+                chatWithGPT(message: prompt, conversationId: currentConversationId ?? UUID(), customization: [:]) { response in
+                    if let response = response {
+                        completion(response)
+                    } else {
+                        completion("I'm sorry, I couldn't generate a response based on the transcript.")
+                    }
+                }
+            case .failure(let error):
+                completion("I'm sorry, I couldn't fetch the transcript for this TED Talk. Error: \(error.localizedDescription)")
+            }
+        }
+    }
     
 
     private static func createCustomizationInstructions(_ customization: [String: Any]) -> String {

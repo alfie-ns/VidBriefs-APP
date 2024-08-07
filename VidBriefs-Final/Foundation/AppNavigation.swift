@@ -96,7 +96,6 @@ struct AppNavigation: View {
         let id = UUID()
     }
     
-    
     struct SettingsAction: Identifiable, Hashable {
         let id = UUID()
     }
@@ -116,12 +115,16 @@ struct AppNavigation: View { // main struct for the app navigation
     var body: some View {
         ZStack { // ZStack overlays views, allowing conditional navigation views to be layered
             if AppNavigationPath.tabs.contains(currentPath) { 
-                // If the current path corresponds to a tab, create the tab view
-                createTabView()
+                // If the current path corresponds to a tab, create the tab view, creatomg a tab 
+                createTabView() // setting up this entire tabbed interface structure for the respective view/
             } else {
                 // Otherwise, create the corresponding view for the current path
                 createView(for: currentPath)
             }
+            // In a TabView, only one tab's content (Home, Insights, Library, Settings, Terms, Feedback, TedTalks)
+            // is visible at a time. Switching tabs replaces the visible content entirely.
+            // Views like 'about' that aren't in the tab bar would be navigated to separately,
+            // typically pushing onto a navigation stack rather than being part of the TabView.
         }
         .background(Color.customTeal) // Set background color
         .edgesIgnoringSafeArea(.all) // Extend background to cover the entire screen
@@ -165,6 +168,8 @@ struct AppNavigation: View { // main struct for the app navigation
             TermsView(currentPath: $currentPath) // Terms view
         case .feedback:
             FeedbackView(currentPath: $currentPath) // Feedback view
+        case .tedtalks:
+            TedTalkView(currentPath: $currentPath) // TedTalks view
         default:
             EmptyView() // Handle unexpected paths gracefully
         }
@@ -173,7 +178,7 @@ struct AppNavigation: View { // main struct for the app navigation
 
 // Enum defining different navigation paths, conforming to `Hashable` for use in SwiftUI
 enum AppNavigationPath: Hashable {
-    case root, home, insights, libary, settings, about, terms, feedback
+    case root, home, insights, libary, settings, about, terms, feedback, tedtalks
 
     // Static array of paths that should appear in the TabView
     static let tabs: [AppNavigationPath] = [.home, .insights, .libary, .settings]
