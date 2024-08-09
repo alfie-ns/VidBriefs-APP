@@ -28,34 +28,77 @@ struct TedTalkView: View {
     @State private var allTalks: [String] = []
     @State private var recommendedTalks: [String] = []
 
+    // testing variables
+    @State private var allTalksList: [String] = []
+    @State private var currentTranscript: String = ""
+    @State private var showingAllTalks = false
+    @State private var showingTranscript = false
+
     // MARK: - Body
 
     var body: some View {
-        ZStack {
-            LinearGradient(gradient: Gradient(colors: [Color.black, Color.red.opacity(0.8)]), startPoint: .top, endPoint: .bottom)
-                .edgesIgnoringSafeArea(.all)
+    ZStack {
+        LinearGradient(gradient: Gradient(colors: [Color.black, Color.red.opacity(0.8)]), startPoint: .top, endPoint: .bottom)
+            .edgesIgnoringSafeArea(.all)
 
-            VStack(spacing: 20) {
-                Text("TED Talks Insights")
-                    .font(.system(size: 42, weight: .heavy))
-                    .foregroundColor(.white)
-                    .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 2)
-                    .padding(.vertical, 20)
+        VStack(spacing: 20) {
+            Text("TED Talks Insights")
+                .font(.system(size: 42, weight: .heavy))
+                .foregroundColor(.white)
+                .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 2)
+                .padding(.vertical, 20)
 
-                talkSelectionSection
+            // New buttons for API testing
+            HStack(spacing: 20) {
+                Button("List All Talks") {
+                    listAllTalksTest()
+                }
+                .padding()
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(10)
 
-                Divider().background(Color.white)
-
-                speechRateControl
-
-                tedChatSection
+                Button("Get Random Talk Transcript") {
+                    getRandomTranscriptTest()
+                }
+                .padding()
+                .background(Color.green)
+                .foregroundColor(.white)
+                .cornerRadius(10)
             }
-            .padding()
+
+            talkSelectionSection
+
+            Divider().background(Color.white)
+
+            speechRateControl
+
+            tedChatSection
+        }
+        .padding()
         }
         .edgesIgnoringSafeArea(.all)
         .navigationBarItems(leading: backButton, trailing: newTedChatButton)
         .onAppear(perform: loadAllTalks)
         .onDisappear(perform: saveTedConversation)
+        .sheet(isPresented: $showingAllTalks) {
+            ScrollView {
+                LazyVStack(alignment: .leading) {
+                    ForEach(allTalksList, id: \.self) { talk in
+                        Text(talk)
+                            .padding()
+                    }
+                }
+            }
+            .navigationTitle("All TED Talks")
+        }
+        .sheet(isPresented: $showingTranscript) {
+            ScrollView {
+                Text(currentTranscript)
+                    .padding()
+            }
+            .navigationTitle("Random Talk Transcript")
+        }
     }
 
     // MARK: - View Components
