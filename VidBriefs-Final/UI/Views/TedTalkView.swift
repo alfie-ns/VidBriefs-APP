@@ -198,6 +198,41 @@ struct TedTalkView: View {
     }
 
     // MARK: - Functions
+    
+    func listAllTalksTest() {
+        APIManager.listAllTedTalks { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let talks):
+                    self.allTalksList = talks
+                    self.showingAllTalks = true
+                case .failure(let error):
+                    print("Failed to load TED Talks: \(error.localizedDescription)")
+                    // You might want to show an alert here
+                }
+            }
+        }
+    }
+
+    func getRandomTranscriptTest() {
+        guard let randomTalk = allTalks.randomElement() else {
+            print("No talks available")
+            return
+        }
+
+        APIManager.getTedTalkTranscript(title: randomTalk) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let transcript):
+                    self.currentTranscript = transcript
+                    self.showingTranscript = true
+                case .failure(let error):
+                    print("Failed to get transcript: \(error.localizedDescription)")
+                    // You might want to show an alert here
+                }
+            }
+        }
+    }
 
     func loadAllTalks() {
         APIManager.listAllTedTalks { result in
