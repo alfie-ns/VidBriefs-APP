@@ -1,6 +1,6 @@
 # VidBriefs Dev
 
-VidBrief's App is an app; utilises AI to read transcripts of youtube videos to feed videos to AI and ask questions
+VidBrief's App is an app; utilises AI to read transcripts of youtube videos to ask questions
 
 ## TODO
 
