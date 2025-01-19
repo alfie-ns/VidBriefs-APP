@@ -1,5 +1,0 @@
-- [ ] PERSONALITY-PICKER - InsightView.swift line 42
-- [ ] slider to change background colour
-- [ ] ted_talks API -> IOS APP
-- [ ] Make the AI be able to search on the internet for more info, and specify it's happening with a 'browsing' tag????
-- [ ] Enhance the app with the functionalities inside the vidbriefs-desktop python scripts

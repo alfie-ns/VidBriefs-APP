@@ -16,7 +16,6 @@
          </BuildableReference>
     </BuildableProductRunnable>
     <EnvironmentVariables>
-      <EnvironmentVariable key="openai-apikey" value="???" isEnabled="YES">
          </EnvironmentVariable>
     </EnvironmentVariables>
   </LaunchAction>
